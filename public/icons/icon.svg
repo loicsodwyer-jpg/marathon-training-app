@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Loic Marathon 2:55 icon</title>
+  <defs>
+    <linearGradient id="bg" x1="96" x2="416" y1="64" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22d3ee"/>
+      <stop offset="0.42" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="track" x1="90" x2="422" y1="344" y2="344" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#67e8f9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="#070a12"/>
+  <rect x="34" y="34" width="444" height="444" rx="96" fill="url(#bg)" opacity="0.98"/>
+  <path d="M90 340c70 51 146 69 228 51 44-10 78-30 104-57" fill="none" stroke="url(#track)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M104 383c63 41 134 55 213 42 39-7 72-21 99-43" fill="none" stroke="#f8fafc" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+  <circle cx="340" cy="176" r="26" fill="#f8fafc"/>
+  <path d="M328 210l-52 40 38 32m-38-32l-51-12m89 44l54 54m-92-86l44-47 48 21" fill="none" stroke="#f8fafc" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="164" fill="#f8fafc" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="800" text-anchor="middle" letter-spacing="0">2:55</text>
+</svg>

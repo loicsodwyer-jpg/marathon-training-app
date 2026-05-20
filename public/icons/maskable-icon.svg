@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Loic Marathon 2:55 maskable icon</title>
+  <defs>
+    <linearGradient id="bg" x1="86" x2="426" y1="70" y2="442" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22d3ee"/>
+      <stop offset="0.5" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#070a12"/>
+  <circle cx="256" cy="256" r="210" fill="url(#bg)"/>
+  <path d="M126 346c55 38 116 55 184 47 36-5 68-18 96-39" fill="none" stroke="#f8fafc" stroke-width="17" stroke-linecap="round"/>
+  <path d="M141 386c51 29 108 40 170 32 32-5 61-15 86-31" fill="none" stroke="#a5f3fc" stroke-width="8" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="337" cy="191" r="22" fill="#f8fafc"/>
+  <path d="M327 220l-45 35 32 28m-32-28l-43-10m75 38l45 45m-77-73l38-40 40 18" fill="none" stroke="#f8fafc" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="174" fill="#f8fafc" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="800" text-anchor="middle" letter-spacing="0">2:55</text>
+</svg>

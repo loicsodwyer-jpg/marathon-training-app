@@ -1,0 +1,5 @@
+export const WORKOUT_LOGS_STORAGE_KEY = 'loic-marathon-workout-logs-v1'
+export const SCHEDULE_OVERRIDES_STORAGE_KEY = 'loic-marathon-schedule-overrides-v1'
+export const PLAN_OVERRIDES_STORAGE_KEY = 'loic-marathon-plan-overrides-v1'
+export const FUELING_PREFERENCES_STORAGE_KEY = 'loic-marathon-fueling-preferences-v1'
+export const THEME_STORAGE_KEY = 'loic-marathon-theme'

@@ -1,0 +1,58 @@
+import type { SpecialEvent } from '../types/training'
+
+export const specialEvents: SpecialEvent[] = [
+  {
+    id: 'half_marathon_recovery',
+    title: 'Utrecht Half Marathon recovery week',
+    startDate: '2026-06-01',
+    endDate: '2026-06-07',
+    category: 'recovery',
+    trainingImpact: 'Easy week after Utrecht Half Marathon.',
+    alcoholRisk: 'none',
+  },
+  {
+    id: 'birthday',
+    title: 'Birthday weekend',
+    startDate: '2026-06-06',
+    endDate: '2026-06-07',
+    category: 'birthday',
+    trainingImpact: 'Keep training easy and avoid hard sessions.',
+    alcoholRisk: 'moderate',
+  },
+  {
+    id: 'july_festival',
+    title: 'July festival block',
+    startDate: '2026-07-15',
+    endDate: '2026-07-19',
+    category: 'festival',
+    trainingImpact: 'Protected deload block. No hard running, no compensation, and rest if recovery is poor.',
+    alcoholRisk: 'high',
+  },
+  {
+    id: 'august_festival',
+    title: 'August festival',
+    startDate: '2026-08-01',
+    endDate: '2026-08-01',
+    category: 'festival',
+    trainingImpact: 'Festival day. Shakeout is optional; rest is fully acceptable.',
+    alcoholRisk: 'high',
+  },
+  {
+    id: 'october_wedding',
+    title: 'Wedding weekend',
+    startDate: '2026-10-03',
+    endDate: '2026-10-04',
+    category: 'wedding',
+    trainingImpact: 'Reduce training stress and avoid risky hard efforts.',
+    alcoholRisk: 'moderate',
+  },
+  {
+    id: 'amsterdam_marathon',
+    title: 'Amsterdam Marathon',
+    startDate: '2026-10-18',
+    endDate: '2026-10-18',
+    category: 'race',
+    trainingImpact: 'Race day.',
+    alcoholRisk: 'none',
+  },
+]

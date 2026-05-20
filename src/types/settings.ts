@@ -1,0 +1,10 @@
+export type SettingsPageId =
+  | 'home'
+  | 'appearance'
+  | 'install'
+  | 'calendar'
+  | 'data'
+  | 'strength'
+  | 'nutrition'
+  | 'integrations'
+  | 'about'
