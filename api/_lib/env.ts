@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 export type PushEnvironment = {
   vapidPublicKey: string
   vapidPrivateKey: string

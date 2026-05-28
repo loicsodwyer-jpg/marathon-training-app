@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import type { ApiRequest } from './types.js'
 
 export async function readJsonBody(request: ApiRequest): Promise<unknown> {
