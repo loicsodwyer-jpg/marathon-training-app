@@ -1,4 +1,4 @@
-import type { ApiResponse } from './types'
+import type { ApiResponse } from './types.js'
 
 export function jsonResponse(
   response: ApiResponse,

@@ -1,4 +1,4 @@
-import type { WebPushSubscription } from './types'
+import type { WebPushSubscription } from './types.js'
 
 export type SubscribePayload = {
   subscription: WebPushSubscription

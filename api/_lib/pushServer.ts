@@ -1,6 +1,6 @@
 import * as webPush from 'web-push'
-import { readPushEnv } from './env'
-import type { WebPushSubscription } from './types'
+import { readPushEnv } from './env.js'
+import type { WebPushSubscription } from './types.js'
 
 export type PushPayload = {
   title: string

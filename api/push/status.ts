@@ -1,10 +1,10 @@
-import { applyCors, handleCorsPreflight } from '../_lib/cors'
-import { isMissingEnvError } from '../_lib/env'
-import { readJsonBody } from '../_lib/request'
-import { errorResponse, jsonResponse, methodNotAllowed } from '../_lib/responses'
-import { createSupabaseAdminClient } from '../_lib/supabaseServer'
-import type { ApiRequest, ApiResponse } from '../_lib/types'
-import { isRecord, validateEndpointPayload } from '../_lib/validation'
+import { applyCors, handleCorsPreflight } from '../_lib/cors.js'
+import { isMissingEnvError } from '../_lib/env.js'
+import { readJsonBody } from '../_lib/request.js'
+import { errorResponse, jsonResponse, methodNotAllowed } from '../_lib/responses.js'
+import { createSupabaseAdminClient } from '../_lib/supabaseServer.js'
+import type { ApiRequest, ApiResponse } from '../_lib/types.js'
+import { isRecord, validateEndpointPayload } from '../_lib/validation.js'
 
 export default async function handler(request: ApiRequest, response: ApiResponse) {
   applyCors(request, response)

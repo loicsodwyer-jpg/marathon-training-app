@@ -1,4 +1,4 @@
-import type { ApiRequest } from './types'
+import type { ApiRequest } from './types.js'
 
 export async function readJsonBody(request: ApiRequest): Promise<unknown> {
   if (request.body !== undefined) {

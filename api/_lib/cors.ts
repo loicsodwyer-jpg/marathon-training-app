@@ -1,5 +1,5 @@
-import { getOptionalEnv } from './env'
-import type { ApiRequest, ApiResponse } from './types'
+import { getOptionalEnv } from './env.js'
+import type { ApiRequest, ApiResponse } from './types.js'
 
 export function applyCors(request: ApiRequest, response: ApiResponse): void {
   const origin = request.headers.origin

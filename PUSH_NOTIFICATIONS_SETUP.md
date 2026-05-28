@@ -36,6 +36,8 @@ Never commit `.env.local`. Never put `VAPID_PRIVATE_KEY` or `SUPABASE_SERVICE_RO
 
 The app does not query this table directly from the browser. Vercel Functions use the service-role key server-side.
 
+The API functions use ESM-style imports with explicit `.js` extensions because TypeScript NodeNext/Node16 resolution requires them.
+
 ## 4. Vercel Environment Variables
 
 Add these to Vercel Project Settings:
