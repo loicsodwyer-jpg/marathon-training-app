@@ -21,7 +21,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
   try {
     const payload = validateEndpointPayload(await readJsonBody(request))
 
-    if (!payload.ok) {
+    if (payload.ok === false) {
       errorResponse(response, payload.message, 400)
       return
     }

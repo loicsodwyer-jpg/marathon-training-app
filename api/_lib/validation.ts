@@ -22,15 +22,21 @@ export type TestPushPayload =
       subscription: WebPushSubscription
     }
 
-type ValidationResult<T> =
-  | {
-      ok: true
-      value: T
-    }
-  | {
-      ok: false
-      message: string
-    }
+export type ValidationSuccess<T> = {
+  ok: true
+  value: T
+}
+
+export type ValidationFailure = {
+  ok: false
+  message: string
+}
+
+export type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure
+
+export function isValidationFailure<T>(result: ValidationResult<T>): result is ValidationFailure {
+  return result.ok === false
+}
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -43,7 +49,7 @@ export function validateSubscribePayload(payload: unknown): ValidationResult<Sub
 
   const subscriptionResult = validatePushSubscriptionPayload(payload.subscription)
 
-  if (!subscriptionResult.ok) {
+  if (subscriptionResult.ok === false) {
     return invalid(subscriptionResult.message)
   }
 
@@ -92,7 +98,7 @@ export function validateTestPushPayload(payload: unknown): ValidationResult<Test
 
   const subscriptionResult = validatePushSubscriptionPayload(payload.subscription)
 
-  if (subscriptionResult.ok) {
+  if (subscriptionResult.ok === true) {
     return {
       ok: true,
       value: { subscription: subscriptionResult.value },
@@ -160,7 +166,7 @@ function optionalText(value: unknown, maxLength: number): string | undefined {
   return text ? text.slice(0, maxLength) : undefined
 }
 
-function invalid(message: string): ValidationResult<never> {
+function invalid(message: string): ValidationFailure {
   return {
     ok: false,
     message,
