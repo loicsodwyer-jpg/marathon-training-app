@@ -47,7 +47,7 @@ export function getFuelingCategoryLabel(category: FuelingSessionCategory): strin
 
 export function getFuelingCategoryAccent(category: FuelingSessionCategory): string {
   const accents: Record<FuelingSessionCategory, string> = {
-    none: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200',
+    none: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200',
     optional:
       'border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-300/25 dark:bg-amber-300/10 dark:text-amber-200',
     light:

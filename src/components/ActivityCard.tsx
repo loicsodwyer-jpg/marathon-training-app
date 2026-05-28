@@ -20,7 +20,7 @@ const iconClassNames: Record<StatusTone, string> = {
   warning:
     'bg-orange-50 text-orange-700 ring-orange-100 dark:bg-orange-400/12 dark:text-orange-300 dark:ring-orange-300/20',
   neutral:
-    'bg-stone-100 text-stone-700 ring-stone-200 dark:bg-slate-400/12 dark:text-slate-300 dark:ring-white/10',
+    'bg-stone-100 text-stone-700 ring-stone-200 dark:bg-neutral-400/12 dark:text-neutral-300 dark:ring-white/10',
   race: 'bg-rose-50 text-rose-700 ring-rose-100 dark:bg-rose-400/12 dark:text-rose-300 dark:ring-rose-300/20',
 }
 
@@ -33,7 +33,7 @@ function ActivityCard({
   children,
 }: ActivityCardProps) {
   return (
-    <section className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
+    <section className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-neutral-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
       <div className="mb-4 flex items-start gap-3">
         <div
           className={`grid h-11 w-11 shrink-0 place-items-center rounded-[18px] ring-1 ${iconClassNames[tone]}`}
@@ -45,7 +45,7 @@ function ActivityCard({
             <div>
               <h2 className="text-base font-semibold text-stone-950 dark:text-white">{title}</h2>
               {subtitle ? (
-                <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+                <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
                   {subtitle}
                 </p>
               ) : null}

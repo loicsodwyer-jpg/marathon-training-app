@@ -99,7 +99,7 @@ function AdjustmentIssueForm({
       <section className="space-y-4 rounded-[22px] border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-white/[0.05]">
         <div>
           <h3 className="text-lg font-semibold text-stone-950 dark:text-white">Issue details</h3>
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
             Structured inputs keep this preview conservative and predictable.
           </p>
         </div>
@@ -130,7 +130,7 @@ function AdjustmentIssueForm({
         ) : null}
 
         <label className="block">
-          <span className="mb-2 flex items-center justify-between text-sm font-semibold text-stone-700 dark:text-slate-200">
+          <span className="mb-2 flex items-center justify-between text-sm font-semibold text-stone-700 dark:text-neutral-200">
             Severity
             <span>{input.severity}/10</span>
           </span>
@@ -205,11 +205,11 @@ function AdjustmentIssueForm({
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-stone-700 dark:text-slate-200">
+          <span className="mb-2 block text-sm font-semibold text-stone-700 dark:text-neutral-200">
             Description
           </span>
           <textarea
-            className="min-h-24 w-full rounded-[18px] border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/10"
+            className="min-h-24 w-full rounded-[18px] border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-neutral-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/10"
             onChange={(event) => updateInput('description', event.target.value)}
             placeholder="What happened? What feels different?"
             value={input.description}
@@ -222,7 +222,7 @@ function AdjustmentIssueForm({
           <h3 className="text-lg font-semibold text-stone-950 dark:text-white">
             Window and tolerance
           </h3>
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
             You can override the recommendation before generating a proposal.
           </p>
         </div>
@@ -252,7 +252,7 @@ function AdjustmentIssueForm({
         />
 
         <label className="flex items-center justify-between rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-          <span className="text-sm font-semibold text-stone-700 dark:text-slate-200">
+          <span className="text-sm font-semibold text-stone-700 dark:text-neutral-200">
             Easy bike possible
           </span>
           <input
@@ -296,7 +296,7 @@ function AdjustmentIssueForm({
           <h3 className="text-lg font-semibold text-stone-950 dark:text-white">
             Adjustment level
           </h3>
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
             Lower is closer to plan. Higher removes more training stress.
           </p>
         </div>
@@ -324,7 +324,7 @@ function AdjustmentIssueForm({
       ) : null}
 
       <button
-        className="min-h-12 w-full rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(23,32,51,0.16)] transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:shadow-[0_16px_40px_rgba(34,211,238,0.18)] dark:hover:bg-cyan-200"
+        className="min-h-12 w-full rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(23,32,51,0.16)] transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:shadow-[0_16px_40px_rgba(34,211,238,0.18)] dark:hover:bg-cyan-200"
         onClick={onGenerateProposal}
         type="button"
       >
@@ -347,11 +347,11 @@ function SelectField({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-stone-700 dark:text-slate-200">
+      <span className="mb-2 block text-sm font-semibold text-stone-700 dark:text-neutral-200">
         {label}
       </span>
       <select
-        className="h-12 w-full rounded-[18px] border border-stone-200 bg-stone-50 px-4 text-sm font-semibold text-stone-900 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/10"
+        className="h-12 w-full rounded-[18px] border border-stone-200 bg-stone-50 px-4 text-sm font-semibold text-stone-900 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-neutral-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/10"
         onChange={(event) => onChange(event.target.value)}
         value={value}
       >

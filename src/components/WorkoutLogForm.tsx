@@ -123,18 +123,18 @@ function WorkoutLogForm({ dayPlan, existingLog, onDelete, onSave }: WorkoutLogFo
   }
 
   return (
-    <div className="space-y-5 rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
+    <div className="space-y-5 rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-neutral-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
       <div>
         <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
           {existingLog ? 'Edit log' : 'Create log'}
         </h2>
-        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
           Enter the data manually from Garmin, Strava, or your watch.
         </p>
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-semibold text-stone-700 dark:text-slate-200">
+        <p className="mb-2 text-sm font-semibold text-stone-700 dark:text-neutral-200">
           Completion status
         </p>
         <div className="grid grid-cols-2 gap-2">
@@ -186,12 +186,12 @@ function WorkoutLogForm({ dayPlan, existingLog, onDelete, onSave }: WorkoutLogFo
 
       <div className="rounded-[18px] border border-cyan-100 bg-cyan-50/70 p-3 dark:border-cyan-300/20 dark:bg-cyan-300/10">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-sm font-semibold text-stone-700 dark:text-slate-200">
+          <span className="text-sm font-semibold text-stone-700 dark:text-neutral-200">
             Calculated pace
           </span>
           <StatusPill tone={livePace ? 'running' : 'neutral'}>{livePace ?? 'Waiting'}</StatusPill>
         </div>
-        <p className="mt-2 text-sm leading-5 text-stone-600 dark:text-slate-300">
+        <p className="mt-2 text-sm leading-5 text-stone-600 dark:text-neutral-300">
           {getDistanceExecutionLabel(dayPlan?.plannedRun?.plannedDistanceKm, parsedDistance)}
           {' · '}
           {getPaceExecutionLabel(dayPlan?.plannedRun, livePace)}
@@ -278,8 +278,8 @@ function SegmentButton({
     <button
       className={`h-11 rounded-[16px] text-sm font-semibold capitalize transition ${
         isActive
-          ? 'bg-stone-950 text-white dark:bg-cyan-300 dark:text-slate-950'
-          : 'border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300 dark:hover:bg-white/[0.1]'
+          ? 'bg-stone-950 text-white dark:bg-cyan-300 dark:text-neutral-950'
+          : 'border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 dark:hover:bg-white/[0.1]'
       }`}
       onClick={onClick}
       type="button"
@@ -304,7 +304,7 @@ function ToggleButton({
       className={`h-12 rounded-[18px] text-sm font-semibold transition ${
         isActive
           ? 'border border-emerald-300/30 bg-emerald-300/15 text-emerald-700 dark:text-emerald-200'
-          : 'border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300 dark:hover:bg-white/[0.1]'
+          : 'border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 dark:hover:bg-white/[0.1]'
       }`}
       onClick={onClick}
       type="button"

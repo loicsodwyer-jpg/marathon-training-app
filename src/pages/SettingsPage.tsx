@@ -9,6 +9,7 @@ import CalendarExportSettingsPage from './settings/CalendarExportSettingsPage'
 import DataManagementSettingsPage from './settings/DataManagementSettingsPage'
 import InstallOfflineSettingsPage from './settings/InstallOfflineSettingsPage'
 import IntegrationsSettingsPage from './settings/IntegrationsSettingsPage'
+import NotificationSettingsPage from './settings/NotificationSettingsPage'
 import NutritionLibrarySettingsPage from './settings/NutritionLibrarySettingsPage'
 import StrengthLibrarySettingsPage from './settings/StrengthLibrarySettingsPage'
 
@@ -41,6 +42,10 @@ const subpageCopy: Record<
   data: {
     title: 'Data management',
     subtitle: 'Back up, import, export, or clear local app data.',
+  },
+  notifications: {
+    title: 'Notifications',
+    subtitle: 'Permission, test notification, and reminder preview.',
   },
   strength: {
     title: 'Strength library',
@@ -88,10 +93,10 @@ function SettingsPage({ onClose, onThemeChange, selectedDate, theme }: SettingsP
     <div
       aria-label="Settings"
       aria-modal="true"
-      className="fixed inset-0 z-[90] flex h-dvh justify-center bg-slate-950/55 backdrop-blur-sm"
+      className="fixed inset-0 z-[90] flex h-dvh justify-center bg-black/60 backdrop-blur-sm"
       role="dialog"
     >
-      <div className="h-dvh w-full max-w-[480px] overflow-hidden bg-[#f4f1eb] shadow-[0_0_90px_rgba(0,0,0,0.35)] dark:bg-[#070a12] dark:shadow-[0_0_90px_rgba(0,0,0,0.78)]">
+      <div className="h-dvh w-full max-w-[480px] overflow-hidden bg-[#f4f1eb] shadow-[0_0_90px_rgba(0,0,0,0.35)] dark:bg-neutral-950 dark:shadow-[0_0_90px_rgba(0,0,0,0.78)]">
         {activePage === 'home' ? (
           <div className="h-dvh overflow-y-auto">
             <SettingsHome
@@ -148,6 +153,10 @@ function renderSubpage({
 
   if (activePage === 'data') {
     return <DataManagementSettingsPage />
+  }
+
+  if (activePage === 'notifications') {
+    return <NotificationSettingsPage selectedDate={selectedDate} />
   }
 
   if (activePage === 'strength') {

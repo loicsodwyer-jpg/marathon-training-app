@@ -29,7 +29,7 @@ function ReadinessCard({ readiness }: ReadinessCardProps) {
       <div className="rounded-[20px] border border-stone-100 bg-stone-50 p-4 dark:border-white/10 dark:bg-white/[0.05]">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-stone-600 dark:text-slate-400">Score</p>
+            <p className="text-sm font-semibold text-stone-600 dark:text-neutral-400">Score</p>
             <p className="mt-1 text-4xl font-semibold text-stone-950 dark:text-white">
               {readiness.label === 'Not enough data' ? '-' : readiness.score}
             </p>
@@ -42,7 +42,7 @@ function ReadinessCard({ readiness }: ReadinessCardProps) {
             style={{ width: `${readiness.score}%` }}
           />
         </div>
-        <p className="mt-3 text-sm leading-6 text-stone-600 dark:text-slate-300">
+        <p className="mt-3 text-sm leading-6 text-stone-600 dark:text-neutral-300">
           {readiness.description}
         </p>
       </div>
@@ -72,7 +72,7 @@ function SignalLine({ icon, text }: { icon: 'positive' | 'concern'; text: string
         }`}
         aria-hidden="true"
       />
-      <p className="text-sm leading-5 text-stone-600 dark:text-slate-300">{text}</p>
+      <p className="text-sm leading-5 text-stone-600 dark:text-neutral-300">{text}</p>
     </div>
   )
 }

@@ -17,7 +17,7 @@ function AboutSettingsPage() {
             <h2 className="mt-1 text-xl font-semibold text-stone-950 dark:text-white">
               Amsterdam Marathon build
             </h2>
-            <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-neutral-300">
               Private training app for a 2:50-2:55 marathon goal.
             </p>
           </div>
@@ -75,7 +75,7 @@ function InfoCard({
       </div>
       <ul className="space-y-2">
         {items.map((item) => (
-          <li className="text-sm leading-5 text-stone-600 dark:text-slate-300" key={item}>
+          <li className="text-sm leading-5 text-stone-600 dark:text-neutral-300" key={item}>
             {item}
           </li>
         ))}

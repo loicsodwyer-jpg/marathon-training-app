@@ -46,7 +46,7 @@ function MealItemCard({ meal, compact = false }: MealItemCardProps) {
 
   return (
     <div className="flex gap-3">
-      <div className="w-12 shrink-0 pt-0.5 text-xs font-semibold text-stone-500 dark:text-slate-500">
+      <div className="w-12 shrink-0 pt-0.5 text-xs font-semibold text-stone-500 dark:text-neutral-500">
         {meal.time}
       </div>
       <div className={`flex-1 rounded-[18px] border p-3 ${categoryStyles[category]}`}>
@@ -54,11 +54,11 @@ function MealItemCard({ meal, compact = false }: MealItemCardProps) {
           <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <div className="min-w-0">
             <p className="text-sm font-semibold text-stone-950 dark:text-white">{meal.label}</p>
-            <p className="mt-1 text-sm leading-5 text-stone-700 dark:text-slate-200">
+            <p className="mt-1 text-sm leading-5 text-stone-700 dark:text-neutral-200">
               {meal.description}
             </p>
             {!compact ? (
-              <p className="mt-1 text-xs leading-5 text-stone-600 dark:text-slate-400">
+              <p className="mt-1 text-xs leading-5 text-stone-600 dark:text-neutral-400">
                 {meal.purpose}
               </p>
             ) : null}

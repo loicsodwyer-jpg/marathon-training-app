@@ -15,7 +15,7 @@ type SettingsRowProps = {
 function SettingsRow({
   badge,
   icon: Icon,
-  iconClassName = 'bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-slate-200',
+  iconClassName = 'bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200',
   onSelect,
   page,
   subtitle,
@@ -34,16 +34,16 @@ function SettingsRow({
         <div className="flex items-center gap-2">
           <p className="truncate text-sm font-semibold text-stone-950 dark:text-white">{title}</p>
           {badge ? (
-            <span className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-stone-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300">
+            <span className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-stone-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300">
               {badge}
             </span>
           ) : null}
         </div>
-        <p className="mt-0.5 line-clamp-2 text-sm leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-0.5 line-clamp-2 text-sm leading-5 text-stone-500 dark:text-neutral-400">
           {subtitle}
         </p>
       </div>
-      <ChevronRight className="h-5 w-5 shrink-0 text-stone-400 dark:text-slate-600" aria-hidden="true" />
+      <ChevronRight className="h-5 w-5 shrink-0 text-stone-400 dark:text-neutral-600" aria-hidden="true" />
     </button>
   )
 }

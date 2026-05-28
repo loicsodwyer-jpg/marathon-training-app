@@ -43,7 +43,7 @@ function ChatGptPromptPreview({ onBack, onContinue, prompt }: ChatGptPromptPrevi
             <h3 className="mt-1 text-lg font-semibold text-stone-950 dark:text-white">
               Copy this prompt into ChatGPT
             </h3>
-            <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-neutral-300">
               It contains the affected plan dates, recent logs, and the rule-based proposal you
               did not approve. Nothing is sent automatically; only the text you copy leaves this
               app.
@@ -54,13 +54,13 @@ function ChatGptPromptPreview({ onBack, onContinue, prompt }: ChatGptPromptPrevi
 
       <div className="space-y-2">
         <label
-          className="text-sm font-semibold text-stone-800 dark:text-slate-100"
+          className="text-sm font-semibold text-stone-800 dark:text-neutral-100"
           htmlFor="chatgpt-adjustment-prompt"
         >
           ChatGPT prompt
         </label>
         <textarea
-          className="min-h-[360px] w-full resize-y rounded-[20px] border border-stone-200 bg-white p-3 font-mono text-xs leading-5 text-stone-800 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
+          className="min-h-[360px] w-full resize-y rounded-[20px] border border-stone-200 bg-white p-3 font-mono text-xs leading-5 text-stone-800 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-100 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
           id="chatgpt-adjustment-prompt"
           readOnly
           value={prompt}
@@ -68,14 +68,14 @@ function ChatGptPromptPreview({ onBack, onContinue, prompt }: ChatGptPromptPrevi
       </div>
 
       {copyMessage ? (
-        <p className="rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300">
+        <p className="rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
           {copyMessage}
         </p>
       ) : null}
 
       <div className="grid grid-cols-1 gap-2">
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
           onClick={handleCopy}
           type="button"
         >
@@ -83,7 +83,7 @@ function ChatGptPromptPreview({ onBack, onContinue, prompt }: ChatGptPromptPrevi
           Copy prompt
         </button>
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
           onClick={handleDownload}
           type="button"
         >
@@ -98,7 +98,7 @@ function ChatGptPromptPreview({ onBack, onContinue, prompt }: ChatGptPromptPrevi
           Continue to paste response
         </button>
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
           onClick={onBack}
           type="button"
         >

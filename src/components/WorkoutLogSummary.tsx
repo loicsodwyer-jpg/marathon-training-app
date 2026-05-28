@@ -87,13 +87,13 @@ function WorkoutLogSummary({ log, dayPlan }: WorkoutLogSummaryProps) {
           value={getPaceExecutionLabel(dayPlan?.plannedRun, log.actualPaceMinPerKm)}
         />
         <div className="flex items-center justify-between gap-3 rounded-[16px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-          <span className="text-sm font-semibold text-stone-700 dark:text-slate-200">Recovery</span>
+          <span className="text-sm font-semibold text-stone-700 dark:text-neutral-200">Recovery</span>
           <StatusPill tone={recoveryTone}>{recoveryHint}</StatusPill>
         </div>
       </div>
 
       {log.notes ? (
-        <p className="mt-4 rounded-[18px] border border-stone-100 bg-stone-50 p-3 text-sm leading-6 text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300">
+        <p className="mt-4 rounded-[18px] border border-stone-100 bg-stone-50 p-3 text-sm leading-6 text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
           {log.notes}
         </p>
       ) : null}
@@ -112,7 +112,7 @@ function SummaryTile({
 }) {
   return (
     <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <div className="mb-1 flex items-center gap-1.5 text-stone-500 dark:text-slate-500">
+      <div className="mb-1 flex items-center gap-1.5 text-stone-500 dark:text-neutral-500">
         {icon}
         <p className="text-xs font-semibold uppercase tracking-[0.08em]">{label}</p>
       </div>
@@ -124,8 +124,8 @@ function SummaryTile({
 function FeedbackLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-[16px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <span className="text-sm font-semibold text-stone-700 dark:text-slate-200">{label}</span>
-      <span className="text-right text-sm text-stone-600 dark:text-slate-300">{value}</span>
+      <span className="text-sm font-semibold text-stone-700 dark:text-neutral-200">{label}</span>
+      <span className="text-right text-sm text-stone-600 dark:text-neutral-300">{value}</span>
     </div>
   )
 }

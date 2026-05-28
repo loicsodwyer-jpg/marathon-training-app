@@ -5,13 +5,14 @@ import type {
   CalendarExportSettings,
 } from '../types/calendarExport'
 import type { FuelingPreferences } from '../types/fueling'
-import type { DailyScheduleBlock, DailyScheduleOverrides, ScheduleBlockOverride } from '../types/schedule'
+import type { DailyScheduleBlock } from '../types/schedule'
 import type { DayPlan, RunWorkout, SpecialEvent, StrengthSession, WorkoutInterval } from '../types/training'
 import { getDayAdjustmentInfo, getEffectiveFullTrainingPlan } from './effectiveTrainingPlanUtils'
 import { formatFuelingItems, formatFuelingSummary } from './fuelingFormatUtils'
 import { getFuelingRecommendationForDay } from './fuelingRules'
 import { loadFuelingPreferences } from './fuelingStorage'
 import { getScheduleOverridesForDate } from './scheduleStorage'
+import { applyScheduleOverridesToGeneratedBlocks } from './scheduleOverrideUtils'
 import { addMinutesToTime, sortBlocksByTime } from './scheduleTimeUtils'
 import { getStrengthSessionsByIds } from './strengthUtils'
 import { getDailyScheduleBlocks } from './todayScheduleUtils'
@@ -413,46 +414,9 @@ function getScheduleBlock(dayPlan: DayPlan, category: 'run' | 'race') {
 function getEffectiveScheduleBlocks(dayPlan: DayPlan): DailyScheduleBlock[] {
   const generatedBlocks = getDailyScheduleBlocks(dayPlan)
   const overrides = getScheduleOverridesForDate(dayPlan.date)
-  const generatedWithOverrides = generatedBlocks.map((block) =>
-    applyScheduleOverride(block, getOverrideForBlock(block, overrides)),
-  )
+  const generatedWithOverrides = applyScheduleOverridesToGeneratedBlocks(generatedBlocks, overrides)
 
   return sortBlocksByTime(generatedWithOverrides)
-}
-
-function applyScheduleOverride(
-  block: DailyScheduleBlock,
-  override: ScheduleBlockOverride | undefined,
-): DailyScheduleBlock {
-  if (!override) {
-    return block
-  }
-
-  return {
-    ...block,
-    title: override.title ?? block.title,
-    startTime: override.startTime ?? block.startTime,
-    endTime: override.endTime ?? block.endTime,
-    description: override.description ?? block.description,
-    category: override.category ?? block.category,
-    completed: override.completed ?? block.completed,
-  }
-}
-
-function getOverrideForBlock(
-  block: DailyScheduleBlock,
-  overrides: DailyScheduleOverrides | undefined,
-) {
-  if (!overrides) {
-    return undefined
-  }
-
-  return (
-    overrides.blockOverrides[block.id] ??
-    block.legacyIds
-      ?.map((legacyId) => overrides.blockOverrides[legacyId])
-      .find((override) => override !== undefined)
-  )
 }
 
 function formatInterval(interval: WorkoutInterval) {

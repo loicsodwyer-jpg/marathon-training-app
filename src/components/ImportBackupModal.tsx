@@ -72,10 +72,10 @@ function ImportBackupModal({ open, onClose, onImported }: ImportBackupModalProps
     <div
       aria-label="Import backup"
       aria-modal="true"
-      className="fixed inset-0 z-[110] flex h-dvh items-end justify-center bg-slate-950/70 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-[max(16px,env(safe-area-inset-top))] backdrop-blur-sm sm:items-center"
+      className="modal-overlay z-[110] items-end justify-center bg-slate-950/70 px-4 backdrop-blur-sm sm:items-center"
       role="dialog"
     >
-      <div className="max-h-[calc(100dvh-28px)] w-full max-w-md overflow-y-auto rounded-[28px] border border-white/10 bg-white p-5 pb-[calc(20px+env(safe-area-inset-bottom))] shadow-2xl dark:bg-slate-900">
+      <div className="modal-panel w-full max-w-md overflow-y-auto rounded-[28px] border border-white/10 bg-white p-5 pb-[calc(20px+env(safe-area-inset-bottom))] shadow-2xl dark:bg-neutral-900">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-cyan-100 bg-cyan-50 text-cyan-700 dark:border-cyan-300/20 dark:bg-cyan-300/10 dark:text-cyan-200">
@@ -85,14 +85,14 @@ function ImportBackupModal({ open, onClose, onImported }: ImportBackupModalProps
               <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
                 Import backup
               </h2>
-              <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+              <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
                 Restore a JSON backup exported from this app.
               </p>
             </div>
           </div>
           <button
             aria-label="Close import backup"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-600 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300 dark:hover:bg-white/[0.1]"
+            className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-600 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 dark:hover:bg-white/[0.1]"
             onClick={handleClose}
             type="button"
           >
@@ -102,19 +102,19 @@ function ImportBackupModal({ open, onClose, onImported }: ImportBackupModalProps
 
         <div className="space-y-4">
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-stone-700 dark:text-slate-200">
+            <span className="mb-2 block text-sm font-semibold text-stone-700 dark:text-neutral-200">
               Backup file
             </span>
             <input
               accept=".json,application/json"
-              className="block w-full rounded-[18px] border border-stone-200 bg-stone-50 px-3 py-3 text-sm text-stone-700 file:mr-3 file:rounded-full file:border-0 file:bg-stone-950 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white dark:border-white/10 dark:bg-slate-950/70 dark:text-slate-200 dark:file:bg-cyan-300 dark:file:text-slate-950"
+              className="block w-full rounded-[18px] border border-stone-200 bg-stone-50 px-3 py-3 text-sm text-stone-700 file:mr-3 file:rounded-full file:border-0 file:bg-stone-950 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-200 dark:file:bg-cyan-300 dark:file:text-neutral-950"
               onChange={(event) => setSelectedFile(event.target.files?.[0])}
               type="file"
             />
           </label>
 
           <div>
-            <p className="mb-2 text-sm font-semibold text-stone-700 dark:text-slate-200">
+            <p className="mb-2 text-sm font-semibold text-stone-700 dark:text-neutral-200">
               Import mode
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -147,7 +147,7 @@ function ImportBackupModal({ open, onClose, onImported }: ImportBackupModalProps
 
           <div className="grid grid-cols-2 gap-2">
             <button
-              className="h-11 rounded-[16px] border border-stone-200 bg-stone-50 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+              className="h-11 rounded-[16px] border border-stone-200 bg-stone-50 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
               onClick={handleClose}
               type="button"
             >
@@ -186,7 +186,7 @@ function ModeButton({
       className={`rounded-[18px] border p-3 text-left transition ${
         isActive
           ? 'border-cyan-300/40 bg-cyan-300/15 text-stone-950 dark:text-cyan-100'
-          : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300 dark:hover:bg-white/[0.1]'
+          : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 dark:hover:bg-white/[0.1]'
       }`}
       onClick={onClick}
       type="button"

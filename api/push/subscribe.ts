@@ -1,0 +1,68 @@
+import { applyCors, handleCorsPreflight } from '../_lib/cors'
+import { isMissingEnvError } from '../_lib/env'
+import { readJsonBody } from '../_lib/request'
+import { errorResponse, jsonResponse, methodNotAllowed } from '../_lib/responses'
+import { createSupabaseAdminClient } from '../_lib/supabaseServer'
+import type { ApiRequest, ApiResponse } from '../_lib/types'
+import { isRecord, validateSubscribePayload } from '../_lib/validation'
+
+export default async function handler(request: ApiRequest, response: ApiResponse) {
+  applyCors(request, response)
+
+  if (handleCorsPreflight(request, response)) {
+    return
+  }
+
+  if (request.method !== 'POST') {
+    methodNotAllowed(response, ['POST'])
+    return
+  }
+
+  try {
+    const payload = validateSubscribePayload(await readJsonBody(request))
+
+    if (!payload.ok) {
+      errorResponse(response, payload.message, 400)
+      return
+    }
+
+    const supabase = createSupabaseAdminClient()
+    const { subscription, preferences, timezone, deviceLabel, userAgent } = payload.value
+    const { data, error } = await supabase
+      .from('push_subscriptions')
+      .upsert(
+        {
+          endpoint: subscription.endpoint,
+          p256dh: subscription.keys.p256dh,
+          auth: subscription.keys.auth,
+          preferences,
+          timezone,
+          device_label: deviceLabel,
+          user_agent: userAgent,
+          active: true,
+          last_seen_at: new Date().toISOString(),
+        },
+        { onConflict: 'endpoint' },
+      )
+      .select('id, active')
+      .single()
+
+    if (error) {
+      errorResponse(response, 'Could not save push subscription.', 500, error.message)
+      return
+    }
+
+    jsonResponse(response, 200, {
+      ok: true,
+      subscriptionId: isRecord(data) && typeof data.id === 'string' ? data.id : undefined,
+      active: isRecord(data) && typeof data.active === 'boolean' ? data.active : true,
+    })
+  } catch (error) {
+    if (isMissingEnvError(error)) {
+      errorResponse(response, 'Push backend environment variables are missing.', 500, error.message)
+      return
+    }
+
+    errorResponse(response, 'Could not save push subscription.', 500)
+  }
+}

@@ -16,7 +16,7 @@ import LongRunProgressionChart from '../components/LongRunProgressionChart'
 import PaceHeartRateTrendChart from '../components/PaceHeartRateTrendChart'
 import ReadinessCard from '../components/ReadinessCard'
 import RiskSignalsCard from '../components/RiskSignalsCard'
-import SectionHeader from '../components/SectionHeader'
+import StickyTabHeader from '../components/StickyTabHeader'
 import StatusPill from '../components/StatusPill'
 import WeeklyMileageChart from '../components/WeeklyMileageChart'
 import { usePlanOverrides } from '../hooks/usePlanOverrides'
@@ -36,7 +36,11 @@ import {
   formatShortDate,
 } from '../utils/chartFormatUtils'
 
-function DashboardPage() {
+type DashboardPageProps = {
+  onOpenSettings: () => void
+}
+
+function DashboardPage({ onOpenSettings }: DashboardPageProps) {
   const { logs } = useWorkoutLogs()
   const planOverrides = usePlanOverrides()
   const logCount = Object.keys(logs).length
@@ -50,14 +54,20 @@ function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      <SectionHeader
-        action={<StatusPill tone={hasLogs ? 'running' : 'neutral'}>{hasLogs ? 'Local logs' : 'No logs yet'}</StatusPill>}
-        subtitle="Progress toward Amsterdam 2:50-2:55"
+      <StickyTabHeader
+        meta={
+          <>
+            <StatusPill tone={hasLogs ? 'running' : 'neutral'}>{hasLogs ? 'Local logs' : 'No logs yet'}</StatusPill>
+            <StatusPill tone="success">{formatKm(latestWeek?.actualKm)} this week</StatusPill>
+          </>
+        }
+        onOpenSettings={onOpenSettings}
+        subtitle="Planned vs actual training"
         title="Dashboard"
       />
 
-      <div className="rounded-[22px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.06)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.28)]">
-        <p className="text-sm leading-6 text-stone-600 dark:text-slate-300">
+      <div className="rounded-[22px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.06)] dark:border-white/10 dark:bg-neutral-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.28)]">
+        <p className="text-sm leading-6 text-stone-600 dark:text-neutral-300">
           {hasLogs
             ? 'Based on your local workout logs and the loaded Amsterdam marathon plan.'
             : 'Start logging workouts to unlock progress analytics. Planned mileage still appears below.'}

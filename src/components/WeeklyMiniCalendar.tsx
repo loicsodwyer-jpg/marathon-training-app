@@ -20,7 +20,7 @@ function WeeklyMiniCalendar({
     <PageCard className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold text-stone-950 dark:text-white">Week at a glance</h2>
-        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
           Monday to Sunday, compact and tappable.
         </p>
       </div>
@@ -69,7 +69,7 @@ function MiniDayRow({
     >
       <div className="grid grid-cols-[64px_1fr_auto] items-center gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
             {day.dayShort}
           </p>
           <p className="mt-0.5 text-sm font-semibold text-stone-950 dark:text-white">
@@ -134,7 +134,7 @@ function MiniSessionLine({
   const classNameByTone = {
     event: 'text-pink-700 dark:text-pink-200',
     race: 'text-rose-700 dark:text-rose-200',
-    rest: 'text-stone-600 dark:text-slate-400',
+    rest: 'text-stone-600 dark:text-neutral-400',
     run: 'text-cyan-700 dark:text-cyan-200',
     strength: 'text-purple-700 dark:text-purple-200',
   }

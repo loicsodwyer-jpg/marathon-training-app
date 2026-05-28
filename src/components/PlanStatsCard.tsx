@@ -13,7 +13,7 @@ function PlanStatsCard({ stats }: PlanStatsCardProps) {
     <PageCard className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold text-stone-950 dark:text-white">Plan stats</h2>
-        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
           Complete 20-week Amsterdam build overview.
         </p>
       </div>
@@ -43,7 +43,7 @@ function StatTile({
 }) {
   return (
     <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <div className="mb-1 flex items-center gap-1.5 text-stone-500 dark:text-slate-500">
+      <div className="mb-1 flex items-center gap-1.5 text-stone-500 dark:text-neutral-500">
         <Icon className="h-4 w-4" aria-hidden="true" />
         <p className="text-xs font-semibold uppercase tracking-[0.08em]">{label}</p>
       </div>

@@ -14,11 +14,11 @@ function SettingsSubpageHeader({
   title,
 }: SettingsSubpageHeaderProps) {
   return (
-    <header className="safe-top sticky top-0 z-10 border-b border-stone-200/70 bg-[#f4f1eb]/95 px-4 pb-3 backdrop-blur-xl dark:border-white/10 dark:bg-[#070a12]/95">
+    <header className="safe-top sticky top-0 z-10 border-b border-stone-200/70 bg-[#f4f1eb]/95 px-4 pb-3 backdrop-blur-xl dark:border-white/10 dark:bg-neutral-950/95">
       <div className="flex items-center justify-between gap-3">
         <button
           aria-label="Back to Settings"
-          className="inline-flex h-10 items-center gap-1 rounded-full border border-stone-200 bg-white/80 px-3 text-sm font-semibold text-stone-700 transition hover:bg-white dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200 dark:hover:bg-white/[0.12]"
+          className="inline-flex h-10 items-center gap-1 rounded-full border border-stone-200 bg-white/80 px-3 text-sm font-semibold text-stone-700 transition hover:bg-white dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200 dark:hover:bg-white/[0.12]"
           onClick={onBack}
           type="button"
         >
@@ -27,7 +27,7 @@ function SettingsSubpageHeader({
         </button>
         <button
           aria-label="Close settings"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-200 bg-white/80 text-stone-700 transition hover:bg-white dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200 dark:hover:bg-white/[0.12]"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-200 bg-white/80 text-stone-700 transition hover:bg-white dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200 dark:hover:bg-white/[0.12]"
           onClick={onClose}
           type="button"
         >
@@ -39,7 +39,7 @@ function SettingsSubpageHeader({
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">{subtitle}</p>
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">{subtitle}</p>
         ) : null}
       </div>
     </header>

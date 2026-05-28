@@ -17,10 +17,10 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import MealTimelineCard from '../components/MealTimelineCard'
 import NutritionDetailModal from '../components/NutritionDetailModal'
 import PageCard from '../components/PageCard'
-import SectionHeader from '../components/SectionHeader'
 import StatusPill, { type StatusTone } from '../components/StatusPill'
 import StrengthDetailCard from '../components/StrengthDetailCard'
 import LiveStrengthSessionModal from '../components/LiveStrengthSessionModal'
+import StickyTabHeader from '../components/StickyTabHeader'
 import StrengthSessionModal from '../components/StrengthSessionModal'
 import TodayHourlyCalendar from '../components/TodayHourlyCalendar'
 import WorkoutDetailCard from '../components/WorkoutDetailCard'
@@ -52,6 +52,7 @@ type TodayPageProps = {
   selectedDate: string
   onSelectedDateChange: (date: string) => void
   onLogSelectedDay: () => void
+  onOpenSettings: () => void
 }
 
 type ActivityModalState =
@@ -83,7 +84,12 @@ const intensityTone: Record<IntensityLevel, StatusTone> = {
   race: 'race',
 }
 
-function TodayPage({ selectedDate, onSelectedDateChange, onLogSelectedDay }: TodayPageProps) {
+function TodayPage({
+  selectedDate,
+  onOpenSettings,
+  onSelectedDateChange,
+  onLogSelectedDay,
+}: TodayPageProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [activityModal, setActivityModal] = useState<ActivityModalState>()
   const [deleteBlock, setDeleteBlock] = useState<DailyScheduleBlock>()
@@ -136,6 +142,8 @@ function TodayPage({ selectedDate, onSelectedDateChange, onLogSelectedDay }: Tod
       })
       .map((block) => block.id),
   )
+  const headerTone = dayPlan ? intensityTone[dayPlan.intensity] : 'neutral'
+  const headerLabel = getTodayHeaderLabel(dayPlan, dayAdjustment)
 
   const handleStartStrengthSession = (session: StrengthSession) => {
     setSelectedStrengthSession(undefined)
@@ -152,34 +160,34 @@ function TodayPage({ selectedDate, onSelectedDateChange, onLogSelectedDay }: Tod
 
   return (
     <div className="space-y-5">
-      <SectionHeader
-        action={
-          dayPlan ? (
-            <StatusPill tone={phaseTone[dayPlan.phase]}>{dayPlan.phase}</StatusPill>
-          ) : null
+      <StickyTabHeader
+        controls={
+          <AppDateInput
+            maxDate={trainingPlanEndDate}
+            minDate={trainingPlanStartDate}
+            onChange={(date) => {
+              if (date) {
+                onSelectedDateChange(date)
+              }
+            }}
+            quickDates={[
+              { label: 'Today', date: todayDateKey },
+              { label: 'Plan start', date: trainingPlanStartDate },
+              { label: 'Race day', date: raceDay?.date ?? trainingPlanEndDate },
+            ]}
+            value={selectedDate}
+          />
         }
+        meta={
+          <>
+            <StatusPill tone={headerTone}>{headerLabel}</StatusPill>
+            {dayPlan ? <StatusPill tone={phaseTone[dayPlan.phase]}>{dayPlan.phase}</StatusPill> : null}
+          </>
+        }
+        onOpenSettings={onOpenSettings}
         subtitle={selectedDisplayDate}
         title="Today"
       />
-
-      <div className="space-y-3 rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
-        <AppDateInput
-          label="Select training date"
-          maxDate={trainingPlanEndDate}
-          minDate={trainingPlanStartDate}
-          onChange={(date) => {
-            if (date) {
-              onSelectedDateChange(date)
-            }
-          }}
-          quickDates={[
-            { label: 'Today', date: todayDateKey },
-            { label: 'Plan start', date: trainingPlanStartDate },
-            { label: 'Race day', date: raceDay?.date ?? trainingPlanEndDate },
-          ]}
-          value={selectedDate}
-        />
-      </div>
 
       <ActionButton className="w-full" icon={<CalendarDays className="h-5 w-5" />} onClick={onLogSelectedDay}>
         {logButtonLabel}
@@ -259,12 +267,16 @@ function TodayPage({ selectedDate, onSelectedDateChange, onLogSelectedDay }: Tod
       ) : null}
 
       <ConfirmDialog
-        confirmLabel="Delete"
-        description="This custom activity will be removed from this day."
+        confirmLabel="Delete activity"
+        description={
+          deleteBlock?.source === 'planned'
+            ? 'This hides the generated activity for this day only. You can restore it with Reset day schedule. The training plan stays unchanged.'
+            : 'This custom activity will be removed from this day.'
+        }
         onCancel={() => setDeleteBlock(undefined)}
         onConfirm={() => {
           if (deleteBlock) {
-            schedule.deleteCustomBlock(deleteBlock.id)
+            schedule.deleteBlock(deleteBlock.id)
           }
           setDeleteBlock(undefined)
           setActivityModal(undefined)
@@ -275,8 +287,8 @@ function TodayPage({ selectedDate, onSelectedDateChange, onLogSelectedDay }: Tod
       />
 
       <ConfirmDialog
-        confirmLabel="Reset day"
-        description="This clears all custom activities and timing changes for the selected day. The marathon plan stays unchanged."
+        confirmLabel="Reset day schedule"
+        description="This will remove custom activities, moved activities, completed activity ticks, and deleted default blocks for this day. It will not delete workout logs or plan adjustments."
         onCancel={() => setIsResetDayDialogOpen(false)}
         onConfirm={() => {
           schedule.resetDay()
@@ -326,6 +338,48 @@ function TodayPage({ selectedDate, onSelectedDateChange, onLogSelectedDay }: Tod
   )
 }
 
+function getTodayHeaderLabel(
+  dayPlan: DayPlan | undefined,
+  adjustment: DayPlanOverride | undefined,
+) {
+  if (adjustment) {
+    return 'Adjusted'
+  }
+
+  if (!dayPlan) {
+    return 'Outside plan'
+  }
+
+  if (dayPlan.plannedRun?.type === 'race') {
+    return 'Race day'
+  }
+
+  if (dayPlan.plannedRun?.type === 'long') {
+    return 'Long run'
+  }
+
+  if (
+    dayPlan.plannedRun &&
+    ['threshold', 'interval', 'marathon_pace', 'progression'].includes(dayPlan.plannedRun.type)
+  ) {
+    return 'Workout'
+  }
+
+  if (dayPlan.plannedRun?.type === 'recovery') {
+    return 'Recovery'
+  }
+
+  if (dayPlan.plannedRun?.type === 'easy') {
+    return 'Easy'
+  }
+
+  if (dayPlan.dayType === 'rest' || dayPlan.intensity === 'rest') {
+    return 'Rest'
+  }
+
+  return dayPlan.intensity
+}
+
 function AdjustedDayCard({
   adjustment,
   onReset,
@@ -341,15 +395,15 @@ function AdjustedDayCard({
           <h2 className="mt-2 text-base font-semibold text-stone-950 dark:text-white">
             Local plan adjustment
           </h2>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
             Original: {adjustment.originalTitle}
           </p>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
             Adjusted: {adjustment.adjustedSummary}
           </p>
         </div>
         <button
-          className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+          className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
           onClick={onReset}
           type="button"
         >
@@ -368,7 +422,7 @@ function TodayLogStatusCard({ log }: { log: WorkoutLogEntry | undefined }) {
     return (
       <div className="rounded-[20px] border border-stone-200 bg-white p-3 dark:border-white/10 dark:bg-white/[0.05]">
         <p className="text-sm font-semibold text-stone-950 dark:text-white">Not logged yet</p>
-        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
           Save the workout and recovery notes from the Log tab after training.
         </p>
       </div>
@@ -389,7 +443,7 @@ function TodayLogStatusCard({ log }: { log: WorkoutLogEntry | undefined }) {
         </p>
         <StatusPill tone="success">{log.completionStatus}</StatusPill>
       </div>
-      <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+      <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
         {summaryParts.length ? summaryParts.join(' - ') : 'Workout log saved'}
       </p>
     </div>
@@ -405,11 +459,11 @@ function DaySummaryCard({ dayPlan, events }: { dayPlan: DayPlan; events: Special
     <PageCard className="space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
             Daily context
           </p>
           <h2 className="text-xl font-semibold text-stone-950 dark:text-white">{dayPlan.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-slate-300">
+          <p className="mt-2 text-sm leading-6 text-stone-600 dark:text-neutral-300">
             {dayPlan.summary}
           </p>
         </div>
@@ -460,7 +514,7 @@ function DaySummaryCard({ dayPlan, events }: { dayPlan: DayPlan; events: Special
 function SummaryMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
         {label}
       </p>
       <p className="mt-1 text-base font-semibold text-stone-950 dark:text-white">{value}</p>
@@ -486,13 +540,13 @@ function RecoveryCard({ dayPlan, events }: { dayPlan: DayPlan; events: SpecialEv
       {notes.length ? (
         <ul className="space-y-2">
           {notes.map((note) => (
-            <li className="text-sm leading-5 text-stone-600 dark:text-slate-300" key={note}>
+            <li className="text-sm leading-5 text-stone-600 dark:text-neutral-300" key={note}>
               {note}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm leading-6 text-stone-600 dark:text-slate-300">
+        <p className="text-sm leading-6 text-stone-600 dark:text-neutral-300">
           Keep hydration, sleep, and Achilles checks simple today.
         </p>
       )}
@@ -534,7 +588,7 @@ function SpecialEventCard({ events }: { events: SpecialEvent[] }) {
                 <p className="text-sm font-semibold text-stone-950 dark:text-white">
                   {event.title}
                 </p>
-                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
                   {event.trainingImpact}
                 </p>
               </div>
@@ -565,7 +619,7 @@ function PlanOutsideRangeCard({
       title={`Plan starts on ${formatDisplayDate(trainingPlanStartDate)}`}
       tone="neutral"
     >
-      <p className="text-sm leading-6 text-stone-600 dark:text-slate-300">
+      <p className="text-sm leading-6 text-stone-600 dark:text-neutral-300">
         The training plan runs from {formatDisplayDate(trainingPlanStartDate)} to{' '}
         {formatDisplayDate(trainingPlanEndDate)}.
       </p>

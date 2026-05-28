@@ -133,7 +133,7 @@ function ControlButton({
     primary:
       'border-purple-500 bg-purple-600 text-white shadow-[0_18px_45px_rgba(126,34,206,0.22)] hover:bg-purple-500',
     secondary:
-      'border-stone-200 bg-white text-stone-800 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]',
+      'border-stone-200 bg-white text-stone-800 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]',
     success:
       'border-emerald-200 bg-emerald-500 text-white hover:bg-emerald-400 dark:border-emerald-300/25',
     warning:

@@ -29,13 +29,13 @@ function WeekSummaryCard({ summary }: WeekSummaryCardProps) {
     <PageCard className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
             {summary.weekNumber ? `Week ${summary.weekNumber}` : 'Week view'}
           </p>
           <h2 className="mt-1 text-lg font-semibold text-stone-950 dark:text-white">
             {formatWeekDateRange(summary.startDate, summary.endDate)}
           </h2>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             {summary.focus ?? 'Select a week inside the plan to see the training focus.'}
           </p>
         </div>
@@ -66,7 +66,7 @@ function WeekSummaryCard({ summary }: WeekSummaryCardProps) {
       </div>
 
       <div>
-        <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-500 dark:text-slate-500">
+        <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-500 dark:text-neutral-500">
           <span>Completed mileage</span>
           <span>{summary.completedKm} / {summary.plannedKm} km</span>
         </div>
@@ -102,7 +102,7 @@ function SummaryMetric({
 }) {
   return (
     <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <div className="mb-1 flex items-center gap-1.5 text-stone-500 dark:text-slate-500">
+      <div className="mb-1 flex items-center gap-1.5 text-stone-500 dark:text-neutral-500">
         <Icon className="h-4 w-4" aria-hidden="true" />
         <p className="text-xs font-semibold uppercase tracking-[0.08em]">{label}</p>
       </div>

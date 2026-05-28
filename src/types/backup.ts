@@ -2,6 +2,8 @@ import type { DailyScheduleOverrides } from './schedule'
 import type { WorkoutLogEntry } from './workoutLog'
 import type { PlanOverridesState } from './planOverride'
 import type { FuelingPreferences } from './fueling'
+import type { GroceryChecksState } from './grocery'
+import type { NotificationPreferences } from './notifications'
 
 export type BackupTheme = 'dark' | 'light'
 
@@ -15,6 +17,8 @@ export interface AppBackupFile {
     scheduleOverrides: Record<string, DailyScheduleOverrides>
     planOverrides?: PlanOverridesState
     fuelingPreferences?: FuelingPreferences
+    groceryChecks?: GroceryChecksState
+    notificationPreferences?: NotificationPreferences
     settings: {
       theme?: BackupTheme
     }
@@ -24,6 +28,8 @@ export interface AppBackupFile {
     scheduleOverrideDayCount: number
     planAdjustmentCount?: number
     adjustedDayCount?: number
+    groceryCheckedWeekCount?: number
+    hasNotificationPreferences?: boolean
     latestWorkoutLogDate?: string
   }
 }
@@ -35,6 +41,8 @@ export interface BackupImportResult {
   importedScheduleOverrideDayCount?: number
   importedPlanAdjustmentCount?: number
   importedAdjustedDayCount?: number
+  importedGroceryCheckedWeekCount?: number
+  importedNotificationPreferences?: boolean
 }
 
 export interface LocalDataSummary {
@@ -42,6 +50,8 @@ export interface LocalDataSummary {
   scheduleOverrideDayCount: number
   planAdjustmentCount: number
   adjustedDayCount: number
+  groceryCheckedWeekCount: number
+  hasNotificationPreferences: boolean
   latestWorkoutLogDate?: string
   theme?: BackupTheme
   storageMode: 'Local only'

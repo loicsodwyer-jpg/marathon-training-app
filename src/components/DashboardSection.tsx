@@ -17,7 +17,7 @@ const iconClassNames: Record<StatusTone, string> = {
   strength: 'bg-purple-300/10 text-purple-700 dark:text-purple-200',
   success: 'bg-emerald-300/10 text-emerald-700 dark:text-emerald-200',
   warning: 'bg-orange-300/10 text-orange-700 dark:text-orange-200',
-  neutral: 'bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-slate-200',
+  neutral: 'bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200',
   race: 'bg-rose-300/10 text-rose-700 dark:text-rose-200',
 }
 
@@ -40,7 +40,7 @@ function DashboardSection({
             <div>
               <h2 className="text-lg font-semibold text-stone-950 dark:text-white">{title}</h2>
               {subtitle ? (
-                <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+                <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
                   {subtitle}
                 </p>
               ) : null}

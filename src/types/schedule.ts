@@ -45,6 +45,7 @@ export interface DailyScheduleOverrides {
   date: string
   blockOverrides: Record<string, ScheduleBlockOverride>
   customBlocks: DailyScheduleBlock[]
+  hiddenDefaultActivityIds: string[]
   updatedAt: string
 }
 

@@ -44,7 +44,7 @@ function StrengthLibraryCard() {
             <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
               Strength library
             </h2>
-            <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+            <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
               Two gym sessions and one mini prehab session support the marathon plan.
             </p>
           </div>

@@ -27,7 +27,7 @@ function PwaInstallCard() {
             <Smartphone className="h-5 w-5" aria-hidden="true" />
             <h2 className="text-lg font-semibold text-stone-950 dark:text-white">Install app</h2>
           </div>
-          <p className="mt-2 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <p className="mt-2 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             Add Loïc Marathon 2:55 to your Home Screen for an app-like experience.
           </p>
         </div>
@@ -65,7 +65,7 @@ function PwaInstallCard() {
         </div>
       ) : canInstall ? (
         <button
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
           onClick={() => {
             void promptInstall()
           }}
@@ -82,7 +82,7 @@ function PwaInstallCard() {
               {isIos ? 'Install on iPhone' : 'Install from your browser menu'}
             </p>
           </div>
-          <ol className="mt-3 space-y-2 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <ol className="mt-3 space-y-2 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             {isIos ? (
               <>
                 <li>1. Open this app in Safari.</li>
@@ -102,14 +102,14 @@ function PwaInstallCard() {
       )}
 
       {lastOutcome === 'dismissed' ? (
-        <p className="rounded-[18px] border border-stone-100 bg-stone-50 px-3 py-2 text-sm text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-400">
+        <p className="rounded-[18px] border border-stone-100 bg-stone-50 px-3 py-2 text-sm text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-400">
           Install was dismissed. You can try again later if your browser shows the prompt.
         </p>
       ) : null}
 
-      <div className="flex items-start gap-2 rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-slate-950/35">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-stone-500 dark:text-slate-400" aria-hidden="true" />
-        <p className="text-sm leading-5 text-stone-600 dark:text-slate-400">
+      <div className="flex items-start gap-2 rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-stone-500 dark:text-neutral-400" aria-hidden="true" />
+        <p className="text-sm leading-5 text-stone-600 dark:text-neutral-400">
           Logs, calendar edits, backups, and adjusted plans are stored locally on this
           device/browser. Export a backup before clearing browser data or changing devices.
         </p>
@@ -129,7 +129,7 @@ function PwaStatusItem({
 }) {
   return (
     <div className="flex items-center gap-2 rounded-[18px] border border-stone-100 bg-stone-50 px-3 py-2 dark:border-white/10 dark:bg-white/[0.05]">
-      <span className="text-stone-600 dark:text-slate-300">{icon}</span>
+      <span className="text-stone-600 dark:text-neutral-300">{icon}</span>
       <StatusPill tone={tone}>{label}</StatusPill>
     </div>
   )

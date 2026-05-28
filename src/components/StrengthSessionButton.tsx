@@ -25,7 +25,7 @@ function StrengthSessionButton({
   return (
     <article className="w-full rounded-[20px] border border-purple-100 bg-purple-50/70 p-3 text-left transition hover:-translate-y-0.5 hover:bg-purple-50 dark:border-purple-300/20 dark:bg-purple-300/10 dark:hover:bg-purple-300/15">
       <div className="flex items-start gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] bg-white text-purple-700 ring-1 ring-purple-100 dark:bg-slate-950/45 dark:text-purple-200 dark:ring-purple-300/20">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] bg-white text-purple-700 ring-1 ring-purple-100 dark:bg-neutral-950/45 dark:text-purple-200 dark:ring-purple-300/20">
           <Dumbbell className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
@@ -34,7 +34,7 @@ function StrengthSessionButton({
               <p className="text-sm font-semibold text-stone-950 dark:text-white">
                 {session.shortTitle}
               </p>
-              <p className="mt-0.5 text-sm leading-5 text-stone-600 dark:text-slate-300">
+              <p className="mt-0.5 text-sm leading-5 text-stone-600 dark:text-neutral-300">
                 {session.title}
               </p>
             </div>
@@ -47,13 +47,13 @@ function StrengthSessionButton({
             <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${accent.className}`}>
               {accent.label}
             </span>
-            <span className="rounded-full border border-stone-200 bg-white px-2.5 py-1 text-xs font-semibold text-stone-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200">
+            <span className="rounded-full border border-stone-200 bg-white px-2.5 py-1 text-xs font-semibold text-stone-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200">
               {getStrengthSessionSummary(session)}
             </span>
           </div>
 
           {!compact ? (
-            <p className="mt-2 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-slate-400">
+            <p className="mt-2 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-neutral-400">
               {session.focus}
             </p>
           ) : null}
@@ -64,7 +64,7 @@ function StrengthSessionButton({
         {onStart ? (
           <button
             aria-label={`Start ${session.title}`}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-purple-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-500 dark:bg-purple-300 dark:text-slate-950 dark:hover:bg-purple-200"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-purple-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-500 dark:bg-purple-300 dark:text-neutral-950 dark:hover:bg-purple-200"
             onClick={() => onStart(session)}
             type="button"
           >

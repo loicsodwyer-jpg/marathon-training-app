@@ -16,8 +16,13 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const WeekPage = lazy(() => import('./pages/WeekPage'))
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('today')
-  const [selectedDate, setSelectedDate] = useState(() => formatDateKey(new Date()))
+  const initialNotificationDate = getInitialDateFromUrl()
+  const [activeTab, setActiveTab] = useState<TabId>(() =>
+    initialNotificationDate ? 'today' : 'today',
+  )
+  const [selectedDate, setSelectedDate] = useState(
+    () => initialNotificationDate ?? formatDateKey(new Date()),
+  )
   const [needRefresh, setNeedRefresh] = useState(false)
   const [offlineReady, setOfflineReady] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -40,6 +45,29 @@ function App() {
     updateServiceWorkerRef.current = updateSw
   }, [])
 
+  useEffect(() => {
+    const handleServiceWorkerMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; url?: string } | undefined
+
+      if (data?.type !== 'notification-click' || !data.url) {
+        return
+      }
+
+      const date = getDateFromUrl(data.url)
+
+      if (date) {
+        setSelectedDate(date)
+        setActiveTab('today')
+      }
+    }
+
+    navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
+
+    return () => {
+      navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerMessage)
+    }
+  }, [])
+
   const handleLogSelectedDay = () => {
     setActiveTab('log')
   }
@@ -53,6 +81,7 @@ function App() {
     today: (
       <TodayPage
         onLogSelectedDay={handleLogSelectedDay}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onSelectedDateChange={setSelectedDate}
         selectedDate={selectedDate}
       />
@@ -60,19 +89,31 @@ function App() {
     week: (
       <WeekPage
         onOpenDateInToday={handleOpenDateInToday}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onSelectedDateChange={setSelectedDate}
         selectedDate={selectedDate}
       />
     ),
-    plan: <PlanPage onOpenDateInToday={handleOpenDateInToday} selectedDate={selectedDate} />,
-    log: <LogPage onSelectedDateChange={setSelectedDate} selectedDate={selectedDate} />,
-    dashboard: <DashboardPage />,
+    plan: (
+      <PlanPage
+        onOpenDateInToday={handleOpenDateInToday}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        selectedDate={selectedDate}
+      />
+    ),
+    log: (
+      <LogPage
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onSelectedDateChange={setSelectedDate}
+        selectedDate={selectedDate}
+      />
+    ),
+    dashboard: <DashboardPage onOpenSettings={() => setIsSettingsOpen(true)} />,
   }
 
   return (
     <AppShell
       activeTab={activeTab}
-      onOpenSettings={() => setIsSettingsOpen(true)}
       onTabChange={setActiveTab}
     >
       <Suspense fallback={<LoadingFallback />}>{pageByTab[activeTab]}</Suspense>
@@ -99,6 +140,30 @@ function App() {
       />
     </AppShell>
   )
+}
+
+function getInitialDateFromUrl() {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  const date = getDateFromUrl(window.location.href)
+
+  if (date) {
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+
+  return date
+}
+
+function getDateFromUrl(url: string) {
+  try {
+    const parsedUrl = new URL(url, window.location.origin)
+    const date = parsedUrl.searchParams.get('date')
+    return date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined
+  } catch {
+    return undefined
+  }
 }
 
 export default App

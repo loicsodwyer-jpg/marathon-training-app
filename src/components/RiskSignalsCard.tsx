@@ -35,7 +35,7 @@ function RiskSignalsCard({ signals }: RiskSignalsCardProps) {
                   <p className="text-sm font-semibold text-stone-950 dark:text-white">
                     {signal.label}
                   </p>
-                  <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+                  <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
                     {signal.description}
                   </p>
                 </div>

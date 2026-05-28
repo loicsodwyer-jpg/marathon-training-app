@@ -15,7 +15,7 @@ function SectionHeader({ title, subtitle, action, className = '' }: SectionHeade
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">{subtitle}</p>
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">{subtitle}</p>
         ) : null}
       </div>
       {action ? <div className="flex shrink-0 flex-wrap justify-end gap-2">{action}</div> : null}

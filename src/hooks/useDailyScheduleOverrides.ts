@@ -4,8 +4,12 @@ import type {
   DailyScheduleOverrides,
   EditableScheduleBlockInput,
   EditableScheduleBlockPatch,
-  ScheduleBlockOverride,
 } from '../types/schedule'
+import {
+  applyScheduleOverridesToGeneratedBlocks,
+  getScheduleBlockIdentityIds,
+  hasDailyScheduleOverrideChanges,
+} from '../utils/scheduleOverrideUtils'
 import {
   clearScheduleOverridesForDate,
   getScheduleOverridesForDate,
@@ -23,6 +27,7 @@ function createEmptyOverrides(date: string): DailyScheduleOverrides {
     date,
     blockOverrides: {},
     customBlocks: [],
+    hiddenDefaultActivityIds: [],
     updatedAt: new Date().toISOString(),
   }
 }
@@ -35,51 +40,10 @@ function createCustomBlockId(date: string) {
   return `custom-${date}-${Date.now()}-${Math.round(Math.random() * 100000)}`
 }
 
-function hasStoredChanges(overrides: DailyScheduleOverrides | undefined) {
-  return Boolean(
-    overrides &&
-      (Object.keys(overrides.blockOverrides).length > 0 || overrides.customBlocks.length > 0),
-  )
-}
-
-function applyOverride(
-  block: DailyScheduleBlock,
-  override: ScheduleBlockOverride | undefined,
-): DailyScheduleBlock {
-  if (!override) {
-    return block
-  }
-
-  return {
-    ...block,
-    title: override.title ?? block.title,
-    startTime: override.startTime ?? block.startTime,
-    endTime: override.endTime ?? block.endTime,
-    description: override.description ?? block.description,
-    category: override.category ?? block.category,
-    completed: override.completed ?? block.completed ?? false,
-  }
-}
-
-function getOverrideForBlock(
-  block: DailyScheduleBlock,
-  overrides: DailyScheduleOverrides | undefined,
-) {
-  if (!overrides) {
-    return undefined
-  }
-
-  return (
-    overrides.blockOverrides[block.id] ??
-    block.legacyIds
-      ?.map((legacyId) => overrides.blockOverrides[legacyId])
-      .find((override) => override !== undefined)
-  )
-}
-
 function normalizeNextOverrides(overrides: DailyScheduleOverrides) {
   return {
     ...overrides,
+    hiddenDefaultActivityIds: overrides.hiddenDefaultActivityIds ?? [],
     updatedAt: new Date().toISOString(),
   }
 }
@@ -96,16 +60,14 @@ export function useDailyScheduleOverrides(date: string, generatedBlocks: DailySc
     overrideState.date === date ? overrideState.overrides : getScheduleOverridesForDate(date)
 
   const effectiveBlocks = useMemo(() => {
-    const generatedWithOverrides = generatedBlocks.map((block) =>
-      applyOverride(block, getOverrideForBlock(block, overrides)),
-    )
+    const generatedWithOverrides = applyScheduleOverridesToGeneratedBlocks(generatedBlocks, overrides)
     return sortBlocksByTime([...(generatedWithOverrides ?? []), ...(overrides?.customBlocks ?? [])])
   }, [generatedBlocks, overrides])
 
   const persistOverrides = (nextOverrides: DailyScheduleOverrides) => {
     const normalizedOverrides = normalizeNextOverrides(nextOverrides)
 
-    if (!hasStoredChanges(normalizedOverrides)) {
+    if (!hasDailyScheduleOverrideChanges(normalizedOverrides)) {
       clearScheduleOverridesForDate(date)
       setOverrideState({ date, overrides: undefined })
       return
@@ -206,12 +168,33 @@ export function useDailyScheduleOverrides(date: string, generatedBlocks: DailySc
     updateBlock(blockId, { startTime, endTime })
   }
 
-  const deleteCustomBlock = (blockId: string) => {
+  const deleteBlock = (blockId: string) => {
+    const currentBlock = effectiveBlocks.find((block) => block.id === blockId)
     const currentOverrides = overrides ?? createEmptyOverrides(date)
+
+    if (currentBlock?.source === 'custom') {
+      persistOverrides({
+        ...currentOverrides,
+        customBlocks: currentOverrides.customBlocks.filter((block) => block.id !== blockId),
+      })
+      return
+    }
+
+    if (!currentBlock) {
+      return
+    }
+
+    const nextBlockOverrides = { ...currentOverrides.blockOverrides }
+    for (const currentBlockId of getScheduleBlockIdentityIds(currentBlock)) {
+      delete nextBlockOverrides[currentBlockId]
+    }
 
     persistOverrides({
       ...currentOverrides,
-      customBlocks: currentOverrides.customBlocks.filter((block) => block.id !== blockId),
+      blockOverrides: nextBlockOverrides,
+      hiddenDefaultActivityIds: Array.from(
+        new Set([...currentOverrides.hiddenDefaultActivityIds, currentBlock.id]),
+      ),
     })
   }
 
@@ -273,10 +256,11 @@ export function useDailyScheduleOverrides(date: string, generatedBlocks: DailySc
     addCustomBlock,
     updateBlock,
     moveBlock,
-    deleteCustomBlock,
+    deleteCustomBlock: deleteBlock,
+    deleteBlock,
     resetPlannedBlock,
     resetDay,
     toggleBlockCompleted,
-    hasChanges: hasStoredChanges(overrides),
+    hasChanges: hasDailyScheduleOverrideChanges(overrides),
   }
 }

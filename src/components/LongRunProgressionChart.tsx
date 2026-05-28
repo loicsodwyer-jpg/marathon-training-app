@@ -16,10 +16,10 @@ function LongRunProgressionChart({ summaries }: LongRunProgressionChartProps) {
       {summaries.map((week) => (
         <div className="space-y-1.5" key={week.weekNumber}>
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold text-stone-500 dark:text-slate-500">
+            <p className="text-xs font-semibold text-stone-500 dark:text-neutral-500">
               W{week.weekNumber}
             </p>
-            <p className="text-xs font-semibold text-stone-600 dark:text-slate-400">
+            <p className="text-xs font-semibold text-stone-600 dark:text-neutral-400">
               {formatKm(week.longestRunKm)} / {formatKm(week.plannedLongRunKm)}
             </p>
           </div>
@@ -35,7 +35,7 @@ function LongRunProgressionChart({ summaries }: LongRunProgressionChartProps) {
           </div>
         </div>
       ))}
-      <div className="flex items-center gap-4 text-xs font-semibold text-stone-500 dark:text-slate-400">
+      <div className="flex items-center gap-4 text-xs font-semibold text-stone-500 dark:text-neutral-400">
         <Legend colorClassName="bg-cyan-400/50" label="Planned longest" />
         <Legend colorClassName="bg-emerald-400" label="Logged longest" />
       </div>

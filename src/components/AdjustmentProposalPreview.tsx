@@ -43,7 +43,7 @@ function AdjustmentProposalPreview({
             <h3 className="mt-1 text-xl font-semibold text-stone-950 dark:text-white">
               {proposal.title}
             </h3>
-            <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-neutral-300">
               {proposal.summary}
             </p>
           </div>
@@ -88,7 +88,7 @@ function AdjustmentProposalPreview({
           <h3 className="text-lg font-semibold text-stone-950 dark:text-white">
             Proposed day-by-day changes
           </h3>
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
             Preview the replacement sessions before saving them as local plan overrides.
           </p>
         </div>
@@ -105,17 +105,17 @@ function AdjustmentProposalPreview({
             </p>
           </div>
         ) : null}
-        <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-slate-950/35">
+        <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-neutral-950/35">
           <div className="flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 text-stone-600 dark:text-slate-300" aria-hidden="true" />
+            <ShieldAlert className="h-4 w-4 text-stone-600 dark:text-neutral-300" aria-hidden="true" />
             <p className="text-sm font-semibold text-stone-950 dark:text-white">
               Approved adjustments are saved locally. Original plan data stays unchanged.
             </p>
           </div>
         </div>
-        <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-slate-950/35">
+        <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-neutral-950/35">
           <div className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4 text-stone-600 dark:text-slate-300" aria-hidden="true" />
+            <MessageSquare className="h-4 w-4 text-stone-600 dark:text-neutral-300" aria-hidden="true" />
             <p className="text-sm font-semibold text-stone-950 dark:text-white">
               {proposal.source === 'manual_chatgpt'
                 ? 'This proposal came from manual ChatGPT fallback and was pasted locally.'
@@ -125,7 +125,7 @@ function AdjustmentProposalPreview({
         </div>
         <div className="grid grid-cols-1 gap-2">
           <button
-            className="min-h-11 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+            className="min-h-11 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
             onClick={onBack}
             type="button"
           >
@@ -134,8 +134,8 @@ function AdjustmentProposalPreview({
           <button
             className={`min-h-11 rounded-[18px] px-4 py-2 text-sm font-semibold transition ${
               isApplied
-                ? 'cursor-not-allowed border border-stone-200 bg-stone-100 text-stone-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-500'
-                : 'bg-stone-950 text-white hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200'
+                ? 'cursor-not-allowed border border-stone-200 bg-stone-100 text-stone-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-500'
+                : 'bg-stone-950 text-white hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200'
             }`}
             disabled={isApplied}
             onClick={onApprove}
@@ -165,8 +165,8 @@ function AdjustmentProposalPreview({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-slate-950/35">
-      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+    <div className="rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
         {label}
       </p>
       <p className="mt-1 text-sm font-semibold text-stone-950 dark:text-white">{value}</p>

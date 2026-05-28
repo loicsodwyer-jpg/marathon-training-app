@@ -8,14 +8,13 @@ import PlanSearchBar from '../components/PlanSearchBar'
 import PlanStatsCard from '../components/PlanStatsCard'
 import PlanWeekSection from '../components/PlanWeekSection'
 import PlanWorkoutBadge from '../components/PlanWorkoutBadge'
-import SectionHeader from '../components/SectionHeader'
+import StickyTabHeader from '../components/StickyTabHeader'
 import StatusPill from '../components/StatusPill'
 import { trainingPlanEndDate, trainingPlanStartDate } from '../data/trainingPlan'
 import { usePlanOverrides } from '../hooks/usePlanOverrides'
 import { useWorkoutLogs } from '../hooks/useWorkoutLogs'
 import type { PlanAdjustmentProposal } from '../types/planAdjustment'
 import type { PlanFilter } from '../types/planView'
-import { formatDisplayDate } from '../utils/dateUtils'
 import { getEffectiveFullTrainingPlan } from '../utils/effectiveTrainingPlanUtils'
 import { convertProposalToPlanOverrides } from '../utils/planAdjustmentApplyUtils'
 import {
@@ -32,9 +31,10 @@ const PlanAdjustmentAssistantModal = lazy(
 type PlanPageProps = {
   selectedDate: string
   onOpenDateInToday: (date: string) => void
+  onOpenSettings: () => void
 }
 
-function PlanPage({ selectedDate, onOpenDateInToday }: PlanPageProps) {
+function PlanPage({ selectedDate, onOpenDateInToday, onOpenSettings }: PlanPageProps) {
   const { logs } = useWorkoutLogs()
   const planOverrides = usePlanOverrides()
   const [activeFilter, setActiveFilter] = useState<PlanFilter>('all')
@@ -100,10 +100,27 @@ function PlanPage({ selectedDate, onOpenDateInToday }: PlanPageProps) {
 
   return (
     <div className="space-y-5">
-      <SectionHeader
-        action={<StatusPill tone="race">Goal: 2:50-2:55</StatusPill>}
-        subtitle={`${formatDisplayDate(trainingPlanStartDate)} - ${formatDisplayDate(trainingPlanEndDate)} - Amsterdam Marathon build`}
-        title="Full Plan"
+      <StickyTabHeader
+        controls={
+          <button
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] bg-stone-950 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(23,32,51,0.14)] transition hover:bg-stone-800 dark:bg-neutral-100 dark:text-neutral-950 dark:shadow-none dark:hover:bg-white"
+            onClick={() => setIsAdjustmentAssistantOpen(true)}
+            type="button"
+          >
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            Adjust plan
+          </button>
+        }
+        meta={
+          <>
+            <StatusPill tone="race">Goal: 2:50-2:55</StatusPill>
+            <StatusPill tone="success">{stats.totalPlannedKm} km</StatusPill>
+            {activeDayOverrideCount ? <StatusPill tone="strength">Adjusted</StatusPill> : null}
+          </>
+        }
+        onOpenSettings={onOpenSettings}
+        subtitle="Amsterdam Marathon build"
+        title="Plan"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -111,15 +128,6 @@ function PlanPage({ selectedDate, onOpenDateInToday }: PlanPageProps) {
         <PlanWorkoutBadge label="Race: 18 Oct" tone="race" />
         <PlanWorkoutBadge label={`${stats.totalPlannedKm} km planned`} tone="success" />
       </div>
-
-      <button
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(23,32,51,0.16)] transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:shadow-[0_16px_40px_rgba(34,211,238,0.18)] dark:hover:bg-cyan-200"
-        onClick={() => setIsAdjustmentAssistantOpen(true)}
-        type="button"
-      >
-        <SlidersHorizontal className="h-5 w-5" aria-hidden="true" />
-        Adjust plan
-      </button>
 
       <PlanStatsCard stats={stats} />
       <PlanOverrideManager
@@ -149,14 +157,14 @@ function PlanPage({ selectedDate, onOpenDateInToday }: PlanPageProps) {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
             <button
-              className="h-10 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-xs font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+              className="h-10 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-xs font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
               onClick={expandAllWeeks}
               type="button"
             >
               Expand all
             </button>
             <button
-              className="h-10 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-xs font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+              className="h-10 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-xs font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
               onClick={collapseAllWeeks}
               type="button"
             >

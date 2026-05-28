@@ -33,7 +33,7 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
   const cardClassName = day.isSelected
     ? 'border-cyan-300/40 bg-cyan-50/70 dark:border-cyan-300/30 dark:bg-cyan-300/10'
     : day.isInsidePlan
-      ? 'border-stone-200 bg-white dark:border-white/10 dark:bg-slate-900/85'
+      ? 'border-stone-200 bg-white dark:border-white/10 dark:bg-neutral-900/85'
       : 'border-stone-200 bg-stone-50/70 dark:border-white/10 dark:bg-white/[0.04]'
 
   return (
@@ -47,7 +47,7 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
           <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-[18px] text-sm font-semibold ${
             day.isToday
               ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-300/15 dark:text-emerald-200'
-              : 'bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-slate-200'
+              : 'bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200'
           }`}>
             <span>{day.dayShort}</span>
           </div>
@@ -60,7 +60,7 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
               {day.isSelected ? <StatusPill tone="running">Selected</StatusPill> : null}
               {day.adjustment ? <AdjustedPlanBadge /> : null}
             </div>
-            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
               {day.dayPlan?.title ?? 'Outside training plan'}
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -78,7 +78,7 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
         </button>
         <button
           aria-label={isExpanded ? `Collapse ${day.displayDate}` : `Expand ${day.displayDate}`}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
           onClick={onToggleExpanded}
           type="button"
         >
@@ -145,14 +145,14 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
                 <WeekBlockPill block={block} key={block.id} onOpen={() => onOpenDay(day.date)} />
               ))
             ) : (
-              <p className="rounded-[16px] border border-stone-100 bg-stone-50 px-3 py-2 text-sm text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-400">
+              <p className="rounded-[16px] border border-stone-100 bg-stone-50 px-3 py-2 text-sm text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-400">
                 No key blocks for this day.
               </p>
             )}
           </div>
 
           <button
-            className="h-11 w-full rounded-[16px] border border-stone-200 bg-white text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+            className="h-11 w-full rounded-[16px] border border-stone-200 bg-white text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
             onClick={() => onOpenDay(day.date)}
             type="button"
           >
@@ -160,7 +160,7 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
           </button>
         </div>
       ) : !day.isInsidePlan && isExpanded ? (
-        <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 text-sm leading-5 text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-400">
+        <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 text-sm leading-5 text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-400">
           The Amsterdam marathon plan is not active on this date.
         </p>
       ) : null}
@@ -183,7 +183,7 @@ function InfoLine({
     running: 'text-cyan-700 dark:text-cyan-200',
     success: 'text-emerald-700 dark:text-emerald-200',
     warning: 'text-orange-700 dark:text-orange-200',
-    neutral: 'text-stone-700 dark:text-slate-200',
+    neutral: 'text-stone-700 dark:text-neutral-200',
     fuel: 'text-amber-700 dark:text-amber-200',
   }[tone]
 
@@ -192,7 +192,7 @@ function InfoLine({
       <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${toneClassName}`} aria-hidden="true" />
       <div className="min-w-0">
         <p className="text-sm font-semibold text-stone-950 dark:text-white">{label}</p>
-        <p className="mt-0.5 truncate text-sm text-stone-600 dark:text-slate-400">{value}</p>
+        <p className="mt-0.5 truncate text-sm text-stone-600 dark:text-neutral-400">{value}</p>
       </div>
     </div>
   )

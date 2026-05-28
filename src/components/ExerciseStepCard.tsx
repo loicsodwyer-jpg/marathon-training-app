@@ -14,7 +14,7 @@ function ExerciseStepCard({ step, active = false }: ExerciseStepCardProps) {
     ) : step.status === 'skipped' ? (
       <SkipForward className="h-4 w-4 text-orange-600 dark:text-orange-300" aria-hidden="true" />
     ) : (
-      <Circle className="h-4 w-4 text-stone-400 dark:text-slate-500" aria-hidden="true" />
+      <Circle className="h-4 w-4 text-stone-400 dark:text-neutral-500" aria-hidden="true" />
     )
 
   return (
@@ -32,11 +32,11 @@ function ExerciseStepCard({ step, active = false }: ExerciseStepCardProps) {
             <p className="text-sm font-semibold text-stone-950 dark:text-white">
               {step.exerciseName}
             </p>
-            <span className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[11px] font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300">
+            <span className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[11px] font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300">
               {liveStrengthSectionLabels[step.section]}
             </span>
           </div>
-          <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-neutral-400">
             {step.completedSets}/{step.sets} sets - {step.reps}
           </p>
         </div>

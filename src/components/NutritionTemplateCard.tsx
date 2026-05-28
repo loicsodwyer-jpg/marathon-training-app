@@ -20,7 +20,7 @@ function NutritionTemplateCard({ mealPlan, onOpen }: NutritionTemplateCardProps)
       type="button"
     >
       <div className="flex items-start gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] bg-white text-amber-700 ring-1 ring-amber-100 dark:bg-slate-950/45 dark:text-amber-200 dark:ring-amber-300/20">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] bg-white text-amber-700 ring-1 ring-amber-100 dark:bg-neutral-950/45 dark:text-amber-200 dark:ring-amber-300/20">
           <Apple className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
@@ -32,10 +32,10 @@ function NutritionTemplateCard({ mealPlan, onOpen }: NutritionTemplateCardProps)
               {mealPlan.carbFocus.replace('_', ' ')}
             </span>
           </div>
-          <p className="mt-2 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-slate-300">
+          <p className="mt-2 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-neutral-300">
             {mealPlan.hydrationFocus}
           </p>
-          <p className="mt-2 text-xs leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-2 text-xs leading-5 text-stone-500 dark:text-neutral-400">
             {getMealPlanPreview(mealPlan)}
           </p>
         </div>

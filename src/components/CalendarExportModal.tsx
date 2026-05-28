@@ -94,11 +94,11 @@ function CalendarExportModal({
     <div
       aria-label="Calendar export"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex h-dvh items-end justify-center bg-slate-950/70 px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-[max(16px,env(safe-area-inset-top))] backdrop-blur-sm sm:items-center"
+      className="modal-overlay z-[100] items-end justify-center bg-slate-950/70 px-3 backdrop-blur-sm sm:items-center"
       role="dialog"
     >
-      <div className="max-h-[calc(100dvh-28px)] w-full max-w-[520px] overflow-hidden rounded-[28px] border border-white/10 bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] dark:bg-slate-900">
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-stone-100 bg-white/95 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-slate-900/95">
+      <div className="modal-panel w-full max-w-[520px] overflow-hidden rounded-[28px] border border-white/10 bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] dark:bg-neutral-900">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-stone-100 bg-white/95 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-neutral-900/95">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-cyan-700 dark:text-cyan-200">
               <CalendarCheck2 className="h-4 w-4" aria-hidden="true" />
@@ -112,7 +112,7 @@ function CalendarExportModal({
           </div>
           <button
             aria-label="Close calendar export"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+            className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
             onClick={onClose}
             type="button"
           >
@@ -120,8 +120,8 @@ function CalendarExportModal({
           </button>
         </div>
 
-        <div className="max-h-[calc(100dvh-96px)] space-y-4 overflow-y-auto p-4 pb-[calc(24px+env(safe-area-inset-bottom))]">
-          <p className="rounded-[20px] border border-stone-100 bg-stone-50 p-3 text-sm leading-5 text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300">
+        <div className="modal-scroll space-y-4 p-4 pb-[calc(24px+env(safe-area-inset-bottom))]">
+          <p className="rounded-[20px] border border-stone-100 bg-stone-50 p-3 text-sm leading-5 text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
             Exports use your effective local plan, including active plan adjustments and moved
             run/strength times from the Today calendar.
           </p>
@@ -135,7 +135,7 @@ function CalendarExportModal({
                   className={`min-h-11 rounded-[16px] border px-3 py-2 text-sm font-semibold transition ${
                     settings.range === option.value
                       ? 'border-cyan-200 bg-cyan-50 text-cyan-800 dark:border-cyan-300/30 dark:bg-cyan-300/15 dark:text-cyan-100'
-                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]'
                   }`}
                   key={option.value}
                   onClick={() => updateRange(option.value)}
@@ -204,18 +204,18 @@ function CalendarExportModal({
           </section>
 
           <section className="grid grid-cols-1 gap-3">
-            <label className="space-y-1 text-sm font-semibold text-stone-800 dark:text-slate-100">
+            <label className="space-y-1 text-sm font-semibold text-stone-800 dark:text-neutral-100">
               Calendar name
               <input
-                className="h-11 w-full rounded-[16px] border border-stone-200 bg-white px-3 text-sm text-stone-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
+                className="h-11 w-full rounded-[16px] border border-stone-200 bg-white px-3 text-sm text-stone-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-neutral-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
                 onChange={(event) => updateSetting('calendarName', event.target.value)}
                 value={settings.calendarName}
               />
             </label>
-            <label className="space-y-1 text-sm font-semibold text-stone-800 dark:text-slate-100">
+            <label className="space-y-1 text-sm font-semibold text-stone-800 dark:text-neutral-100">
               Timezone
               <input
-                className="h-11 w-full rounded-[16px] border border-stone-200 bg-white px-3 text-sm text-stone-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
+                className="h-11 w-full rounded-[16px] border border-stone-200 bg-white px-3 text-sm text-stone-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-neutral-950/70 dark:text-white dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
                 onChange={(event) => updateSetting('timezone', event.target.value)}
                 value={settings.timezone}
               />
@@ -247,7 +247,7 @@ function CalendarExportModal({
 
           <div className="grid grid-cols-1 gap-2">
             <button
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
               onClick={handleDownload}
               type="button"
             >
@@ -255,7 +255,7 @@ function CalendarExportModal({
               Download .ics
             </button>
             <button
-              className="min-h-11 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+              className="min-h-11 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
               onClick={onClose}
               type="button"
             >
@@ -278,7 +278,7 @@ function Checkbox({
   onChange: (checked: boolean) => void
 }) {
   return (
-    <label className="flex min-h-11 items-center gap-3 rounded-[16px] border border-stone-100 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-800 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-100">
+    <label className="flex min-h-11 items-center gap-3 rounded-[16px] border border-stone-100 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-800 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-100">
       <input
         checked={checked}
         className="h-4 w-4 accent-cyan-500"

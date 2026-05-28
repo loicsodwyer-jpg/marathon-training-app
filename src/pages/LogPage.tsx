@@ -4,7 +4,7 @@ import AdjustedPlanBadge from '../components/AdjustedPlanBadge'
 import AppDateInput from '../components/AppDateInput'
 import ConfirmDialog from '../components/ConfirmDialog'
 import PlannedSessionSummary from '../components/PlannedSessionSummary'
-import SectionHeader from '../components/SectionHeader'
+import StickyTabHeader from '../components/StickyTabHeader'
 import StatusPill, { type StatusTone } from '../components/StatusPill'
 import WorkoutLogForm from '../components/WorkoutLogForm'
 import WorkoutLogSummary from '../components/WorkoutLogSummary'
@@ -19,6 +19,7 @@ import { getCompletionLabel } from '../utils/workoutLogUtils'
 type LogPageProps = {
   selectedDate: string
   onSelectedDateChange: (date: string) => void
+  onOpenSettings: () => void
 }
 
 type SaveMessage = {
@@ -35,7 +36,7 @@ const statusTone: Record<CompletionStatus | 'not_logged', StatusTone> = {
   not_logged: 'neutral',
 }
 
-function LogPage({ selectedDate, onSelectedDateChange }: LogPageProps) {
+function LogPage({ selectedDate, onOpenSettings, onSelectedDateChange }: LogPageProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [saveMessage, setSaveMessage] = useState<SaveMessage | undefined>()
   const workoutLogs = useWorkoutLogs()
@@ -58,29 +59,37 @@ function LogPage({ selectedDate, onSelectedDateChange }: LogPageProps) {
 
   return (
     <div className="space-y-5">
-      <SectionHeader
-        action={<StatusPill tone={statusTone[currentStatus]}>{getCompletionLabel(existingLog)}</StatusPill>}
-        title="Log workout"
+      <StickyTabHeader
+        controls={
+          <AppDateInput
+            maxDate={trainingPlanEndDate}
+            minDate={trainingPlanStartDate}
+            onChange={(date) => {
+              if (date) {
+                onSelectedDateChange(date)
+              }
+            }}
+            quickDates={[
+              { label: 'Plan start', date: trainingPlanStartDate },
+              { label: 'Race day', date: trainingPlanEndDate },
+            ]}
+            value={selectedDate}
+          />
+        }
+        meta={
+          <>
+            <StatusPill tone={statusTone[currentStatus]}>{getCompletionLabel(existingLog)}</StatusPill>
+            {dayPlan?.plannedRun ? (
+              <StatusPill tone="running">{dayPlan.plannedRun.plannedDistanceKm} km</StatusPill>
+            ) : (
+              <StatusPill tone="neutral">No run</StatusPill>
+            )}
+          </>
+        }
+        onOpenSettings={onOpenSettings}
         subtitle={formatDisplayDate(selectedDate)}
+        title="Log"
       />
-
-      <div className="space-y-3 rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
-        <AppDateInput
-          label="Select log date"
-          maxDate={trainingPlanEndDate}
-          minDate={trainingPlanStartDate}
-          onChange={(date) => {
-            if (date) {
-              onSelectedDateChange(date)
-            }
-          }}
-          quickDates={[
-            { label: 'Plan start', date: trainingPlanStartDate },
-            { label: 'Race day', date: trainingPlanEndDate },
-          ]}
-          value={selectedDate}
-        />
-      </div>
 
       <PlannedSessionSummary dayPlan={dayPlan} events={events} />
 

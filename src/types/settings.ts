@@ -4,6 +4,7 @@ export type SettingsPageId =
   | 'install'
   | 'calendar'
   | 'data'
+  | 'notifications'
   | 'strength'
   | 'nutrition'
   | 'integrations'

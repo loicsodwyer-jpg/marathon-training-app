@@ -18,10 +18,10 @@ const filterOptions: Array<{ id: PlanFilter; label: string }> = [
 
 function PlanFilterBar({ activeFilter, matchCount, onFilterChange }: PlanFilterBarProps) {
   return (
-    <div className="space-y-3 rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
+    <div className="space-y-3 rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-neutral-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-stone-950 dark:text-white">Filters</h2>
-        <p className="text-xs font-semibold text-stone-500 dark:text-slate-400">
+        <p className="text-xs font-semibold text-stone-500 dark:text-neutral-400">
           {matchCount} matching day{matchCount === 1 ? '' : 's'}
         </p>
       </div>
@@ -32,7 +32,7 @@ function PlanFilterBar({ activeFilter, matchCount, onFilterChange }: PlanFilterB
             className={`h-10 shrink-0 rounded-full border px-3 text-xs font-semibold transition ${
               activeFilter === option.id
                 ? 'border-cyan-300/40 bg-cyan-300/15 text-stone-950 dark:text-cyan-100'
-                : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300 dark:hover:bg-white/[0.1]'
+                : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 dark:hover:bg-white/[0.1]'
             }`}
             key={option.id}
             onClick={() => onFilterChange(option.id)}

@@ -16,10 +16,10 @@ type ActivityBlockCardProps = {
 }
 
 const categoryClassNames: Record<ScheduleBlockCategory, string> = {
-  wake: 'border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-200',
+  wake: 'border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/[0.08] dark:text-neutral-200',
   commute:
-    'border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-200',
-  work: 'border-blue-100 bg-blue-50 text-blue-700 dark:border-blue-300/20 dark:bg-blue-300/10 dark:text-blue-200',
+    'border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/[0.08] dark:text-neutral-200',
+  work: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.08] dark:text-neutral-200',
   meal: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-300/20 dark:bg-emerald-300/10 dark:text-emerald-200',
   run: 'border-cyan-100 bg-cyan-50 text-cyan-700 dark:border-cyan-300/25 dark:bg-cyan-300/10 dark:text-cyan-200',
   strength:
@@ -29,7 +29,7 @@ const categoryClassNames: Record<ScheduleBlockCategory, string> = {
   social:
     'border-pink-100 bg-pink-50 text-pink-700 dark:border-pink-300/25 dark:bg-pink-300/10 dark:text-pink-200',
   race: 'border-rose-100 bg-rose-50 text-rose-700 dark:border-rose-300/25 dark:bg-rose-300/10 dark:text-rose-200',
-  rest: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200',
+  rest: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200',
   custom:
     'border-sky-100 bg-sky-50 text-sky-700 dark:border-sky-300/25 dark:bg-sky-300/10 dark:text-sky-200',
 }

@@ -40,7 +40,7 @@ function WorkoutDetailCard({ dayPlan, fuelingRecommendation }: WorkoutDetailCard
         title="Run"
         tone="neutral"
       >
-        <p className="text-sm leading-6 text-stone-600 dark:text-slate-300">
+        <p className="text-sm leading-6 text-stone-600 dark:text-neutral-300">
           {dayPlan.summary}
         </p>
       </ActivityCard>
@@ -63,14 +63,14 @@ function WorkoutDetailCard({ dayPlan, fuelingRecommendation }: WorkoutDetailCard
           <p className="text-lg font-semibold text-stone-950 dark:text-white">
             {run.plannedDistanceKm} km
           </p>
-          <p className="text-xs text-stone-500 dark:text-slate-400">Planned distance</p>
+          <p className="text-xs text-stone-500 dark:text-neutral-400">Planned distance</p>
         </div>
         <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
           <Timer className="mb-2 h-4 w-4 text-cyan-600 dark:text-cyan-300" aria-hidden="true" />
           <p className="text-lg font-semibold text-stone-950 dark:text-white">
             {run.estimatedDurationMinutes ?? '-'} min
           </p>
-          <p className="text-xs text-stone-500 dark:text-slate-400">Estimated time</p>
+          <p className="text-xs text-stone-500 dark:text-neutral-400">Estimated time</p>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ function WorkoutDetailCard({ dayPlan, fuelingRecommendation }: WorkoutDetailCard
           </p>
         </div>
         {run.targetPace ? (
-          <p className="text-sm leading-5 text-stone-600 dark:text-slate-300">
+          <p className="text-sm leading-5 text-stone-600 dark:text-neutral-300">
             Pace {run.targetPace.minPerKmFrom}-{run.targetPace.minPerKmTo}/km -{' '}
             {run.targetPace.description}
           </p>
@@ -98,10 +98,10 @@ function WorkoutDetailCard({ dayPlan, fuelingRecommendation }: WorkoutDetailCard
                 className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]"
                 key={`${interval.label}-${interval.repetitions}-${interval.distanceKm ?? interval.durationMinutes}`}
               >
-                <p className="text-sm font-semibold text-stone-900 dark:text-slate-100">
+                <p className="text-sm font-semibold text-stone-900 dark:text-neutral-100">
                   {interval.repetitions} x {interval.label}
                 </p>
-                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
                   {interval.distanceKm ? `${interval.distanceKm} km` : null}
                   {interval.durationMinutes ? `${interval.durationMinutes} min` : null}
                   {interval.targetPace
@@ -109,7 +109,7 @@ function WorkoutDetailCard({ dayPlan, fuelingRecommendation }: WorkoutDetailCard
                     : null}
                 </p>
                 {interval.recoveryInstruction ? (
-                  <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-slate-500">
+                  <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-neutral-500">
                     {interval.recoveryInstruction}
                   </p>
                 ) : null}
@@ -143,7 +143,7 @@ function NoteList({ title, items, tone }: { title: string; items: string[]; tone
       </div>
       <ul className="space-y-2">
         {items.map((item) => (
-          <li className="text-sm leading-5 text-stone-600 dark:text-slate-300" key={item}>
+          <li className="text-sm leading-5 text-stone-600 dark:text-neutral-300" key={item}>
             {item}
           </li>
         ))}

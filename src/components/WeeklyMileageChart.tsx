@@ -10,7 +10,7 @@ function WeeklyMileageChart({ summaries }: WeeklyMileageChartProps) {
 
   return (
     <div className="overflow-x-auto pb-1">
-      <div className="flex min-w-[720px] items-end gap-2 rounded-[22px] border border-stone-100 bg-stone-50 p-4 dark:border-white/10 dark:bg-slate-950/45">
+      <div className="flex min-w-[720px] items-end gap-2 rounded-[22px] border border-stone-100 bg-stone-50 p-4 dark:border-white/10 dark:bg-neutral-950/45">
         {summaries.map((week) => (
           <div className="flex flex-1 flex-col items-center gap-2" key={week.weekNumber}>
             <div className="flex h-40 w-full items-end justify-center gap-1.5">
@@ -25,13 +25,13 @@ function WeeklyMileageChart({ summaries }: WeeklyMileageChartProps) {
                 valuePercent={(week.actualKm / maxKm) * 100}
               />
             </div>
-            <p className="text-[11px] font-semibold text-stone-500 dark:text-slate-500">
+            <p className="text-[11px] font-semibold text-stone-500 dark:text-neutral-500">
               W{week.weekNumber}
             </p>
           </div>
         ))}
       </div>
-      <div className="mt-3 flex items-center gap-4 text-xs font-semibold text-stone-500 dark:text-slate-400">
+      <div className="mt-3 flex items-center gap-4 text-xs font-semibold text-stone-500 dark:text-neutral-400">
         <Legend colorClassName="bg-cyan-400" label="Planned" />
         <Legend colorClassName="bg-emerald-400" label="Actual" />
       </div>

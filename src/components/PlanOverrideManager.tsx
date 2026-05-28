@@ -61,7 +61,7 @@ function PlanOverrideManager({
             </h2>
             <StatusPill tone="strength">{records.length}</StatusPill>
           </div>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             {adjustedDayCount} adjusted day{adjustedDayCount === 1 ? '' : 's'} are applied locally.
             The original plan is preserved.
           </p>
@@ -79,7 +79,7 @@ function PlanOverrideManager({
                 <p className="text-sm font-semibold text-stone-950 dark:text-white">
                   {record.title}
                 </p>
-                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
                   {formatDisplayDate(record.startDate)} - {formatDisplayDate(record.endDate)}
                 </p>
               </div>
@@ -101,7 +101,7 @@ function PlanOverrideManager({
               </div>
             ) : null}
             <button
-              className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-white px-3 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-slate-950/35 dark:text-slate-200 dark:hover:bg-white/[0.08]"
+              className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-white px-3 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-neutral-950/35 dark:text-neutral-200 dark:hover:bg-white/[0.08]"
               onClick={() => setClearTarget({ type: 'adjustment', record })}
               type="button"
             >
@@ -122,8 +122,8 @@ function PlanOverrideManager({
       </button>
 
       <div className="flex gap-2 rounded-[16px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-        <CalendarX className="mt-0.5 h-4 w-4 shrink-0 text-stone-500 dark:text-slate-400" aria-hidden="true" />
-        <p className="text-xs leading-5 text-stone-600 dark:text-slate-400">
+        <CalendarX className="mt-0.5 h-4 w-4 shrink-0 text-stone-500 dark:text-neutral-400" aria-hidden="true" />
+        <p className="text-xs leading-5 text-stone-600 dark:text-neutral-400">
           Daily calendar edits are separate. If a day had custom schedule edits before the plan
           changed, reset that day schedule from Today if needed.
         </p>

@@ -12,7 +12,7 @@ function StrengthExerciseCard({ exercise }: StrengthExerciseCardProps) {
   const visualType = getExerciseVisualType(exercise.name)
 
   return (
-    <article className="rounded-[18px] border border-stone-100 bg-white p-3 dark:border-white/10 dark:bg-slate-950/45">
+    <article className="rounded-[18px] border border-stone-100 bg-white p-3 dark:border-white/10 dark:bg-neutral-950/45">
       <div className="flex items-start gap-3">
         <div className="grid h-24 w-28 shrink-0 place-items-center rounded-[16px] border border-purple-100 bg-slate-950 p-1 text-white dark:border-purple-300/20">
           <ExerciseIllustration
@@ -43,8 +43,8 @@ function StrengthExerciseCard({ exercise }: StrengthExerciseCardProps) {
 
       {exercise.notes ? (
         <div className="mt-3 flex gap-2 rounded-[14px] border border-stone-100 bg-stone-50 p-2 dark:border-white/10 dark:bg-white/[0.04]">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone-500 dark:text-slate-400" aria-hidden="true" />
-          <p className="text-xs leading-5 text-stone-600 dark:text-slate-300">{exercise.notes}</p>
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone-500 dark:text-neutral-400" aria-hidden="true" />
+          <p className="text-xs leading-5 text-stone-600 dark:text-neutral-300">{exercise.notes}</p>
         </div>
       ) : null}
     </article>
@@ -62,11 +62,11 @@ function ExerciseMetric({
 }) {
   return (
     <div className="min-w-0 rounded-[14px] border border-stone-100 bg-stone-50 px-2 py-2 dark:border-white/10 dark:bg-white/[0.04]">
-      <div className="flex items-center gap-1 text-stone-500 dark:text-slate-400">
+      <div className="flex items-center gap-1 text-stone-500 dark:text-neutral-400">
         {icon}
         <span className="text-[10px] font-semibold uppercase tracking-[0.08em]">{label}</span>
       </div>
-      <p className="mt-1 break-words text-xs font-semibold leading-4 text-stone-900 dark:text-slate-100">
+      <p className="mt-1 break-words text-xs font-semibold leading-4 text-stone-900 dark:text-neutral-100">
         {value}
       </p>
     </div>

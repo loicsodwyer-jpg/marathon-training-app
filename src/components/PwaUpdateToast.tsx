@@ -14,7 +14,7 @@ function PwaUpdateToast({ needRefresh, offlineReady, onClose, onRefresh }: PwaUp
 
   return (
     <div className="fixed inset-x-0 bottom-24 z-50 mx-auto w-full max-w-[480px] px-4">
-      <div className="rounded-[22px] border border-white/10 bg-slate-950/95 p-4 text-white shadow-[0_22px_70px_rgba(0,0,0,0.4)] backdrop-blur dark:bg-slate-900/95">
+      <div className="rounded-[22px] border border-white/10 bg-slate-950/95 p-4 text-white shadow-[0_22px_70px_rgba(0,0,0,0.4)] backdrop-blur dark:bg-neutral-900/95">
         <div className="flex items-start gap-3">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-200">
             {needRefresh ? (

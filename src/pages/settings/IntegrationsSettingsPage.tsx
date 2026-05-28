@@ -49,7 +49,7 @@ function IntegrationsSettingsPage() {
             <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
               Nothing is connected
             </h2>
-            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
               This app stays local for now. These rows are roadmap notes only, with no login,
               backend, or API keys.
             </p>
@@ -65,14 +65,14 @@ function IntegrationsSettingsPage() {
             <PageCard className="space-y-2" key={integration.title}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-start gap-3">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-stone-950 dark:text-white">
                       {integration.title}
                     </h3>
-                    <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+                    <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
                       {integration.description}
                     </p>
                   </div>

@@ -35,7 +35,7 @@ function PaceHeartRateTrendChart({ points }: PaceHeartRateTrendChartProps) {
             <p className="text-sm font-semibold text-stone-950 dark:text-white">
               {formatShortDate(point.date)}
             </p>
-            <p className="text-xs font-semibold text-stone-500 dark:text-slate-500">
+            <p className="text-xs font-semibold text-stone-500 dark:text-neutral-500">
               {formatPaceSeconds(point.paceSecondsPerKm)} · Avg HR {formatHeartRate(point.averageHr)}
             </p>
           </div>

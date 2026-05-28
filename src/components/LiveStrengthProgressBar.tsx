@@ -8,7 +8,7 @@ function LiveStrengthProgressBar({ percent }: LiveStrengthProgressBarProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
           Session progress
         </p>
         <p className="text-sm font-semibold text-stone-900 dark:text-white">{safePercent}%</p>

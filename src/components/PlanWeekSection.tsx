@@ -38,7 +38,7 @@ function PlanWeekSection({
   const { week } = section
 
   return (
-    <section className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
+    <section className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-neutral-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]">
       <button
         className="w-full text-left"
         onClick={onToggleExpanded}
@@ -46,7 +46,7 @@ function PlanWeekSection({
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
               Week {week.weekNumber} - {formatDisplayDate(week.startDate)} - {formatDisplayDate(week.endDate)}
             </p>
             <h2 className="mt-1 text-lg font-semibold text-stone-950 dark:text-white">
@@ -56,9 +56,9 @@ function PlanWeekSection({
           <div className="flex shrink-0 items-center gap-2">
             <StatusPill tone={phaseTone[week.phase] ?? 'neutral'}>{week.phase}</StatusPill>
             {isExpanded ? (
-              <ChevronUp className="h-5 w-5 text-stone-500 dark:text-slate-400" aria-hidden="true" />
+              <ChevronUp className="h-5 w-5 text-stone-500 dark:text-neutral-400" aria-hidden="true" />
             ) : (
-              <ChevronDown className="h-5 w-5 text-stone-500 dark:text-slate-400" aria-hidden="true" />
+              <ChevronDown className="h-5 w-5 text-stone-500 dark:text-neutral-400" aria-hidden="true" />
             )}
           </div>
         </div>
@@ -107,7 +107,7 @@ function WeekMetric({
 }) {
   return (
     <div className="rounded-[16px] border border-stone-100 bg-stone-50 p-2.5 dark:border-white/10 dark:bg-white/[0.05]">
-      <div className="mb-1 flex items-center gap-1 text-stone-500 dark:text-slate-500">
+      <div className="mb-1 flex items-center gap-1 text-stone-500 dark:text-neutral-500">
         {icon}
         <p className="text-[10px] font-semibold uppercase tracking-[0.08em]">{label}</p>
       </div>

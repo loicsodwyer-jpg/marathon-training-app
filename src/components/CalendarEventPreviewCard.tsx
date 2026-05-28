@@ -20,7 +20,7 @@ const categoryTone: Record<CalendarExportEvent['category'], 'running' | 'strengt
 function CalendarEventPreviewCard({ event }: CalendarEventPreviewCardProps) {
   return (
     <div className="flex gap-3 rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-stone-200 bg-white text-stone-700 dark:border-white/10 dark:bg-slate-950/70 dark:text-slate-200">
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-stone-200 bg-white text-stone-700 dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-200">
         <CalendarEventIcon category={event.category} />
       </div>
       <div className="min-w-0 flex-1">
@@ -28,7 +28,7 @@ function CalendarEventPreviewCard({ event }: CalendarEventPreviewCardProps) {
           <p className="text-sm font-semibold text-stone-950 dark:text-white">{event.title}</p>
           <StatusPill tone={categoryTone[event.category]}>{event.category}</StatusPill>
         </div>
-        <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
           {formatDisplayDate(event.date)} ·{' '}
           {event.allDay ? 'All day' : `${event.startTime}-${event.endTime}`}
         </p>

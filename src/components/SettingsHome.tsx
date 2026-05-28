@@ -1,6 +1,7 @@
 import {
   Activity,
   Apple,
+  Bell,
   CalendarCheck2,
   Cloud,
   Dumbbell,
@@ -31,10 +32,10 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
 
   return (
     <>
-      <header className="safe-top sticky top-0 z-10 border-b border-stone-200/70 bg-[#f4f1eb]/95 px-4 pb-3 backdrop-blur-xl dark:border-white/10 dark:bg-[#070a12]/95">
+      <header className="safe-top sticky top-0 z-10 border-b border-stone-200/70 bg-[#f4f1eb]/95 px-4 pb-3 backdrop-blur-xl dark:border-white/10 dark:bg-neutral-950/95">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-cyan-700 dark:text-cyan-200">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-600 dark:text-neutral-400">
               Loïc Marathon 2:55
             </p>
             <h1 className="mt-1 text-3xl font-semibold tracking-normal text-stone-950 dark:text-white">
@@ -43,7 +44,7 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
           </div>
           <button
             aria-label="Close settings"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-stone-200 bg-white/80 text-stone-700 transition hover:bg-white dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200 dark:hover:bg-white/[0.12]"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-stone-200 bg-white/80 text-stone-700 transition hover:bg-white dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200 dark:hover:bg-white/[0.12]"
             onClick={onClose}
             type="button"
           >
@@ -57,7 +58,7 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
           <SettingsRow
             badge={theme}
             icon={Moon}
-            iconClassName="bg-blue-50 text-blue-700 dark:bg-cyan-300/10 dark:text-cyan-200"
+            iconClassName="bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200"
             onSelect={onSelectPage}
             page="appearance"
             subtitle="Dark/light mode and app look"
@@ -69,7 +70,7 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
           <SettingsRow
             badge="Offline ready"
             icon={Smartphone}
-            iconClassName="bg-cyan-50 text-cyan-700 dark:bg-cyan-300/10 dark:text-cyan-200"
+            iconClassName="bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200"
             onSelect={onSelectPage}
             page="install"
             subtitle="Home Screen app and offline support"
@@ -92,6 +93,15 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
             page="calendar"
             subtitle="Export training events to Apple Calendar, Google Calendar, or Outlook"
             title="Calendar export"
+          />
+          <SettingsRow
+            badge="Preview"
+            icon={Bell}
+            iconClassName="bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200"
+            onSelect={onSelectPage}
+            page="notifications"
+            subtitle="Run, strength, snack, meal and fuelling reminders"
+            title="Notifications"
           />
         </SettingsSection>
 
@@ -132,7 +142,7 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
           <SettingsRow
             badge="Private"
             icon={Info}
-            iconClassName="bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-slate-200"
+            iconClassName="bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200"
             onSelect={onSelectPage}
             page="about"
             subtitle="Version, storage, privacy, and roadmap"
@@ -141,11 +151,11 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
         </SettingsSection>
 
         <div className="rounded-[22px] border border-stone-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-          <div className="flex items-center gap-2 text-stone-700 dark:text-slate-300">
+          <div className="flex items-center gap-2 text-stone-700 dark:text-neutral-300">
             <Activity className="h-4 w-4" aria-hidden="true" />
             <p className="text-sm font-semibold">Local-first training cockpit</p>
           </div>
-          <p className="mt-2 text-sm leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-2 text-sm leading-5 text-stone-500 dark:text-neutral-400">
             Logs, calendar edits, backups, and adjusted plans stay on this browser unless you
             export or copy them yourself.
           </p>

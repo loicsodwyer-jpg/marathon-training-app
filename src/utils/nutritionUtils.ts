@@ -30,7 +30,7 @@ export function getCarbFocusDescription(carbFocus: MealPlan['carbFocus']): strin
 
 export function getCarbFocusColor(carbFocus: MealPlan['carbFocus']): string {
   const classNames: Record<MealPlan['carbFocus'], string> = {
-    low: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200',
+    low: 'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200',
     moderate:
       'border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-300/25 dark:bg-amber-300/10 dark:text-amber-200',
     high: 'border-orange-100 bg-orange-50 text-orange-700 dark:border-orange-300/25 dark:bg-orange-300/10 dark:text-orange-200',

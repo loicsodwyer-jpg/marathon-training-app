@@ -32,7 +32,7 @@ function StrengthSessionDetail({ session }: StrengthSessionDetailProps) {
           </span>
         </div>
 
-        <p className="mt-3 text-sm leading-6 text-stone-700 dark:text-slate-300">{session.focus}</p>
+        <p className="mt-3 text-sm leading-6 text-stone-700 dark:text-neutral-300">{session.focus}</p>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
           <HeaderMetric
@@ -60,7 +60,7 @@ function StrengthSessionDetail({ session }: StrengthSessionDetailProps) {
         <section className="space-y-3" key={group.id}>
           <div>
             <h3 className="text-base font-semibold text-stone-950 dark:text-white">{group.title}</h3>
-            <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+            <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
               {group.description}
             </p>
           </div>
@@ -95,8 +95,8 @@ function HeaderMetric({
   value: string
 }) {
   return (
-    <div className="rounded-[18px] border border-white/70 bg-white/80 p-3 dark:border-white/10 dark:bg-slate-950/35">
-      <div className="flex items-center gap-2 text-stone-500 dark:text-slate-400">
+    <div className="rounded-[18px] border border-white/70 bg-white/80 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+      <div className="flex items-center gap-2 text-stone-500 dark:text-neutral-400">
         {icon}
         <p className="text-xs font-semibold uppercase tracking-[0.08em]">{label}</p>
       </div>
@@ -125,7 +125,7 @@ function DetailList({
       </div>
       <ul className="space-y-2">
         {items.map((item) => (
-          <li className="text-sm leading-5 text-stone-600 dark:text-slate-300" key={item}>
+          <li className="text-sm leading-5 text-stone-600 dark:text-neutral-300" key={item}>
             {item}
           </li>
         ))}

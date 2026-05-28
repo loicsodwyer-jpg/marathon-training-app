@@ -53,7 +53,7 @@ function MealTimelineCard({
           </span>
           {dayPlan ? <StatusPill tone="running">{getNutritionSummaryForDay(dayPlan)}</StatusPill> : null}
         </div>
-        <p className="mt-2 text-sm leading-5 text-stone-700 dark:text-slate-300">
+        <p className="mt-2 text-sm leading-5 text-stone-700 dark:text-neutral-300">
           Protein: {mealPlan.proteinFocus}
         </p>
       </div>
@@ -98,13 +98,13 @@ function GuidanceLine({
 
   return (
     <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <div className="mb-2 flex items-center gap-2 text-stone-700 dark:text-slate-200">
+      <div className="mb-2 flex items-center gap-2 text-stone-700 dark:text-neutral-200">
         {icon}
         <p className="text-sm font-semibold">{title}</p>
       </div>
       <ul className="space-y-1">
         {items.map((item) => (
-          <li className="text-sm leading-5 text-stone-600 dark:text-slate-400" key={item}>
+          <li className="text-sm leading-5 text-stone-600 dark:text-neutral-400" key={item}>
             {item}
           </li>
         ))}

@@ -1,4 +1,4 @@
-import type { DailyScheduleBlock, DailyScheduleOverrides, ScheduleBlockOverride } from '../types/schedule'
+import type { DailyScheduleBlock } from '../types/schedule'
 import type { DayPlan } from '../types/training'
 import type { WeekViewDay, WeekViewSummary } from '../types/weekView'
 import type { WorkoutLogEntry } from '../types/workoutLog'
@@ -16,6 +16,7 @@ import {
   getEffectiveWeekPlanByNumber,
 } from './effectiveTrainingPlanUtils'
 import { getScheduleOverridesForDate } from './scheduleStorage'
+import { applyScheduleOverridesToGeneratedBlocks } from './scheduleOverrideUtils'
 import { sortBlocksByTime } from './scheduleTimeUtils'
 import { getDailyScheduleBlocks } from './todayScheduleUtils'
 import { getSpecialEventsForDate } from './trainingPlanUtils'
@@ -32,45 +33,11 @@ function isCompletedRunLog(log: WorkoutLogEntry | undefined) {
   )
 }
 
-function getOverrideForBlock(
-  block: DailyScheduleBlock,
-  overrides: DailyScheduleOverrides | undefined,
-) {
-  if (!overrides) {
-    return undefined
-  }
-
-  return (
-    overrides.blockOverrides[block.id] ??
-    block.legacyIds
-      ?.map((legacyId) => overrides.blockOverrides[legacyId])
-      .find((override) => override !== undefined)
-  )
-}
-
-function applyOverride(
-  block: DailyScheduleBlock,
-  override: ScheduleBlockOverride | undefined,
-): DailyScheduleBlock {
-  if (!override) {
-    return block
-  }
-
-  return {
-    ...block,
-    title: override.title ?? block.title,
-    startTime: override.startTime ?? block.startTime,
-    endTime: override.endTime ?? block.endTime,
-    description: override.description ?? block.description,
-    category: override.category ?? block.category,
-    completed: override.completed ?? block.completed ?? false,
-  }
-}
-
 function getEffectiveScheduleBlocks(dayPlan: DayPlan, log: WorkoutLogEntry | undefined) {
   const overrides = getScheduleOverridesForDate(dayPlan.date)
-  const plannedBlocks = getDailyScheduleBlocks(dayPlan).map((block) =>
-    applyOverride(block, getOverrideForBlock(block, overrides)),
+  const plannedBlocks = applyScheduleOverridesToGeneratedBlocks(
+    getDailyScheduleBlocks(dayPlan),
+    overrides,
   )
   const allBlocks = sortBlocksByTime([
     ...plannedBlocks,

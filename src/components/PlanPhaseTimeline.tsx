@@ -21,7 +21,7 @@ function PlanPhaseTimeline({ segments }: PlanPhaseTimelineProps) {
     <PageCard className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold text-stone-950 dark:text-white">Phase timeline</h2>
-        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
           Recovery, base, build, specific, peak, taper, and race week.
         </p>
       </div>
@@ -38,7 +38,7 @@ function PlanPhaseTimeline({ segments }: PlanPhaseTimelineProps) {
                 W{segment.startWeek}
                 {segment.endWeek !== segment.startWeek ? `-W${segment.endWeek}` : ''}
               </p>
-              <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-slate-400">
+              <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-neutral-400">
                 {segment.weekCount} week{segment.weekCount === 1 ? '' : 's'} - {segment.minMileageKm}
                 {segment.maxMileageKm !== segment.minMileageKm ? `-${segment.maxMileageKm}` : ''} km
               </p>

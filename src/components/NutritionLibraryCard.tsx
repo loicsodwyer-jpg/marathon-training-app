@@ -38,7 +38,7 @@ function NutritionLibraryCard() {
             <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
               Nutrition library
             </h2>
-            <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+            <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
               Meal templates for different marathon training days. Practical guidance, not calorie tracking.
             </p>
           </div>

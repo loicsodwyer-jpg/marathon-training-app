@@ -13,7 +13,7 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
   if (!dayPlan) {
     return (
       <ActivityCard icon={Moon} pill="No plan" title="Planned session" tone="neutral">
-        <p className="text-sm leading-6 text-stone-600 dark:text-slate-300">
+        <p className="text-sm leading-6 text-stone-600 dark:text-neutral-300">
           There is no marathon plan entry for this date.
         </p>
       </ActivityCard>
@@ -33,7 +33,7 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
     >
       <div>
         <h2 className="text-lg font-semibold text-stone-950 dark:text-white">{dayPlan.title}</h2>
-        <p className="mt-1 text-sm leading-6 text-stone-600 dark:text-slate-300">
+        <p className="mt-1 text-sm leading-6 text-stone-600 dark:text-neutral-300">
           {dayPlan.summary}
         </p>
       </div>
@@ -45,14 +45,14 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
               <p className="text-sm font-semibold text-stone-950 dark:text-white">
                 {plannedRun.title}
               </p>
-              <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+              <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
                 {plannedRun.plannedDistanceKm} km - {plannedRun.startTime ?? 'Flexible'}
               </p>
             </div>
             <StatusPill tone="running">{plannedRun.type.replaceAll('_', ' ')}</StatusPill>
           </div>
           {plannedRun.targetPace ? (
-            <p className="mt-2 text-sm leading-5 text-stone-600 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-5 text-stone-600 dark:text-neutral-300">
               Pace {plannedRun.targetPace.minPerKmFrom}-{plannedRun.targetPace.minPerKmTo}/km -{' '}
               {plannedRun.targetHrDescription ?? plannedRun.targetHrZone}
             </p>
@@ -61,7 +61,7 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
             <div className="mt-2 space-y-1">
               {plannedRun.intervals.map((interval) => (
                 <p
-                  className="text-xs leading-5 text-stone-500 dark:text-slate-400"
+                  className="text-xs leading-5 text-stone-500 dark:text-neutral-400"
                   key={`${interval.label}-${interval.repetitions}-${interval.distanceKm ?? interval.durationMinutes}`}
                 >
                   {interval.repetitions} x{' '}
@@ -82,7 +82,7 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
           <p className="text-sm font-semibold text-stone-950 dark:text-white">
             Rest, recovery, or social day
           </p>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
             No planned run for this date.
           </p>
         </div>
@@ -96,7 +96,7 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
           </div>
           {strengthSessions.map((session) => (
             <div
-              className="mt-2 rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-slate-950/35"
+              className="mt-2 rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35"
               key={session.id}
             >
               <div className="flex items-start justify-between gap-3">
@@ -104,7 +104,7 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
                   <p className="text-sm font-semibold text-stone-950 dark:text-white">
                     {session.shortTitle}
                   </p>
-                  <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+                  <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
                     {session.focus}
                   </p>
                 </div>

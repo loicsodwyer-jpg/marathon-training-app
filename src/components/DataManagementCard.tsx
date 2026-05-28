@@ -4,6 +4,7 @@ import {
   DatabaseBackup,
   FileSpreadsheet,
   HardDrive,
+  ShoppingBasket,
   SlidersHorizontal,
   Trash2,
   Upload,
@@ -13,6 +14,7 @@ import { useState } from 'react'
 import type { BackupImportResult, LocalDataSummary } from '../types/backup'
 import {
   clearAllLocalAppData,
+  clearGroceryChecksOnly,
   clearPlanOverridesOnly,
   clearScheduleOverridesOnly,
   clearWorkoutLogsOnly,
@@ -24,7 +26,7 @@ import ConfirmDialog from './ConfirmDialog'
 import ImportBackupModal from './ImportBackupModal'
 import PageCard from './PageCard'
 
-type ClearAction = 'logs' | 'calendar' | 'plan' | 'all'
+type ClearAction = 'logs' | 'calendar' | 'plan' | 'grocery' | 'all'
 
 type Message = {
   tone: 'success' | 'error'
@@ -57,10 +59,16 @@ const clearActionContent: Record<
       'This removes local plan overrides and returns adjusted days to the original marathon plan. Workout logs and calendar edits stay unchanged.',
     confirmLabel: 'Clear adjustments',
   },
+  grocery: {
+    title: 'Clear grocery checkmarks?',
+    description:
+      'This clears weekly grocery item checkmarks. It does not change the generated grocery lists, meal templates, or training plan.',
+    confirmLabel: 'Clear checkmarks',
+  },
   all: {
     title: 'Clear all local data?',
     description:
-      'This removes workout logs, daily calendar edits, local plan adjustments, and the theme preference from this browser. The app will return to the dark-mode default.',
+      'This removes workout logs, daily calendar edits, local plan adjustments, grocery checkmarks, fuelling preferences, notification preferences, and the theme preference from this browser. The app will return to the dark-mode default.',
     confirmLabel: 'Clear all',
   },
 }
@@ -115,6 +123,11 @@ function DataManagementCard() {
       setMessage({ tone: 'success', text: 'Plan adjustments cleared. Reloading...' })
     }
 
+    if (clearAction === 'grocery') {
+      clearGroceryChecksOnly()
+      setMessage({ tone: 'success', text: 'Grocery checkmarks cleared. Reloading...' })
+    }
+
     if (clearAction === 'all') {
       clearAllLocalAppData()
       setMessage({ tone: 'success', text: 'All local app data cleared. Reloading...' })
@@ -149,10 +162,10 @@ function DataManagementCard() {
           <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
             Data management
           </h2>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
-            Your logs, calendar edits, plan adjustments, and fuelling preferences are stored
-            locally on this device. Export a backup before clearing browser data or changing
-            devices.
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
+            Your logs, calendar edits, plan adjustments, fuelling preferences, notification
+            preferences, and grocery checkmarks are stored locally on this device. Export a backup
+            before clearing browser data or changing devices.
           </p>
         </div>
       </div>
@@ -162,6 +175,11 @@ function DataManagementCard() {
         <SummaryTile label="Edited days" value={String(summary.scheduleOverrideDayCount)} />
         <SummaryTile label="Adjustments" value={String(summary.planAdjustmentCount)} />
         <SummaryTile label="Adjusted days" value={String(summary.adjustedDayCount)} />
+        <SummaryTile label="Grocery weeks" value={String(summary.groceryCheckedWeekCount)} />
+        <SummaryTile
+          label="Notifications"
+          value={summary.hasNotificationPreferences ? 'Saved' : 'Default'}
+        />
         <SummaryTile label="Latest log" value={summary.latestWorkoutLogDate ?? 'None'} />
         <SummaryTile label="Storage" value={summary.storageMode} />
       </div>
@@ -229,6 +247,12 @@ function DataManagementCard() {
           variant="danger"
         />
         <ActionButton
+          icon={<ShoppingBasket className="h-4 w-4" aria-hidden="true" />}
+          label="Clear grocery checkmarks"
+          onClick={() => setClearAction('grocery')}
+          variant="danger"
+        />
+        <ActionButton
           icon={<Trash2 className="h-4 w-4" aria-hidden="true" />}
           label="Clear all local data"
           onClick={() => setClearAction('all')}
@@ -258,7 +282,7 @@ function DataManagementCard() {
 function SummaryTile({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
-      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
         {label}
       </p>
       <p className="mt-1 truncate text-base font-semibold text-stone-950 dark:text-white">
@@ -281,11 +305,11 @@ function ActionButton({
 }) {
   const classNameByVariant = {
     primary:
-      'bg-stone-950 text-white hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200',
+      'bg-stone-950 text-white hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200',
     secondary:
-      'border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]',
+      'border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]',
     danger:
-      'border border-rose-200 bg-white text-rose-700 hover:bg-rose-50 dark:border-rose-300/20 dark:bg-slate-950/30 dark:text-rose-200 dark:hover:bg-rose-300/10',
+      'border border-rose-200 bg-white text-rose-700 hover:bg-rose-50 dark:border-rose-300/20 dark:bg-neutral-950/30 dark:text-rose-200 dark:hover:bg-rose-300/10',
   }
 
   return (

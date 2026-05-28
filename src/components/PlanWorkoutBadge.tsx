@@ -15,7 +15,7 @@ const classNameByTone: Record<PlanBadgeTone, string> = {
   warning:
     'border-orange-300/25 bg-orange-300/10 text-orange-700 dark:text-orange-200',
   neutral:
-    'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200',
+    'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200',
   race:
     'border-rose-300/25 bg-rose-300/10 text-rose-700 dark:text-rose-200',
 }

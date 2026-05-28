@@ -11,7 +11,19 @@ import {
   normalizeFuelingPreferences,
   saveFuelingPreferences,
 } from './fuelingStorage'
-import { THEME_STORAGE_KEY } from './localStorageKeys'
+import {
+  clearAllGroceryChecks,
+  loadGroceryChecks,
+  normalizeGroceryChecks,
+  saveGroceryChecks,
+} from './groceryListStorage'
+import { NOTIFICATION_PREFERENCES_STORAGE_KEY, THEME_STORAGE_KEY } from './localStorageKeys'
+import {
+  clearNotificationPreferences,
+  loadNotificationPreferences,
+  normalizeNotificationPreferences,
+  saveNotificationPreferences,
+} from './notificationPreferencesStorage'
 import {
   clearAllPlanOverrides,
   loadPlanOverrides,
@@ -99,6 +111,18 @@ function clearStoredTheme() {
   }
 }
 
+function hasStoredNotificationPreferences() {
+  if (!canUseLocalStorage()) {
+    return false
+  }
+
+  try {
+    return window.localStorage.getItem(NOTIFICATION_PREFERENCES_STORAGE_KEY) !== null
+  } catch {
+    return false
+  }
+}
+
 function getLatestWorkoutLogDate(workoutLogs: Record<string, unknown>) {
   const sortedDates = Object.keys(workoutLogs).sort()
   return sortedDates[sortedDates.length - 1]
@@ -122,6 +146,7 @@ export function createFullBackup(): AppBackupFile {
   const workoutLogs = loadWorkoutLogs()
   const scheduleOverrides = getAllScheduleOverrides()
   const planOverrides = loadPlanOverrides()
+  const groceryChecks = loadGroceryChecks()
   const planAdjustmentCount = Object.keys(planOverrides.records).length
   const adjustedDayCount = Object.keys(planOverrides.dayOverrides).length
 
@@ -135,6 +160,8 @@ export function createFullBackup(): AppBackupFile {
       scheduleOverrides,
       planOverrides,
       fuelingPreferences: loadFuelingPreferences(),
+      groceryChecks,
+      notificationPreferences: loadNotificationPreferences(),
       settings: {
         theme: getStoredTheme(),
       },
@@ -144,6 +171,8 @@ export function createFullBackup(): AppBackupFile {
       scheduleOverrideDayCount: Object.keys(scheduleOverrides).length,
       planAdjustmentCount,
       adjustedDayCount,
+      groceryCheckedWeekCount: Object.keys(groceryChecks).length,
+      hasNotificationPreferences: true,
       latestWorkoutLogDate: getLatestWorkoutLogDate(workoutLogs),
     },
   }
@@ -194,6 +223,10 @@ export function validateBackupFile(value: unknown): value is AppBackupFile {
     isNumber(metadata.scheduleOverrideDayCount) &&
     (metadata.planAdjustmentCount === undefined || isNumber(metadata.planAdjustmentCount)) &&
     (metadata.adjustedDayCount === undefined || isNumber(metadata.adjustedDayCount)) &&
+    (metadata.groceryCheckedWeekCount === undefined ||
+      isNumber(metadata.groceryCheckedWeekCount)) &&
+    (metadata.hasNotificationPreferences === undefined ||
+      typeof metadata.hasNotificationPreferences === 'boolean') &&
     (metadata.latestWorkoutLogDate === undefined || isString(metadata.latestWorkoutLogDate))
 
   if (!validMetadata) {
@@ -204,6 +237,7 @@ export function validateBackupFile(value: unknown): value is AppBackupFile {
   const scheduleOverrideKeys = Object.keys(data.scheduleOverrides)
   const planOverrides = data.planOverrides
   const normalizedPlanOverrides = normalizePlanOverridesState(planOverrides)
+  const groceryChecks = data.groceryChecks
 
   return (
     Object.keys(normalizeWorkoutLogRecord(data.workoutLogs)).length === workoutLogKeys.length &&
@@ -214,7 +248,8 @@ export function validateBackupFile(value: unknown): value is AppBackupFile {
         0 ||
       (isRecord(planOverrides) &&
         Object.keys(isRecord(planOverrides.records) ? planOverrides.records : {}).length === 0 &&
-        Object.keys(isRecord(planOverrides.dayOverrides) ? planOverrides.dayOverrides : {}).length === 0))
+        Object.keys(isRecord(planOverrides.dayOverrides) ? planOverrides.dayOverrides : {}).length === 0)) &&
+    (groceryChecks === undefined || isRecord(groceryChecks))
   )
 }
 
@@ -239,6 +274,11 @@ export function importFullBackup(
       backup.data.fuelingPreferences === undefined && options.merge
         ? loadFuelingPreferences()
         : normalizeFuelingPreferences(backup.data.fuelingPreferences)
+    const backupGroceryChecks = normalizeGroceryChecks(backup.data.groceryChecks)
+    const backupNotificationPreferences =
+      backup.data.notificationPreferences === undefined && options.merge
+        ? loadNotificationPreferences()
+        : normalizeNotificationPreferences(backup.data.notificationPreferences)
     const workoutLogs = options.merge
       ? { ...loadWorkoutLogs(), ...backupWorkoutLogs }
       : backupWorkoutLogs
@@ -259,11 +299,19 @@ export function importFullBackup(
           },
         }
       : backupPlanOverrides
+    const groceryChecks = options.merge
+      ? {
+          ...loadGroceryChecks(),
+          ...backupGroceryChecks,
+        }
+      : backupGroceryChecks
 
     saveWorkoutLogs(workoutLogs)
     saveAllScheduleOverrides(scheduleOverrides)
     savePlanOverrides(planOverrides)
     saveFuelingPreferences(backupFuelingPreferences)
+    saveGroceryChecks(groceryChecks)
+    saveNotificationPreferences(backupNotificationPreferences)
     saveStoredTheme(backup.data.settings.theme)
 
     return {
@@ -273,6 +321,8 @@ export function importFullBackup(
       importedScheduleOverrideDayCount: Object.keys(backupScheduleOverrides).length,
       importedPlanAdjustmentCount: Object.keys(backupPlanOverrides.records).length,
       importedAdjustedDayCount: Object.keys(backupPlanOverrides.dayOverrides).length,
+      importedGroceryCheckedWeekCount: Object.keys(backupGroceryChecks).length,
+      importedNotificationPreferences: backup.data.notificationPreferences !== undefined,
     }
   } catch {
     return {
@@ -286,12 +336,15 @@ export function getLocalDataSummary(): LocalDataSummary {
   const workoutLogs = loadWorkoutLogs()
   const scheduleOverrides = getAllScheduleOverrides()
   const planOverrides = loadPlanOverrides()
+  const groceryChecks = loadGroceryChecks()
 
   return {
     workoutLogCount: Object.keys(workoutLogs).length,
     scheduleOverrideDayCount: Object.keys(scheduleOverrides).length,
     planAdjustmentCount: Object.keys(planOverrides.records).length,
     adjustedDayCount: Object.keys(planOverrides.dayOverrides).length,
+    groceryCheckedWeekCount: Object.keys(groceryChecks).length,
+    hasNotificationPreferences: hasStoredNotificationPreferences(),
     latestWorkoutLogDate: getLatestWorkoutLogDate(workoutLogs),
     theme: getStoredTheme(),
     storageMode: 'Local only',
@@ -310,10 +363,16 @@ export function clearPlanOverridesOnly(): void {
   clearAllPlanOverrides()
 }
 
+export function clearGroceryChecksOnly(): void {
+  clearAllGroceryChecks()
+}
+
 export function clearAllLocalAppData(): void {
   clearAllWorkoutLogs()
   clearAllScheduleOverrides()
   clearAllPlanOverrides()
   clearFuelingPreferences()
+  clearAllGroceryChecks()
+  clearNotificationPreferences()
   clearStoredTheme()
 }

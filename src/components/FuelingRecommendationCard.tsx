@@ -33,7 +33,7 @@ function FuelingRecommendationCard({
             <Flame className="h-4 w-4" aria-hidden="true" />
             <h3 className="text-sm font-semibold">{recommendation.title}</h3>
           </div>
-          <p className="mt-1 text-sm leading-5 text-stone-700 dark:text-slate-300">
+          <p className="mt-1 text-sm leading-5 text-stone-700 dark:text-neutral-300">
             {formatFuelingSummary(recommendation)}
           </p>
         </div>
@@ -93,7 +93,7 @@ function FuelingTimingSection({
   }
 
   return (
-    <div className="rounded-[16px] border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-slate-950/30">
+    <div className="rounded-[16px] border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-neutral-950/30">
       <h4 className="text-sm font-semibold text-stone-950 dark:text-white">{title}</h4>
       <div className="mt-2 space-y-2">
         {items.map((item) => (
@@ -104,7 +104,7 @@ function FuelingTimingSection({
             <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-amber-700 dark:text-amber-200">
               {item.timing}
             </p>
-            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
               {item.instruction}
             </p>
           </div>
@@ -128,14 +128,14 @@ function FuelingList({
   }
 
   return (
-    <div className="rounded-[16px] border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-slate-950/30">
-      <div className="mb-2 flex items-center gap-2 text-stone-800 dark:text-slate-100">
+    <div className="rounded-[16px] border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-neutral-950/30">
+      <div className="mb-2 flex items-center gap-2 text-stone-800 dark:text-neutral-100">
         <Icon className="h-4 w-4" aria-hidden="true" />
         <p className="text-sm font-semibold">{title}</p>
       </div>
       <ul className="space-y-1">
         {items.map((item) => (
-          <li className="text-sm leading-5 text-stone-600 dark:text-slate-300" key={item}>
+          <li className="text-sm leading-5 text-stone-600 dark:text-neutral-300" key={item}>
             {item}
           </li>
         ))}

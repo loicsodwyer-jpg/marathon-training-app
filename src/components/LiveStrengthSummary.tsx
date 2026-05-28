@@ -32,7 +32,7 @@ function LiveStrengthSummary({
     <div className="space-y-4">
       <div className="rounded-[28px] border border-emerald-100 bg-emerald-50/80 p-5 dark:border-emerald-300/20 dark:bg-emerald-300/10">
         <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] bg-white text-emerald-700 ring-1 ring-emerald-100 dark:bg-slate-950/35 dark:text-emerald-200 dark:ring-emerald-300/20">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] bg-white text-emerald-700 ring-1 ring-emerald-100 dark:bg-neutral-950/35 dark:text-emerald-200 dark:ring-emerald-300/20">
             <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
@@ -42,7 +42,7 @@ function LiveStrengthSummary({
             <h3 className="mt-2 text-xl font-semibold text-stone-950 dark:text-white">
               Strength summary
             </h3>
-            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+            <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
               {result.completionPercent}% complete - {result.completedExercises}/
               {result.totalExercises} exercises finished - {result.skippedExercises} skipped
             </p>
@@ -57,8 +57,8 @@ function LiveStrengthSummary({
             <button
               className={`min-h-11 rounded-[18px] border px-3 py-2 text-sm font-semibold transition ${
                 feeling === option
-                  ? 'border-purple-400 bg-purple-600 text-white dark:border-purple-300 dark:bg-purple-400 dark:text-slate-950'
-                  : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]'
+                  ? 'border-purple-400 bg-purple-600 text-white dark:border-purple-300 dark:bg-purple-400 dark:text-neutral-950'
+                  : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]'
               }`}
               key={option}
               onClick={() => setFeeling(option)}
@@ -73,7 +73,7 @@ function LiveStrengthSummary({
       <label className="block rounded-[24px] border border-stone-100 bg-white p-4 dark:border-white/10 dark:bg-white/[0.05]">
         <span className="text-base font-semibold text-stone-950 dark:text-white">Notes</span>
         <textarea
-          className="mt-3 min-h-28 w-full resize-none rounded-[18px] border border-stone-200 bg-stone-50 px-3 py-3 text-sm leading-5 text-stone-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-white/10 dark:bg-slate-950/45 dark:text-white dark:focus:border-purple-300/50"
+          className="mt-3 min-h-28 w-full resize-none rounded-[18px] border border-stone-200 bg-stone-50 px-3 py-3 text-sm leading-5 text-stone-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-white/10 dark:bg-neutral-950/45 dark:text-white dark:focus:border-purple-300/50"
           onChange={(event) => setNotes(event.target.value)}
           placeholder="Anything to remember next time?"
           value={notes}
@@ -82,7 +82,7 @@ function LiveStrengthSummary({
 
       <div className="grid gap-2">
         <button
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
           onClick={() => onSave(finalResult)}
           type="button"
         >
@@ -91,7 +91,7 @@ function LiveStrengthSummary({
         </button>
         {!result.completed ? (
           <button
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[20px] border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[20px] border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
             onClick={onContinue}
             type="button"
           >

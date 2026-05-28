@@ -26,7 +26,7 @@ function AdjustmentChangeCard({ change }: AdjustmentChangeCardProps) {
     <article className="space-y-3 rounded-[22px] border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-white/[0.05]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
             {formatDisplayDate(change.date)}
           </p>
           <h3 className="mt-1 text-base font-semibold text-stone-950 dark:text-white">
@@ -46,7 +46,7 @@ function AdjustmentChangeCard({ change }: AdjustmentChangeCardProps) {
           title={change.originalTitle}
         />
 
-        <div className="flex justify-center text-stone-400 dark:text-slate-500">
+        <div className="flex justify-center text-stone-400 dark:text-neutral-500">
           <ArrowRight className="h-5 w-5 rotate-90" aria-hidden="true" />
         </div>
 
@@ -77,11 +77,11 @@ function AdjustmentChangeCard({ change }: AdjustmentChangeCardProps) {
         </div>
       ) : null}
 
-      <div className="rounded-[16px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-slate-950/35">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+      <div className="rounded-[16px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
           Reason
         </p>
-        <p className="mt-1 text-sm leading-5 text-stone-700 dark:text-slate-300">
+        <p className="mt-1 text-sm leading-5 text-stone-700 dark:text-neutral-300">
           {change.reason}
         </p>
       </div>
@@ -125,15 +125,15 @@ function SessionPanel({
   const Icon = icon === 'bike' ? Bike : Route
 
   return (
-    <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-slate-950/35">
+    <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-neutral-950/35">
       <div className="flex items-start gap-2">
-        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-stone-500 dark:text-slate-400" aria-hidden="true" />
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-stone-500 dark:text-neutral-400" aria-hidden="true" />
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
             {label}
           </p>
           <p className="mt-1 text-sm font-semibold text-stone-950 dark:text-white">{title}</p>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">{summary}</p>
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">{summary}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {distanceKm !== undefined ? <StatusPill tone="running">{distanceKm} km</StatusPill> : null}
             {runType ? <StatusPill tone="neutral">{runType.replaceAll('_', ' ')}</StatusPill> : null}

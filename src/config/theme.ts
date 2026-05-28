@@ -1,12 +1,12 @@
 export const appTheme = {
   background: '#f4f1eb',
-  darkBackground: '#05070d',
+  darkBackground: '#050505',
   surface: '#ffffff',
-  darkSurface: '#111827',
+  darkSurface: '#171717',
   text: '#172033',
-  darkText: '#edf3ff',
+  darkText: '#f5f5f5',
   mutedText: '#687082',
-  darkMutedText: '#94a3b8',
+  darkMutedText: '#a3a3a3',
 } as const
 
 export type AppTone = 'running' | 'strength' | 'completed' | 'warning' | 'neutral'
@@ -50,9 +50,9 @@ export const toneStyles: Record<
   },
   neutral: {
     badge:
-      'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200',
-    bar: 'bg-stone-400 dark:bg-slate-400',
+      'border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/[0.07] dark:text-neutral-200',
+    bar: 'bg-stone-400 dark:bg-neutral-400',
     card: 'border-stone-200 bg-stone-50 dark:border-white/10 dark:bg-white/[0.06]',
-    text: 'text-stone-700 dark:text-slate-200',
+    text: 'text-stone-700 dark:text-neutral-200',
   },
 }

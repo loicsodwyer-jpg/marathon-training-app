@@ -50,7 +50,7 @@ function PlanDayCard({ dayPlan, events, isSelected, log, onOpenDay }: PlanDayCar
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
             {dayPlan.dayOfWeek} - {formatShortDate(dayPlan.date)}
           </p>
           <h3 className="mt-1 text-base font-semibold text-stone-950 dark:text-white">
@@ -62,7 +62,7 @@ function PlanDayCard({ dayPlan, events, isSelected, log, onOpenDay }: PlanDayCar
         </StatusPill>
       </div>
 
-      <p className="text-sm leading-5 text-stone-600 dark:text-slate-300">{dayPlan.summary}</p>
+      <p className="text-sm leading-5 text-stone-600 dark:text-neutral-300">{dayPlan.summary}</p>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {badges.map((badge) => (
@@ -162,7 +162,7 @@ function PlanDayCard({ dayPlan, events, isSelected, log, onOpenDay }: PlanDayCar
       ) : null}
 
       {dayPlan.notes.length ? (
-        <p className="mt-3 line-clamp-2 text-xs leading-5 text-stone-500 dark:text-slate-400">
+        <p className="mt-3 line-clamp-2 text-xs leading-5 text-stone-500 dark:text-neutral-400">
           {dayPlan.notes.join(' ')}
         </p>
       ) : null}
@@ -180,11 +180,11 @@ function DetailLine({
   value: string
 }) {
   return (
-    <div className="flex items-start gap-2 rounded-[16px] border border-stone-100 bg-white p-3 dark:border-white/10 dark:bg-slate-950/35">
-      <span className="mt-0.5 shrink-0 text-stone-500 dark:text-slate-400">{icon}</span>
+    <div className="flex items-start gap-2 rounded-[16px] border border-stone-100 bg-white p-3 dark:border-white/10 dark:bg-neutral-950/35">
+      <span className="mt-0.5 shrink-0 text-stone-500 dark:text-neutral-400">{icon}</span>
       <div className="min-w-0">
         <p className="text-sm font-semibold text-stone-950 dark:text-white">{label}</p>
-        <p className="mt-0.5 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-slate-400">
+        <p className="mt-0.5 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-neutral-400">
           {value || '-'}
         </p>
       </div>

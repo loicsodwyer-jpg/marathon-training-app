@@ -26,7 +26,7 @@ function StrengthDetailCard({
         title="Strength"
         tone="neutral"
       >
-        <p className="text-sm leading-6 text-stone-600 dark:text-slate-300">
+        <p className="text-sm leading-6 text-stone-600 dark:text-neutral-300">
           Keep the day focused on the planned run, recovery, or social context.
         </p>
       </ActivityCard>
@@ -52,7 +52,7 @@ function StrengthDetailCard({
                 <h3 className="text-sm font-semibold text-stone-950 dark:text-white">
                   {session.title}
                 </h3>
-                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-300">
+                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
                   {session.focus}
                 </p>
               </div>
@@ -69,14 +69,14 @@ function StrengthDetailCard({
               {isCompleted ? <StatusPill tone="success">Done</StatusPill> : null}
             </div>
 
-            <div className="mt-3 rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-slate-950/35">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-slate-500">
+            <div className="mt-3 rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
                 Key exercises
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {session.exercises.slice(0, 4).map((exercise) => (
                   <span
-                    className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200"
+                    className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200"
                     key={`${session.id}-${exercise.name}`}
                   >
                     {exercise.name}
@@ -84,7 +84,7 @@ function StrengthDetailCard({
                 ))}
               </div>
               {session.exercises.length > 4 ? (
-                <p className="mt-2 text-xs leading-5 text-stone-500 dark:text-slate-400">
+                <p className="mt-2 text-xs leading-5 text-stone-500 dark:text-neutral-400">
                   Plus {session.exercises.length - 4} more in the full session.
                 </p>
               ) : null}
@@ -95,7 +95,7 @@ function StrengthDetailCard({
                 {onStartSession ? (
                   <button
                     aria-label={`Start ${session.title}`}
-                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] bg-purple-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-500 dark:bg-purple-300 dark:text-slate-950 dark:hover:bg-purple-200"
+                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] bg-purple-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-500 dark:bg-purple-300 dark:text-neutral-950 dark:hover:bg-purple-200"
                     onClick={() => onStartSession(session)}
                     type="button"
                   >
@@ -124,7 +124,7 @@ function StrengthDetailCard({
                 </p>
                 <ul className="mt-2 space-y-1">
                   {session.progressionNotes.slice(0, 2).map((note) => (
-                    <li className="text-xs leading-5 text-stone-600 dark:text-slate-300" key={note}>
+                    <li className="text-xs leading-5 text-stone-600 dark:text-neutral-300" key={note}>
                       {note}
                     </li>
                   ))}

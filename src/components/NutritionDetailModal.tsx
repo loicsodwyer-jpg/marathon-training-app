@@ -50,11 +50,11 @@ function NutritionDetailModal({
     <div
       aria-label="Nutrition plan"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex h-dvh items-end justify-center bg-slate-950/70 px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-[max(16px,env(safe-area-inset-top))] backdrop-blur-sm sm:items-center"
+      className="modal-overlay z-[100] items-end justify-center bg-slate-950/70 px-3 backdrop-blur-sm sm:items-center"
       role="dialog"
     >
-      <div className="max-h-[calc(100dvh-28px)] w-full max-w-[480px] overflow-hidden rounded-[28px] border border-white/10 bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] dark:bg-slate-900">
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-stone-100 bg-white/95 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-slate-900/95">
+      <div className="modal-panel w-full max-w-[480px] overflow-hidden rounded-[28px] border border-white/10 bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] dark:bg-neutral-900">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-stone-100 bg-white/95 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-neutral-900/95">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-amber-700 dark:text-amber-200">
               Nutrition plan
@@ -65,7 +65,7 @@ function NutritionDetailModal({
           </div>
           <button
             aria-label="Close nutrition plan"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
+            className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
             onClick={onClose}
             type="button"
           >
@@ -73,7 +73,7 @@ function NutritionDetailModal({
           </button>
         </div>
 
-        <div className="max-h-[calc(100dvh-96px)] space-y-5 overflow-y-auto p-4 pb-[calc(24px+env(safe-area-inset-bottom))]">
+        <div className="modal-scroll space-y-5 p-4 pb-[calc(24px+env(safe-area-inset-bottom))]">
           <header className="rounded-[24px] border border-amber-100 bg-amber-50/70 p-4 dark:border-amber-300/20 dark:bg-amber-300/10">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -91,10 +91,10 @@ function NutritionDetailModal({
                 {effectiveMealPlan.carbFocus.replace('_', ' ')}
               </span>
             </div>
-            <p className="mt-3 text-sm leading-6 text-stone-700 dark:text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-stone-700 dark:text-neutral-300">
               {getCarbFocusDescription(effectiveMealPlan.carbFocus)}
             </p>
-            <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-neutral-300">
               Protein: {effectiveMealPlan.proteinFocus}
             </p>
           </header>
@@ -104,7 +104,7 @@ function NutritionDetailModal({
               <h3 className="text-base font-semibold text-stone-950 dark:text-white">
                 Meal timeline
               </h3>
-              <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+              <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
                 No default morning meal; fuel starts with Loïc's planned snack rhythm.
               </p>
             </div>

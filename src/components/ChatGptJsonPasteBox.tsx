@@ -28,7 +28,7 @@ function ChatGptJsonPasteBox({
         <h3 className="mt-1 text-lg font-semibold text-stone-950 dark:text-white">
           Validate ChatGPT JSON
         </h3>
-        <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-slate-300">
+        <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-neutral-300">
           Paste the JSON response from ChatGPT here. The app validates it locally before showing
           a preview or allowing approval.
         </p>
@@ -42,13 +42,13 @@ function ChatGptJsonPasteBox({
 
       <div className="space-y-2">
         <label
-          className="text-sm font-semibold text-stone-800 dark:text-slate-100"
+          className="text-sm font-semibold text-stone-800 dark:text-neutral-100"
           htmlFor="chatgpt-adjustment-json"
         >
           ChatGPT JSON response
         </label>
         <textarea
-          className="min-h-[320px] w-full resize-y rounded-[20px] border border-stone-200 bg-white p-3 font-mono text-xs leading-5 text-stone-800 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-slate-950/70 dark:text-slate-100 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
+          className="min-h-[320px] w-full resize-y rounded-[20px] border border-stone-200 bg-white p-3 font-mono text-xs leading-5 text-stone-800 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-100 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20"
           id="chatgpt-adjustment-json"
           onChange={(event) => onChange(event.target.value)}
           placeholder='{"adjustmentTitle":"...","summary":"...","changes":[...]}'
@@ -73,7 +73,7 @@ function ChatGptJsonPasteBox({
 
       <div className="grid grid-cols-1 gap-2">
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
           onClick={onValidate}
           type="button"
         >
@@ -81,7 +81,7 @@ function ChatGptJsonPasteBox({
           Validate response
         </button>
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
           onClick={onClear}
           type="button"
         >
@@ -89,7 +89,7 @@ function ChatGptJsonPasteBox({
           Clear
         </button>
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
           onClick={onBackToPrompt}
           type="button"
         >

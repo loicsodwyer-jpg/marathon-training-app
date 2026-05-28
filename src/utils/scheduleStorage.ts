@@ -125,6 +125,10 @@ function isDailyScheduleOverrides(value: unknown): value is DailyScheduleOverrid
   )
 }
 
+function parseHiddenDefaultActivityIds(value: unknown): string[] {
+  return Array.isArray(value) && value.every(isString) ? value : []
+}
+
 function normalizeOverrides(value: unknown): DailyScheduleOverrides | undefined {
   if (!isDailyScheduleOverrides(value)) {
     return undefined
@@ -134,6 +138,7 @@ function normalizeOverrides(value: unknown): DailyScheduleOverrides | undefined 
     date: value.date,
     blockOverrides: parseBlockOverrides(value.blockOverrides),
     customBlocks: value.customBlocks,
+    hiddenDefaultActivityIds: parseHiddenDefaultActivityIds(value.hiddenDefaultActivityIds),
     updatedAt: value.updatedAt,
   }
 }

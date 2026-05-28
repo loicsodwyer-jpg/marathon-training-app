@@ -65,7 +65,7 @@ function CalendarExportCard({ selectedDate }: CalendarExportCardProps) {
           <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
             Calendar export
           </h2>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             Download your effective training plan as an .ics file for Apple Calendar, Google
             Calendar, or Outlook.
           </p>
@@ -79,7 +79,7 @@ function CalendarExportCard({ selectedDate }: CalendarExportCardProps) {
       </div>
 
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[20px] bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
         onClick={() => openModal('custom')}
         type="button"
       >
@@ -99,8 +99,8 @@ function CalendarExportCard({ selectedDate }: CalendarExportCardProps) {
         </p>
       ) : null}
 
-      <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-slate-950/35">
-        <p className="text-sm leading-5 text-stone-600 dark:text-slate-400">
+      <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+        <p className="text-sm leading-5 text-stone-600 dark:text-neutral-400">
           Exports use active local plan adjustments. Custom daily activities are not exported yet,
           so private notes stay out of calendar files.
         </p>
@@ -121,7 +121,7 @@ function CalendarExportCard({ selectedDate }: CalendarExportCardProps) {
 function QuickButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button
-      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
       onClick={onClick}
       type="button"
     >

@@ -41,7 +41,7 @@ function AdjustmentRecommendationCard({
       </div>
 
       <div className="grid grid-cols-1 gap-2">
-        <div className="rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-slate-950/35">
+        <div className="rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35">
           <div className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4 text-cyan-700 dark:text-cyan-200" aria-hidden="true" />
             <p className="text-sm font-semibold text-stone-950 dark:text-white">
@@ -49,16 +49,16 @@ function AdjustmentRecommendationCard({
               {formatDisplayDate(recommendation.recommendedEndDate)}
             </p>
           </div>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             {recommendation.recommendedDurationDays} affected day
             {recommendation.recommendedDurationDays === 1 ? '' : 's'}
           </p>
         </div>
-        <div className="rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-slate-950/35">
+        <div className="rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35">
           <p className="text-sm font-semibold text-stone-950 dark:text-white">
             Load reduction: {rules.loadReductionRange}
           </p>
-          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
             {rules.strengthGuidance}
           </p>
         </div>
@@ -66,7 +66,7 @@ function AdjustmentRecommendationCard({
 
       <ul className="space-y-1">
         {recommendation.reasoning.map((reason) => (
-          <li className="text-sm leading-5 text-stone-700 dark:text-slate-300" key={reason}>
+          <li className="text-sm leading-5 text-stone-700 dark:text-neutral-300" key={reason}>
             {reason}
           </li>
         ))}

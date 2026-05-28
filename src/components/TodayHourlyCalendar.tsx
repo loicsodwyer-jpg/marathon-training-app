@@ -146,53 +146,48 @@ function TodayHourlyCalendar({
   return (
     <section
       aria-label={`Hourly calendar for ${date}`}
-      className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]"
+      className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-[0_18px_45px_rgba(49,55,70,0.07)] dark:border-white/10 dark:bg-neutral-900/85 dark:shadow-[0_22px_70px_rgba(0,0,0,0.35)]"
     >
       <div className="mb-4 flex items-start gap-3">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[16px] bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-slate-200">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[16px] bg-stone-100 text-stone-700 dark:bg-white/[0.07] dark:text-neutral-200">
           <Clock className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
           <h2 className="text-base font-semibold text-stone-950 dark:text-white">
             Hourly calendar
           </h2>
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
-            Move blocks, add activities, and adjust your day.
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
+            Move, hide, add, and complete activities for this day.
           </p>
-          <p className="mt-1 text-xs leading-5 text-stone-400 dark:text-slate-500">
-            Tip: tap a block to edit. Drag the handle to another hour or half-hour.
+          <p className="mt-1 text-xs leading-5 text-stone-400 dark:text-neutral-500">
+            Tip: tap a block to edit or delete it. Drag the handle to another hour or half-hour.
           </p>
         </div>
       </div>
 
       <div className="mb-4 grid grid-cols-2 gap-2">
         <button
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] bg-stone-950 px-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-slate-950 dark:hover:bg-cyan-200"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] bg-stone-950 px-3 text-sm font-semibold text-white transition hover:bg-stone-800 dark:bg-cyan-300 dark:text-neutral-950 dark:hover:bg-cyan-200"
           onClick={onAddActivity}
           type="button"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           Add activity
         </button>
-        {hasChanges ? (
-          <button
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200 dark:hover:bg-white/[0.1]"
-            onClick={onResetDay}
-            type="button"
-          >
-            <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            Reset day
-          </button>
-        ) : (
-          <div className="rounded-[16px] border border-stone-100 bg-stone-50 px-3 py-3 text-center text-xs font-semibold text-stone-400 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-500">
-            No edits saved
-          </div>
-        )}
+        <button
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1] dark:disabled:hover:bg-white/[0.06]"
+          disabled={!hasChanges}
+          onClick={onResetDay}
+          type="button"
+        >
+          <RotateCcw className="h-4 w-4" aria-hidden="true" />
+          Reset day
+        </button>
       </div>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
         <div
-          className="relative overflow-hidden rounded-[22px] border border-stone-100 bg-stone-50/70 dark:border-white/10 dark:bg-slate-950/35"
+          className="relative overflow-hidden rounded-[22px] border border-stone-100 bg-stone-50/70 dark:border-white/10 dark:bg-neutral-950/35"
           style={{ height: timelineHeight }}
         >
           {hours.map((hour, index) => (
@@ -231,7 +226,7 @@ function HourLine({ hour, index }: { hour: number; index: number }) {
   return (
     <div className="absolute left-0 right-0" style={{ top: topPx }}>
       <div className="grid grid-cols-[54px_1fr]">
-        <div className="pr-2 pt-1 text-right text-[11px] font-semibold text-stone-400 dark:text-slate-600">
+        <div className="pr-2 pt-1 text-right text-[11px] font-semibold text-stone-400 dark:text-neutral-600">
           {formatHour(hour)}
         </div>
         <div className="border-t border-stone-200/80 dark:border-white/10" />

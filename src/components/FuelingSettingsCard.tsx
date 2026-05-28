@@ -22,7 +22,7 @@ function FuelingSettingsCard() {
           <h2 className="text-lg font-semibold text-stone-950 dark:text-white">
             Maurten fuelling preferences
           </h2>
-          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-slate-400">
+          <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
             Local rules for gels, Drink Mix, caffeine, and stomach-sensitive marathon practice.
           </p>
         </div>
@@ -109,7 +109,7 @@ function FuelingSettingsCard() {
       </div>
 
       <button
-        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:bg-white/[0.1]"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[18px] border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-100 dark:hover:bg-white/[0.1]"
         onClick={resetPreferences}
         type="button"
       >
@@ -135,7 +135,7 @@ function ToggleRow({
 }) {
   return (
     <label className={`flex min-h-12 items-center justify-between gap-3 rounded-[18px] border border-stone-100 bg-stone-50 px-3 py-2 dark:border-white/10 dark:bg-white/[0.05] ${disabled ? 'opacity-50' : ''}`}>
-      <span className="flex items-center gap-2 text-sm font-semibold text-stone-800 dark:text-slate-100">
+      <span className="flex items-center gap-2 text-sm font-semibold text-stone-800 dark:text-neutral-100">
         <span className="text-amber-700 dark:text-amber-200">{icon}</span>
         {label}
       </span>
@@ -163,15 +163,15 @@ function SegmentedControl<Value extends FuelingPreferences['preferredGelSize']>(
 }) {
   return (
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold text-stone-800 dark:text-slate-100">{label}</h3>
-      <div className="grid grid-cols-3 gap-2 rounded-[20px] border border-stone-100 bg-stone-50 p-2 dark:border-white/10 dark:bg-slate-950/50">
+      <h3 className="text-sm font-semibold text-stone-800 dark:text-neutral-100">{label}</h3>
+      <div className="grid grid-cols-3 gap-2 rounded-[20px] border border-stone-100 bg-stone-50 p-2 dark:border-white/10 dark:bg-neutral-950/50">
         {options.map((option) => (
           <button
             aria-pressed={value === option.value}
             className={`min-h-10 rounded-[16px] px-2 text-xs font-semibold transition ${
               value === option.value
-                ? 'bg-white text-stone-950 shadow-sm dark:bg-amber-300 dark:text-slate-950'
-                : 'text-stone-500 hover:bg-white/70 hover:text-stone-900 dark:text-slate-400 dark:hover:bg-white/[0.08] dark:hover:text-white'
+                ? 'bg-white text-stone-950 shadow-sm dark:bg-amber-300 dark:text-neutral-950'
+                : 'text-stone-500 hover:bg-white/70 hover:text-stone-900 dark:text-neutral-400 dark:hover:bg-white/[0.08] dark:hover:text-white'
             }`}
             key={option.value}
             onClick={() => onChange(option.value)}
@@ -196,7 +196,7 @@ function NumberSegments({
 }) {
   return (
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold text-stone-800 dark:text-slate-100">{label}</h3>
+      <h3 className="text-sm font-semibold text-stone-800 dark:text-neutral-100">{label}</h3>
       <div className="grid grid-cols-4 gap-2">
         {carbTargets.map((target) => (
           <button
@@ -204,7 +204,7 @@ function NumberSegments({
             className={`min-h-10 rounded-[16px] border px-2 text-xs font-semibold transition ${
               value === target
                 ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/15 dark:text-amber-100'
-                : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300 dark:hover:bg-white/[0.1]'
+                : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 dark:hover:bg-white/[0.1]'
             }`}
             key={target}
             onClick={() => onChange(target)}
