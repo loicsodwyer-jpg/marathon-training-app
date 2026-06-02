@@ -3,10 +3,14 @@ import {
   Clock,
   Cloud,
   Eye,
+  ListChecks,
+  RefreshCw,
   RotateCcw,
   Send,
   ShieldAlert,
   Smartphone,
+  Trash2,
+  UploadCloud,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import PageCard from '../../components/PageCard'
@@ -17,11 +21,12 @@ import type {
   LocalReminderPreview,
   NotificationSupportStatus,
 } from '../../types/notifications'
+import { trainingPlanEndDate } from '../../data/trainingPlan'
 import { formatDisplayDate } from '../../utils/dateUtils'
 import { getEffectiveFullTrainingPlan } from '../../utils/effectiveTrainingPlanUtils'
 import {
   buildLocalReminderPreviewForRange,
-  getNotificationPreviewRange,
+  buildReminderSyncPayload,
 } from '../../utils/notificationReminderPreviewUtils'
 import {
   getNotificationSupportMessage,
@@ -40,12 +45,19 @@ import {
   getPushSubscriptionBackendStatus,
   type PushSubscriptionBackendStatusResult,
 } from '../../utils/pushBackendClient'
+import {
+  clearPushReminders,
+  getReminderSyncRange,
+  listPushReminders,
+  syncPushReminders,
+  type PushReminderListItem,
+} from '../../utils/pushReminderBackendClient'
 
 type NotificationSettingsPageProps = {
   selectedDate: string
 }
 
-type PreviewRange = 'next_7_days' | 'current_week' | 'next_4_weeks'
+type PreviewRange = 'next_7_days' | 'next_30_days' | 'full_remaining_plan'
 
 type Message = {
   tone: 'success' | 'error'
@@ -54,8 +66,8 @@ type Message = {
 
 const previewRangeLabels: Record<PreviewRange, string> = {
   next_7_days: 'Next 7 days',
-  current_week: 'Current week',
-  next_4_weeks: 'Next 4 weeks',
+  next_30_days: 'Next 30 days',
+  full_remaining_plan: 'Full remaining plan',
 }
 
 function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProps) {
@@ -69,7 +81,15 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
   const [deviceLabel, setDeviceLabel] = useState(() => getDefaultDeviceLabel())
   const [isBackendBusy, setIsBackendBusy] = useState(false)
   const [message, setMessage] = useState<Message>()
-  const [previewRange, setPreviewRange] = useState<PreviewRange>('next_7_days')
+  const [previewRange, setPreviewRange] = useState<PreviewRange>('next_30_days')
+  const [hasPreviewedScheduledReminders, setHasPreviewedScheduledReminders] = useState(false)
+  const [isReminderBackendBusy, setIsReminderBackendBusy] = useState(false)
+  const [syncedReminders, setSyncedReminders] = useState<PushReminderListItem[]>([])
+  const [lastSyncSummary, setLastSyncSummary] = useState<{
+    synced: number
+    cancelled: number
+    syncedAt: string
+  }>()
   const hasVapidPublicKey = Boolean(getVapidPublicKey())
 
   const refreshStatus = async () => {
@@ -103,7 +123,8 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
     }
   }, [])
 
-  const previewWindow = getNotificationPreviewRange(previewRange, selectedDate)
+  const previewWindow = getSelectedReminderRange(previewRange, selectedDate)
+  const syncScope = getReminderSyncScope(previewRange)
   const reminders = useMemo(
     () =>
       buildLocalReminderPreviewForRange({
@@ -116,6 +137,13 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
     [fuelingPreferences, preferences, previewWindow.endDate, previewWindow.startDate],
   )
   const visibleReminders = reminders.slice(0, 20)
+  const reminderStatusCounts = getReminderStatusCounts(syncedReminders)
+  const reminderSyncBlocker = getReminderSyncBlocker({
+    backendStatus,
+    hasPushSubscription,
+    preferencesEnabled: preferences.enabled,
+    permission: supportStatus.permission,
+  })
 
   const handleEnableNotifications = async () => {
     const permission = await requestNotificationPermission()
@@ -204,6 +232,137 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
       await refreshStatus()
     } finally {
       setIsBackendBusy(false)
+    }
+  }
+
+  const handlePreviewScheduledReminders = () => {
+    setHasPreviewedScheduledReminders(true)
+    setMessage({
+      tone: 'success',
+      text: `${reminders.length} reminders previewed for this range.`,
+    })
+  }
+
+  const handleSyncScheduledReminders = async () => {
+    if (reminderSyncBlocker) {
+      setMessage({ tone: 'error', text: reminderSyncBlocker })
+      return
+    }
+
+    setIsReminderBackendBusy(true)
+
+    try {
+      const subscription = await getExistingPushSubscription()
+
+      if (!subscription?.endpoint) {
+        setMessage({ tone: 'error', text: 'Create and save push subscription first.' })
+        return
+      }
+
+      const payload = buildReminderSyncPayload({
+        endpoint: subscription.endpoint,
+        syncScope,
+        startDate: previewWindow.startDate,
+        endDate: previewWindow.endDate,
+        preferences,
+        effectiveDayPlans: getEffectiveFullTrainingPlan(),
+        fuelingPreferences,
+      })
+      const result = await syncPushReminders({
+        endpoint: payload.endpoint,
+        syncScope: payload.syncScope,
+        rangeStart: payload.rangeStart,
+        rangeEnd: payload.rangeEnd,
+        reminders: payload.reminders,
+      })
+
+      if (result.ok) {
+        setLastSyncSummary({
+          synced: result.synced ?? payload.reminders.length,
+          cancelled: result.cancelled ?? 0,
+          syncedAt: new Date().toLocaleString(),
+        })
+        setHasPreviewedScheduledReminders(true)
+        setMessage({
+          tone: 'success',
+          text: `Synced ${result.synced ?? payload.reminders.length} reminders. Cancelled ${result.cancelled ?? 0}.`,
+        })
+        await refreshSyncedReminders(subscription.endpoint, false)
+      } else {
+        setMessage({ tone: 'error', text: result.message })
+      }
+    } finally {
+      setIsReminderBackendBusy(false)
+    }
+  }
+
+  const handleRefreshSyncedReminders = async () => {
+    setIsReminderBackendBusy(true)
+
+    try {
+      await refreshSyncedReminders(undefined, true)
+    } finally {
+      setIsReminderBackendBusy(false)
+    }
+  }
+
+  const handleClearSyncedReminders = async () => {
+    setIsReminderBackendBusy(true)
+
+    try {
+      const subscription = await getExistingPushSubscription()
+
+      if (!subscription?.endpoint) {
+        setMessage({ tone: 'error', text: 'Create and save push subscription first.' })
+        return
+      }
+
+      const result = await clearPushReminders({
+        endpoint: subscription.endpoint,
+        syncScope,
+      })
+
+      setMessage({
+        tone: result.ok ? 'success' : 'error',
+        text: result.ok ? `Cancelled ${result.cancelled ?? 0} pending reminders.` : result.message,
+      })
+      await refreshSyncedReminders(subscription.endpoint, false)
+    } finally {
+      setIsReminderBackendBusy(false)
+    }
+  }
+
+  const refreshSyncedReminders = async (
+    endpointOverride?: string,
+    showResultMessage = false,
+  ) => {
+    const endpoint =
+      endpointOverride ?? (await getExistingPushSubscription())?.endpoint
+
+    if (!endpoint) {
+      setSyncedReminders([])
+
+      if (showResultMessage) {
+        setMessage({ tone: 'error', text: 'Create and save push subscription first.' })
+      }
+
+      return
+    }
+
+    const result = await listPushReminders({
+      endpoint,
+      rangeStart: previewWindow.startDate,
+      rangeEnd: previewWindow.endDate,
+    })
+
+    if (result.ok) {
+      setSyncedReminders(result.reminders ?? [])
+
+      if (showResultMessage) {
+        setMessage({ tone: 'success', text: 'Synced reminders refreshed.' })
+      }
+    } else if (showResultMessage) {
+      setMessage({ tone: 'error', text: result.message })
     }
   }
 
@@ -344,9 +503,129 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
 
       <PageCard className="space-y-4">
         <SectionTitle
+          icon={ListChecks}
+          title="Scheduled reminders"
+          subtitle="Step 27 sends due reminders through the backend. Delivery is best-effort within a few minutes."
+        />
+        <div className="flex flex-wrap gap-2">
+          <StatusPill tone={hasPushSubscription ? 'success' : 'neutral'}>
+            {hasPushSubscription ? 'Current browser subscribed' : 'No browser subscription'}
+          </StatusPill>
+          <StatusPill tone={backendStatusTone(backendStatus)}>
+            {backendStatusLabel(backendStatus)}
+          </StatusPill>
+          <StatusPill tone={reminderSyncBlocker ? 'warning' : 'success'}>
+            {reminderSyncBlocker ? 'Sync blocked' : 'Ready to sync'}
+          </StatusPill>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {(Object.keys(previewRangeLabels) as PreviewRange[]).map((range) => (
+            <button
+              className={`min-h-10 rounded-[14px] border px-2 text-xs font-semibold transition ${
+                previewRange === range
+                  ? 'border-stone-950 bg-stone-950 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-950'
+                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]'
+              }`}
+              key={range}
+              onClick={() => {
+                setPreviewRange(range)
+                setHasPreviewedScheduledReminders(false)
+                setSyncedReminders([])
+              }}
+              type="button"
+            >
+              {previewRangeLabels[range]}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-xs font-semibold text-stone-500 dark:text-neutral-500">
+          {formatDisplayDate(previewWindow.startDate)} - {formatDisplayDate(previewWindow.endDate)}
+        </p>
+        <p className="text-sm leading-5 text-stone-600 dark:text-neutral-400">
+          Sync reminders uploads this device&apos;s next schedule to the backend. Scheduled delivery
+          runs every ~5 minutes. Changes to your plan/calendar require re-syncing.
+        </p>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-white px-3 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
+            onClick={handlePreviewScheduledReminders}
+            type="button"
+          >
+            <Eye className="h-4 w-4" aria-hidden="true" />
+            Preview reminders
+          </button>
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] bg-stone-950 px-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-white"
+            disabled={Boolean(reminderSyncBlocker) || isReminderBackendBusy}
+            onClick={() => {
+              void handleSyncScheduledReminders()
+            }}
+            type="button"
+          >
+            <UploadCloud className="h-4 w-4" aria-hidden="true" />
+            Sync reminders
+          </button>
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-white px-3 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
+            disabled={!hasPushSubscription || isReminderBackendBusy}
+            onClick={() => {
+              void handleRefreshSyncedReminders()
+            }}
+            type="button"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            Refresh synced
+          </button>
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-rose-200 bg-white px-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-rose-300/20 dark:bg-neutral-950/30 dark:text-rose-200 dark:hover:bg-rose-300/10"
+            disabled={!hasPushSubscription || isReminderBackendBusy}
+            onClick={() => {
+              void handleClearSyncedReminders()
+            }}
+            type="button"
+          >
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            Clear synced
+          </button>
+        </div>
+
+        {reminderSyncBlocker ? (
+          <p className="rounded-[16px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200">
+            {reminderSyncBlocker}
+          </p>
+        ) : null}
+
+        {lastSyncSummary ? (
+          <p className="rounded-[16px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 dark:border-emerald-300/20 dark:bg-emerald-300/10 dark:text-emerald-200">
+            Last sync: {lastSyncSummary.syncedAt}. Synced {lastSyncSummary.synced};
+            cancelled {lastSyncSummary.cancelled}.
+          </p>
+        ) : null}
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <CountTile label="Pending" value={reminderStatusCounts.pending} />
+          <CountTile label="Sent" value={reminderStatusCounts.sent} />
+          <CountTile label="Failed" value={reminderStatusCounts.failed} />
+          <CountTile label="Cancelled" value={reminderStatusCounts.cancelled} />
+        </div>
+
+        {syncedReminders.length ? (
+          <SyncedReminderList reminders={syncedReminders} />
+        ) : (
+          <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-4 text-sm font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
+            No synced reminders loaded for this range yet.
+          </p>
+        )}
+      </PageCard>
+
+      <PageCard className="space-y-4">
+        <SectionTitle
           icon={Clock}
           title="Reminder preferences"
-          subtitle="These create a local preview only. Scheduled delivery comes later."
+          subtitle="Choose which schedule items become local previews and backend reminders."
         />
         <div className="space-y-2">
           <ToggleRow
@@ -449,7 +728,7 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
         <SectionTitle
           icon={Eye}
           title="Reminder preview"
-          subtitle="Preview only. Scheduled backend delivery comes in Step 27."
+          subtitle="Built from your effective plan, calendar edits, and notification preferences."
         />
         <div className="grid grid-cols-3 gap-2">
           {(Object.keys(previewRangeLabels) as PreviewRange[]).map((range) => (
@@ -470,7 +749,7 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
         <p className="text-xs font-semibold text-stone-500 dark:text-neutral-500">
           {formatDisplayDate(previewWindow.startDate)} - {formatDisplayDate(previewWindow.endDate)}
         </p>
-        {visibleReminders.length ? (
+        {hasPreviewedScheduledReminders && visibleReminders.length ? (
           <div className="space-y-2">
             {visibleReminders.map((reminder) => (
               <ReminderPreviewRow key={reminder.id} reminder={reminder} />
@@ -481,10 +760,14 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
               </p>
             ) : null}
           </div>
-        ) : (
+        ) : hasPreviewedScheduledReminders ? (
           <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-4 text-sm font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
             No reminders in this preview range. Enable reminder types or choose a training week
             with planned events.
+          </p>
+        ) : (
+          <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-4 text-sm font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
+            Tap Preview reminders to inspect this range before syncing it to the backend.
           </p>
         )}
       </PageCard>
@@ -652,6 +935,195 @@ function ReminderPreviewRow({ reminder }: { reminder: LocalReminderPreview }) {
       ) : null}
     </div>
   )
+}
+
+function CountTile({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
+        {label}
+      </p>
+      <p className="mt-1 text-lg font-semibold text-stone-950 dark:text-white">{value}</p>
+    </div>
+  )
+}
+
+function SyncedReminderList({ reminders }: { reminders: PushReminderListItem[] }) {
+  const pendingReminders = reminders
+    .filter((reminder) => reminder.status === 'pending')
+    .slice(0, 6)
+  const failedReminders = reminders
+    .filter((reminder) => reminder.status === 'failed')
+    .slice(0, 4)
+  const sentReminders = reminders
+    .filter((reminder) => reminder.status === 'sent')
+    .slice(-4)
+    .reverse()
+  const visibleReminders = [
+    ...failedReminders,
+    ...pendingReminders,
+    ...sentReminders,
+  ]
+
+  if (!visibleReminders.length) {
+    return (
+      <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-4 text-sm font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
+        Synced reminder rows exist, but none are pending, sent, or failed in this range.
+      </p>
+    )
+  }
+
+  return (
+    <div className="space-y-2">
+      {visibleReminders.map((reminder) => (
+        <SyncedReminderRow key={reminder.id ?? reminder.reminderKey} reminder={reminder} />
+      ))}
+    </div>
+  )
+}
+
+function SyncedReminderRow({ reminder }: { reminder: PushReminderListItem }) {
+  return (
+    <div className="rounded-[18px] border border-stone-100 bg-white p-3 dark:border-white/10 dark:bg-white/[0.04]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-stone-950 dark:text-white">
+            {reminder.title ?? 'Scheduled reminder'}
+          </p>
+          <p className="mt-1 text-xs font-semibold text-stone-500 dark:text-neutral-500">
+            Send {formatReminderDateTime(reminder.sendAt)}
+          </p>
+        </div>
+        <StatusPill tone={syncedReminderTone(reminder.status)}>
+          {reminder.status ?? 'unknown'}
+        </StatusPill>
+      </div>
+      {reminder.body ? (
+        <p className="mt-2 line-clamp-2 text-sm leading-5 text-stone-600 dark:text-neutral-400">
+          {reminder.body}
+        </p>
+      ) : null}
+      {reminder.lastError ? (
+        <p className="mt-2 rounded-[14px] border border-rose-200 bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700 dark:border-rose-300/20 dark:bg-rose-300/10 dark:text-rose-200">
+          {reminder.lastError}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+function getSelectedReminderRange(range: PreviewRange, selectedDate: string) {
+  if (range === 'full_remaining_plan') {
+    return {
+      startDate: selectedDate,
+      endDate: trainingPlanEndDate >= selectedDate ? trainingPlanEndDate : selectedDate,
+    }
+  }
+
+  const daysAhead = range === 'next_7_days' ? 7 : 30
+  const syncRange = getReminderSyncRange(daysAhead, selectedDate)
+
+  return {
+    startDate: syncRange.rangeStart,
+    endDate: syncRange.rangeEnd,
+  }
+}
+
+function getReminderSyncScope(range: PreviewRange) {
+  if (range === 'full_remaining_plan') {
+    return 'current-device-full-remaining-plan'
+  }
+
+  return range === 'next_7_days'
+    ? 'current-device-next-7-days'
+    : 'current-device-next-30-days'
+}
+
+function getReminderStatusCounts(reminders: PushReminderListItem[]) {
+  return reminders.reduce(
+    (counts, reminder) => {
+      if (reminder.status === 'pending') {
+        counts.pending += 1
+      } else if (reminder.status === 'sent') {
+        counts.sent += 1
+      } else if (reminder.status === 'failed') {
+        counts.failed += 1
+      } else if (reminder.status === 'cancelled') {
+        counts.cancelled += 1
+      }
+
+      return counts
+    },
+    {
+      pending: 0,
+      sent: 0,
+      failed: 0,
+      cancelled: 0,
+    },
+  )
+}
+
+function getReminderSyncBlocker({
+  backendStatus,
+  hasPushSubscription,
+  preferencesEnabled,
+  permission,
+}: {
+  backendStatus: PushSubscriptionBackendStatusResult | undefined
+  hasPushSubscription: boolean
+  preferencesEnabled: boolean
+  permission: string
+}) {
+  if (!preferencesEnabled) {
+    return 'Enable reminders before syncing scheduled delivery.'
+  }
+
+  if (permission !== 'granted') {
+    return 'Notification permission must be granted before syncing reminders.'
+  }
+
+  if (!hasPushSubscription) {
+    return 'Create and save push subscription first.'
+  }
+
+  if (!backendStatus?.ok || !backendStatus.exists || !backendStatus.active) {
+    return 'Save this device to backend before syncing reminders.'
+  }
+
+  return undefined
+}
+
+function syncedReminderTone(status: string | null): StatusTone {
+  if (status === 'pending') {
+    return 'neutral'
+  }
+
+  if (status === 'sent') {
+    return 'success'
+  }
+
+  if (status === 'failed') {
+    return 'warning'
+  }
+
+  return 'neutral'
+}
+
+function formatReminderDateTime(value: string | null) {
+  if (!value) {
+    return 'pending'
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
 }
 
 function permissionTone(permission: string): StatusTone {

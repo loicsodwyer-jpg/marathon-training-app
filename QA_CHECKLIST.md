@@ -43,6 +43,8 @@ Use this checklist before deployment or iPhone testing. The app is local-first, 
 - Export `.ics` calendar: export a long-run week with fuelling reminders, inspect descriptions for adjusted plan and Maurten notes.
 - Notification foundation: open Settings -> Notifications, request permission from a user tap, send a local test notification, and check reminder preview copy.
 - Backend push: create and save subscription, confirm Supabase row, check backend status, send backend test push, then remove subscription.
+- Scheduled reminders: preview next 7 days, sync reminders, confirm pending Supabase rows, refresh synced reminders, clear synced reminders, and confirm pending rows become cancelled.
+- Due reminder delivery: call `/api/push/reminders/send-due` with `CRON_SECRET` or run the GitHub workflow manually, confirm due reminders send and rows become sent.
 - Offline/PWA check: build, preview, load once, switch DevTools network offline, refresh, confirm app shell and local data still load.
 
 ## 5. Important Dates To Test
@@ -93,9 +95,14 @@ Use this checklist before deployment or iPhone testing. The app is local-first, 
 - `VITE_VAPID_PUBLIC_KEY` is public; no private VAPID key is stored in frontend code.
 - Vercel has `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`.
 - Supabase has the `public.push_subscriptions` table from `supabase/push_subscriptions.sql`.
+- Supabase has the `public.push_reminders` table from `supabase/push_reminders.sql`.
 - Create and save subscription stores a row in Supabase without exposing keys in the UI.
 - Check backend status reports saved/active for the current endpoint.
 - Send backend test push arrives on the device.
+- Sync reminders uploads pending rows without exposing subscription keys.
+- Clear synced reminders marks pending rows cancelled without deleting sent history.
+- Send due reminders requires `CRON_SECRET`; wrong or missing secrets return 401.
+- GitHub Actions workflow uses `PUSH_CRON_URL` and `PUSH_CRON_SECRET`, and scheduled runs are best-effort every 5 minutes UTC.
 - Remove push subscription unsubscribes the browser and marks the Supabase row inactive.
-- Reminder preview is local only; scheduled backend delivery is not expected until the backend/scheduler steps.
+- Reminder preview, sync, clear, and due delivery all work from Settings -> Notifications.
 - Service worker still precaches the app shell and offline mode still works after the notification push handler changes.

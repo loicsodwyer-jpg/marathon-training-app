@@ -9,6 +9,8 @@ export type PushPayload = {
   tag: string
   type: string
   reminderId?: string
+  sourceActivityId?: string
+  sourceDate?: string
 }
 
 let isConfigured = false

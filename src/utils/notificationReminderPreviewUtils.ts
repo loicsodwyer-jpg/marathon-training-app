@@ -9,6 +9,7 @@ import type { DayPlan } from '../types/training'
 import { addDays, formatDateKey, getMondayOfWeek } from './dateUtils'
 import { formatFuelingSummary } from './fuelingFormatUtils'
 import { getFuelingRecommendationForDay } from './fuelingRules'
+import type { SyncedPushReminderInput } from './pushReminderBackendClient'
 import { getScheduleOverridesForDate } from './scheduleStorage'
 import { applyScheduleOverridesToGeneratedBlocks } from './scheduleOverrideUtils'
 import { addMinutesToTime, sortBlocksByTime, timeToMinutes } from './scheduleTimeUtils'
@@ -23,6 +24,21 @@ type ReminderPreviewArgs = {
 }
 
 type ReminderPreviewRange = 'next_7_days' | 'current_week' | 'next_4_weeks'
+
+type ReminderSyncPayloadArgs = ReminderPreviewArgs & {
+  endpoint: string
+  syncScope: string
+  includePast?: boolean
+}
+
+export type ReminderSyncPayload = {
+  endpoint: string
+  syncScope: string
+  rangeStart: string
+  rangeEnd: string
+  reminders: SyncedPushReminderInput[]
+  quietHoursWarnings: LocalReminderPreview[]
+}
 
 export function getNotificationPreviewRange(
   range: ReminderPreviewRange,
@@ -64,6 +80,83 @@ export function buildLocalReminderPreviewForRange({
     .filter((dayPlan) => dayPlan.date >= startDate && dayPlan.date <= endDate)
     .flatMap((dayPlan) => buildDayReminderPreview(dayPlan, preferences, fuelingPreferences))
     .sort((firstReminder, secondReminder) => firstReminder.sendAt.localeCompare(secondReminder.sendAt))
+}
+
+export function buildReminderSyncPayload({
+  effectiveDayPlans,
+  endpoint,
+  endDate,
+  fuelingPreferences,
+  includePast = false,
+  preferences,
+  startDate,
+  syncScope,
+}: ReminderSyncPayloadArgs): ReminderSyncPayload {
+  const previews = buildLocalReminderPreviewForRange({
+    startDate,
+    endDate,
+    preferences,
+    effectiveDayPlans,
+    fuelingPreferences,
+  })
+  const now = Date.now()
+  const quietHoursWarnings: LocalReminderPreview[] = []
+  const reminders = previews.flatMap((preview): SyncedPushReminderInput[] => {
+    const sendTime = getPreviewSendTime(preview)
+    const sendAt = toUtcIso(preview.date, sendTime, preferences.timezone)
+    const eventTime = toUtcIso(preview.date, preview.eventTime, preferences.timezone)
+
+    if (!includePast && Date.parse(sendAt) <= now) {
+      return []
+    }
+
+    if (shouldSkipForQuietHours(preview, preferences)) {
+      return []
+    }
+
+    if (preview.quietHoursWarning) {
+      quietHoursWarnings.push(preview)
+    }
+
+    const reminderKey = createReminderKey(preview)
+
+    return [
+      {
+        reminderKey,
+        syncScope,
+        sourceActivityId: preview.sourceActivityId,
+        sourceDate: preview.date,
+        type: preview.type,
+        title: preview.title,
+        body: preview.body,
+        url: preview.url,
+        sendAt,
+        eventTime,
+        reminderOffsetMinutes: preview.reminderOffsetMinutes,
+        payload: {
+          type: preview.type,
+          title: preview.title,
+          body: preview.body,
+          url: preview.url,
+          tag: reminderKey,
+          reminderId: reminderKey,
+          sourceActivityId: preview.sourceActivityId,
+          sourceDate: preview.date,
+          eventTimeLocal: preview.eventTime,
+          sendTimeLocal: sendTime,
+        },
+      },
+    ]
+  })
+
+  return {
+    endpoint,
+    syncScope,
+    rangeStart: startDate,
+    rangeEnd: endDate,
+    reminders,
+    quietHoursWarnings,
+  }
 }
 
 function buildDayReminderPreview(
@@ -308,4 +401,83 @@ function isInsideQuietHours(time: string, preferences: NotificationPreferences) 
   }
 
   return current >= start || current < end
+}
+
+function shouldSkipForQuietHours(
+  preview: LocalReminderPreview,
+  preferences: NotificationPreferences,
+) {
+  return (
+    preferences.quietHoursEnabled &&
+    Boolean(preview.quietHoursWarning) &&
+    ['snack', 'meal', 'recovery'].includes(preview.type)
+  )
+}
+
+function createReminderKey(preview: LocalReminderPreview) {
+  const source = slugify(preview.sourceActivityId ?? preview.title)
+  return `${preview.date}:${preview.type}:${source}:${preview.eventTime}:minus${preview.reminderOffsetMinutes}`
+}
+
+function getPreviewSendTime(preview: LocalReminderPreview) {
+  const [, time = preview.eventTime] = preview.sendAt.split(' ')
+  return time
+}
+
+function toUtcIso(date: string, time: string, timeZone: string) {
+  try {
+    return zonedDateTimeToUtcIso(date, time, timeZone || 'Europe/Amsterdam')
+  } catch {
+    return new Date(`${date}T${time}:00`).toISOString()
+  }
+}
+
+function zonedDateTimeToUtcIso(date: string, time: string, timeZone: string) {
+  const [year = 0, month = 1, day = 1] = date.split('-').map(Number)
+  const [hours = 0, minutes = 0] = time.split(':').map(Number)
+  const desiredUtcTime = Date.UTC(year, month - 1, day, hours, minutes)
+  const firstUtcTime =
+    desiredUtcTime - getTimeZoneOffsetMilliseconds(new Date(desiredUtcTime), timeZone)
+  const secondUtcTime =
+    desiredUtcTime - getTimeZoneOffsetMilliseconds(new Date(firstUtcTime), timeZone)
+
+  return new Date(secondUtcTime).toISOString()
+}
+
+function getTimeZoneOffsetMilliseconds(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(date)
+  const values = parts.reduce<Record<string, string>>((result, part) => {
+    if (part.type !== 'literal') {
+      result[part.type] = part.value
+    }
+
+    return result
+  }, {})
+  const localAsUtcTime = Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day),
+    Number(values.hour),
+    Number(values.minute),
+    Number(values.second),
+  )
+
+  return localAsUtcTime - date.getTime()
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 120)
 }
