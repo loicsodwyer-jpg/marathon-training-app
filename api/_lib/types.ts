@@ -81,3 +81,7 @@ export interface SendDueRemindersPayload {
   dryRun?: boolean
   limit?: number
 }
+
+export interface ReminderHealthPayload {
+  endpoint?: string
+}

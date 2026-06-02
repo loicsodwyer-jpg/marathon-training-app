@@ -34,7 +34,8 @@ Never commit `.env.local`. Never put `VAPID_PRIVATE_KEY`, `SUPABASE_SERVICE_ROLE
 2. Open SQL Editor.
 3. Run `supabase/push_subscriptions.sql`.
 4. Run `supabase/push_reminders.sql`.
-5. Confirm the `public.push_subscriptions` and `public.push_reminders` tables exist.
+5. Run `supabase/push_scheduler_runs.sql`.
+6. Confirm the `public.push_subscriptions`, `public.push_reminders`, and `public.push_scheduler_runs` tables exist.
 
 The app does not query this table directly from the browser. Vercel Functions use the service-role key server-side.
 
@@ -102,6 +103,20 @@ If you do not use `vercel dev`, backend buttons may show “Push backend is not 
 
 Scheduled workflows use UTC. Every 5 minutes is the shortest GitHub Actions schedule interval. GitHub may delay workflow starts under load, so delivery is best-effort within a few minutes.
 
+## 8. Step 28 Diagnostics And Reliability
+
+1. Run `supabase/push_scheduler_runs.sql`.
+2. Deploy the updated app.
+3. Open Settings -> Notifications.
+4. Check Notification system health.
+5. Use Repair notification setup if browser and backend status disagree.
+6. Use Create test reminder to create a reminder due in about 2 minutes.
+7. Run GitHub -> Actions -> Send due push reminders -> Run workflow, or wait for cron.
+8. Refresh health and synced reminders.
+9. Confirm the test reminder moves from pending to sent.
+
+If the app says reminders may be out of date, re-sync reminders after plan changes, calendar edits, fuelling preference changes, notification preference changes, or push subscription repairs.
+
 ## Troubleshooting
 
 - Permission denied: re-enable notifications in iPhone/browser settings.
@@ -111,6 +126,9 @@ Scheduled workflows use UTC. Every 5 minutes is the shortest GitHub Actions sche
 - Scheduler 401: confirm GitHub `PUSH_CRON_SECRET` matches Vercel `CRON_SECRET`.
 - No reminders pending: sync reminders from Settings -> Notifications and confirm the selected range has upcoming events.
 - GitHub workflow not running: confirm GitHub Actions are enabled and repo secrets are present.
-- Supabase table missing: run `supabase/push_subscriptions.sql` and `supabase/push_reminders.sql`.
+- Supabase table missing: run `supabase/push_subscriptions.sql`, `supabase/push_reminders.sql`, and `supabase/push_scheduler_runs.sql`.
+- Scheduler has not run yet: run the GitHub workflow manually once, then refresh health.
+- Reminder stuck pending: confirm GitHub secrets and Vercel `CRON_SECRET`, then run the workflow manually.
+- Backend subscription inactive: use Repair notification setup or create/save the push subscription again.
 - Expired subscription: remove the push subscription in the app, then create and save it again.
 - Stale service worker: refresh the deployed app, or remove/reinstall the Home Screen app after redeploying.

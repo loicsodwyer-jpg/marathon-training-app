@@ -1,5 +1,6 @@
 import type { NotificationPermissionState } from '../types/notifications'
 import { LOCAL_PUSH_SUBSCRIPTION_STORAGE_KEY } from './localStorageKeys'
+import { markNotificationRemindersNeedResync } from './notificationSyncMetadataStorage'
 import { getNotificationPermissionState, urlBase64ToUint8Array } from './notificationSupportUtils'
 import {
   removePushSubscriptionFromBackend,
@@ -227,6 +228,7 @@ function saveLocalSerializedPushSubscription(subscription: Record<string, unknow
       LOCAL_PUSH_SUBSCRIPTION_STORAGE_KEY,
       JSON.stringify(subscription),
     )
+    markNotificationRemindersNeedResync('Push subscription changed.')
   } catch {
     // Local subscription display is non-critical.
   }
@@ -235,6 +237,7 @@ function saveLocalSerializedPushSubscription(subscription: Record<string, unknow
 function clearLocalSerializedPushSubscription(): void {
   try {
     window.localStorage.removeItem(LOCAL_PUSH_SUBSCRIPTION_STORAGE_KEY)
+    markNotificationRemindersNeedResync('Push subscription changed.')
   } catch {
     // Keep unsubscribe actions from crashing if storage is unavailable.
   }

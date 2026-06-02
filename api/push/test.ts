@@ -27,7 +27,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     const payload = validateTestPushPayload(await readJsonBody(request))
 
     if (payload.ok === false) {
-      errorResponse(response, payload.message, 400)
+      errorResponse(response, payload.message, 400, undefined, 'VALIDATION_ERROR')
       return
     }
 
@@ -38,7 +38,13 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       : payload.value.subscription
 
     if (!subscription) {
-      errorResponse(response, 'Active push subscription was not found.', 404)
+      errorResponse(
+        response,
+        'Active push subscription was not found.',
+        404,
+        undefined,
+        'SUBSCRIPTION_NOT_FOUND',
+      )
       return
     }
 
@@ -56,11 +62,23 @@ export default async function handler(request: ApiRequest, response: ApiResponse
 
       if (endpoint && (statusCode === 404 || statusCode === 410)) {
         await supabase.from('push_subscriptions').update({ active: false }).eq('endpoint', endpoint)
-        errorResponse(response, 'Subscription expired and was deactivated.', 410)
+        errorResponse(
+          response,
+          'Subscription expired and was deactivated.',
+          410,
+          undefined,
+          'PUSH_SEND_FAILED',
+        )
         return
       }
 
-      errorResponse(response, 'Backend test push failed.', 502, getWebPushErrorMessage(error))
+      errorResponse(
+        response,
+        'Backend test push failed.',
+        502,
+        getWebPushErrorMessage(error),
+        'PUSH_SEND_FAILED',
+      )
       return
     }
 
@@ -77,11 +95,17 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     })
   } catch (error) {
     if (isMissingEnvError(error)) {
-      errorResponse(response, 'Push backend environment variables are missing.', 500, error.message)
+      errorResponse(
+        response,
+        'Push backend environment variables are missing.',
+        500,
+        error.message,
+        'INVALID_ENV',
+      )
       return
     }
 
-    errorResponse(response, 'Backend test push failed.', 500)
+    errorResponse(response, 'Backend test push failed.', 500, undefined, 'PUSH_SEND_FAILED')
   }
 }
 

@@ -8,6 +8,7 @@ import type {
   PlanOverridesState,
 } from '../types/planOverride'
 import { PLAN_OVERRIDES_STORAGE_KEY } from './localStorageKeys'
+import { markNotificationRemindersNeedResync } from './notificationSyncMetadataStorage'
 
 const emptyPlanOverridesState: PlanOverridesState = {
   schemaVersion: 1,
@@ -298,6 +299,7 @@ export function savePlanOverrides(state: PlanOverridesState): void {
 
   try {
     window.localStorage.setItem(PLAN_OVERRIDES_STORAGE_KEY, JSON.stringify(state))
+    markNotificationRemindersNeedResync('Plan adjustments changed.')
   } catch {
     // Keep the app usable if browser storage is unavailable or full.
   }
@@ -385,6 +387,7 @@ export function clearAllPlanOverrides(): void {
 
   try {
     window.localStorage.removeItem(PLAN_OVERRIDES_STORAGE_KEY)
+    markNotificationRemindersNeedResync('Plan adjustments changed.')
   } catch {
     // Keep settings actions from crashing in restricted browser contexts.
   }

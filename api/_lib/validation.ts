@@ -1,6 +1,7 @@
 import type {
   ClearRemindersPayload,
   ListRemindersPayload,
+  ReminderHealthPayload,
   ReminderStatus,
   SendDueRemindersPayload,
   SyncedReminderInput,
@@ -351,6 +352,32 @@ export function validateSendDueRemindersPayload(
       dryRun: typeof payload.dryRun === 'boolean' ? payload.dryRun : undefined,
       limit: validateNumber(payload.limit),
     },
+  }
+}
+
+export function validateReminderHealthPayload(
+  payload: unknown,
+): ValidationResult<ReminderHealthPayload> {
+  if (!isRecord(payload)) {
+    return invalid('Expected a JSON object.')
+  }
+
+  if (payload.endpoint === undefined || payload.endpoint === null || payload.endpoint === '') {
+    return {
+      ok: true,
+      value: {},
+    }
+  }
+
+  const endpoint = validateEndpoint(payload.endpoint)
+
+  if (!endpoint) {
+    return invalid('A valid endpoint is required.')
+  }
+
+  return {
+    ok: true,
+    value: { endpoint },
   }
 }
 

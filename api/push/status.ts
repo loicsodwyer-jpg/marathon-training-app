@@ -22,7 +22,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     const payload = validateEndpointPayload(await readJsonBody(request))
 
     if (payload.ok === false) {
-      errorResponse(response, payload.message, 400)
+      errorResponse(response, payload.message, 400, undefined, 'VALIDATION_ERROR')
       return
     }
 
@@ -34,7 +34,13 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       .maybeSingle()
 
     if (error) {
-      errorResponse(response, 'Could not check push subscription status.', 500, error.message)
+      errorResponse(
+        response,
+        'Could not check push subscription status.',
+        500,
+        error.message,
+        'SUPABASE_ERROR',
+      )
       return
     }
 
@@ -57,10 +63,22 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     })
   } catch (error) {
     if (isMissingEnvError(error)) {
-      errorResponse(response, 'Push backend environment variables are missing.', 500, error.message)
+      errorResponse(
+        response,
+        'Push backend environment variables are missing.',
+        500,
+        error.message,
+        'INVALID_ENV',
+      )
       return
     }
 
-    errorResponse(response, 'Could not check push subscription status.', 500)
+    errorResponse(
+      response,
+      'Could not check push subscription status.',
+      500,
+      undefined,
+      'SUPABASE_ERROR',
+    )
   }
 }

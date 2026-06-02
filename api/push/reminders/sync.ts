@@ -22,7 +22,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     const payload = validateSyncRemindersPayload(await readJsonBody(request))
 
     if (payload.ok === false) {
-      errorResponse(response, payload.message, 400)
+      errorResponse(response, payload.message, 400, undefined, 'VALIDATION_ERROR')
       return
     }
 
@@ -35,12 +35,24 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       .maybeSingle()
 
     if (subscriptionError) {
-      errorResponse(response, 'Could not verify push subscription.', 500, subscriptionError.message)
+      errorResponse(
+        response,
+        'Could not verify push subscription.',
+        500,
+        subscriptionError.message,
+        'SUPABASE_ERROR',
+      )
       return
     }
 
     if (!isRecord(subscription) || subscription.active !== true) {
-      errorResponse(response, 'Save this device to backend before syncing reminders.', 404)
+      errorResponse(
+        response,
+        'Save this device to backend before syncing reminders.',
+        404,
+        undefined,
+        'SUBSCRIPTION_NOT_FOUND',
+      )
       return
     }
 
@@ -58,7 +70,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
         .upsert(upsertRows, { onConflict: 'subscription_endpoint,reminder_key' })
 
       if (error) {
-        errorResponse(response, 'Could not sync push reminders.', 500, error.message)
+        errorResponse(response, 'Could not sync push reminders.', 500, error.message, 'SUPABASE_ERROR')
         return
       }
     }
@@ -82,11 +94,17 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     })
   } catch (error) {
     if (isMissingEnvError(error)) {
-      errorResponse(response, 'Push backend environment variables are missing.', 500, error.message)
+      errorResponse(
+        response,
+        'Push backend environment variables are missing.',
+        500,
+        error.message,
+        'INVALID_ENV',
+      )
       return
     }
 
-    errorResponse(response, 'Could not sync push reminders.', 500)
+    errorResponse(response, 'Could not sync push reminders.', 500, undefined, 'SUPABASE_ERROR')
   }
 }
 

@@ -22,7 +22,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     const payload = validateClearRemindersPayload(await readJsonBody(request))
 
     if (payload.ok === false) {
-      errorResponse(response, payload.message, 400)
+      errorResponse(response, payload.message, 400, undefined, 'VALIDATION_ERROR')
       return
     }
 
@@ -36,7 +36,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       .eq('status', 'pending')
 
     if (error) {
-      errorResponse(response, 'Could not clear synced reminders.', 500, error.message)
+      errorResponse(response, 'Could not clear synced reminders.', 500, error.message, 'SUPABASE_ERROR')
       return
     }
 
@@ -56,7 +56,13 @@ export default async function handler(request: ApiRequest, response: ApiResponse
         .in('id', ids)
 
       if (updateError) {
-        errorResponse(response, 'Could not clear synced reminders.', 500, updateError.message)
+        errorResponse(
+          response,
+          'Could not clear synced reminders.',
+          500,
+          updateError.message,
+          'SUPABASE_ERROR',
+        )
         return
       }
     }
@@ -68,10 +74,16 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     })
   } catch (error) {
     if (isMissingEnvError(error)) {
-      errorResponse(response, 'Push backend environment variables are missing.', 500, error.message)
+      errorResponse(
+        response,
+        'Push backend environment variables are missing.',
+        500,
+        error.message,
+        'INVALID_ENV',
+      )
       return
     }
 
-    errorResponse(response, 'Could not clear synced reminders.', 500)
+    errorResponse(response, 'Could not clear synced reminders.', 500, undefined, 'SUPABASE_ERROR')
   }
 }

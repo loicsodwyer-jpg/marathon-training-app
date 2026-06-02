@@ -5,4 +5,6 @@ export const FUELING_PREFERENCES_STORAGE_KEY = 'loic-marathon-fueling-preference
 export const GROCERY_CHECKS_STORAGE_KEY = 'loic-marathon-grocery-checks-v1'
 export const NOTIFICATION_PREFERENCES_STORAGE_KEY = 'loic-marathon-notification-preferences-v1'
 export const LOCAL_PUSH_SUBSCRIPTION_STORAGE_KEY = 'loic-marathon-local-push-subscription-v1'
+export const NOTIFICATION_SYNC_METADATA_STORAGE_KEY =
+  'loic-marathon-notification-sync-metadata-v1'
 export const THEME_STORAGE_KEY = 'loic-marathon-theme'

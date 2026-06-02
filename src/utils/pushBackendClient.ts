@@ -5,6 +5,9 @@ export type BackendStatus = 'unknown' | 'saved' | 'missing' | 'inactive' | 'erro
 export type PushBackendResult = {
   ok: boolean
   message: string
+  code?: string
+  status?: number
+  details?: string
 }
 
 export type SavePushSubscriptionArgs = {
@@ -75,6 +78,9 @@ async function postJson<T extends PushBackendResult>(
       return {
         ok: false,
         message: getResponseMessage(payload, response.statusText),
+        code: getResponseCode(payload),
+        details: getResponseDetails(payload),
+        status: response.status,
       } as T
     }
 
@@ -95,6 +101,7 @@ async function postJson<T extends PushBackendResult>(
       ok: false,
       message:
         'Push backend is not reachable. Use Vercel dev locally or test after deployment.',
+      code: 'NETWORK_ERROR',
     } as T
   }
 }
@@ -117,6 +124,14 @@ function getResponseMessage(payload: unknown, fallback: string) {
   }
 
   return fallback
+}
+
+function getResponseCode(payload: unknown) {
+  return isRecord(payload) && typeof payload.code === 'string' ? payload.code : undefined
+}
+
+function getResponseDetails(payload: unknown) {
+  return isRecord(payload) && typeof payload.details === 'string' ? payload.details : undefined
 }
 
 function getUserAgent() {

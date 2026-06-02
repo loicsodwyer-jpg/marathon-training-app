@@ -6,6 +6,7 @@ import type {
   ScheduleBlockSource,
 } from '../types/schedule'
 import { SCHEDULE_OVERRIDES_STORAGE_KEY } from './localStorageKeys'
+import { markNotificationRemindersNeedResync } from './notificationSyncMetadataStorage'
 
 const scheduleBlockCategories: ScheduleBlockCategory[] = [
   'wake',
@@ -225,6 +226,7 @@ export function saveAllScheduleOverrides(
 
   try {
     window.localStorage.setItem(SCHEDULE_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides))
+    markNotificationRemindersNeedResync('Calendar edits changed.')
   } catch {
     // Keep the app usable if browser storage is unavailable or full.
   }
@@ -237,6 +239,7 @@ export function clearAllScheduleOverrides(): void {
 
   try {
     window.localStorage.removeItem(SCHEDULE_OVERRIDES_STORAGE_KEY)
+    markNotificationRemindersNeedResync('Calendar edits changed.')
   } catch {
     // Keep settings actions from crashing in restricted browser contexts.
   }

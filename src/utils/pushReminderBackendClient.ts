@@ -42,6 +42,9 @@ export type ReminderSyncRange = {
 export type ReminderBackendResult = {
   ok: boolean
   message: string
+  code?: string
+  status?: number
+  details?: string
 }
 
 export type SyncPushRemindersArgs = ReminderSyncRange & {
@@ -68,6 +71,30 @@ export type ListPushRemindersResult = ReminderBackendResult & {
 
 export type ClearPushRemindersResult = ReminderBackendResult & {
   cancelled?: number
+}
+
+export type PushReminderSchedulerHealth = {
+  lastRunAt: string | null
+  lastStatus: string | null
+  lastSuccessfulRunAt: string | null
+  lastFailedRunAt: string | null
+  recentRuns: number
+  recentSent: number
+  recentFailed: number
+}
+
+export type PushReminderDeviceHealth = {
+  pending: number
+  sent: number
+  failed: number
+  cancelled: number
+  nextPendingSendAt: string | null
+  lastSentAt: string | null
+}
+
+export type PushReminderHealthResult = ReminderBackendResult & {
+  scheduler?: PushReminderSchedulerHealth
+  device?: PushReminderDeviceHealth
 }
 
 export function getReminderSyncRange(
@@ -99,6 +126,14 @@ export async function clearPushReminders(args: {
   return postJson<ClearPushRemindersResult>('/api/push/reminders/clear', args)
 }
 
+export async function getPushReminderHealth(
+  endpoint?: string,
+): Promise<PushReminderHealthResult> {
+  return postJson<PushReminderHealthResult>('/api/push/reminders/health', {
+    ...(endpoint ? { endpoint } : {}),
+  })
+}
+
 async function postJson<T extends ReminderBackendResult>(
   url: string,
   body: Record<string, unknown>,
@@ -124,6 +159,9 @@ async function postJson<T extends ReminderBackendResult>(
       return {
         ok: false,
         message: getResponseMessage(payload, response.statusText),
+        code: getResponseCode(payload),
+        details: getResponseDetails(payload),
+        status: response.status,
       } as T
     }
 
@@ -144,6 +182,7 @@ async function postJson<T extends ReminderBackendResult>(
       ok: false,
       message:
         'Scheduled reminder backend is not reachable. Use Vercel dev locally or test after deployment.',
+      code: 'NETWORK_ERROR',
     } as T
   }
 }
@@ -166,6 +205,14 @@ function getResponseMessage(payload: unknown, fallback: string) {
   }
 
   return fallback
+}
+
+function getResponseCode(payload: unknown) {
+  return isRecord(payload) && typeof payload.code === 'string' ? payload.code : undefined
+}
+
+function getResponseDetails(payload: unknown) {
+  return isRecord(payload) && typeof payload.details === 'string' ? payload.details : undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

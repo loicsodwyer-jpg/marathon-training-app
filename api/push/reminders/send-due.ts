@@ -37,24 +37,30 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     return
   }
 
+  let schedulerSupabase: ReturnType<typeof createSupabaseAdminClient> | undefined
+  let schedulerRunId: string | undefined
+
   try {
     const cronSecret = getRequiredEnv('CRON_SECRET')
 
     if (!isAuthorizedCronRequest(request, cronSecret)) {
-      errorResponse(response, 'Unauthorized scheduler request.', 401)
+      errorResponse(response, 'Unauthorized scheduler request.', 401, undefined, 'UNAUTHORIZED')
       return
     }
 
     const payload = validateSendDueRemindersPayload(await readJsonBody(request))
 
     if (payload.ok === false) {
-      errorResponse(response, payload.message, 400)
+      errorResponse(response, payload.message, 400, undefined, 'VALIDATION_ERROR')
       return
     }
 
     const dryRun = payload.value.dryRun === true
     const limit = payload.value.limit ?? 50
     const supabase = createSupabaseAdminClient()
+    schedulerSupabase = supabase
+    const schedulerRun = await createSchedulerRun(supabase, dryRun, limit)
+    schedulerRunId = schedulerRun.id
     const { data, error } = await supabase
       .from('push_reminders')
       .select(
@@ -67,20 +73,46 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       .limit(limit)
 
     if (error) {
-      errorResponse(response, 'Could not read due reminders.', 500, error.message)
+      await finishSchedulerRun(supabase, schedulerRun.id, {
+        processed: 0,
+        sent: 0,
+        failed: 0,
+        skipped: 0,
+        status: 'failed',
+        errorMessage: getSafeErrorMessage(error.message),
+      })
+      errorResponse(
+        response,
+        'Could not read due reminders.',
+        500,
+        error.message,
+        getSupabaseErrorCode(error.message),
+      )
       return
     }
 
+    const rawReminderCount = Array.isArray(data) ? data.length : 0
     const reminders = Array.isArray(data)
       ? data.map(parseDueReminder).filter((reminder): reminder is DueReminder => Boolean(reminder))
       : []
+    const skipped = rawReminderCount - reminders.length
 
     if (dryRun) {
-      jsonResponse(response, 200, {
-        ok: true,
+      await finishSchedulerRun(supabase, schedulerRun.id, {
         processed: reminders.length,
         sent: 0,
         failed: 0,
+        skipped,
+        status: 'success',
+      })
+      jsonResponse(response, 200, {
+        ok: true,
+        schedulerRunId: schedulerRun.id,
+        schedulerWarning: schedulerRun.warning,
+        processed: reminders.length,
+        sent: 0,
+        failed: 0,
+        skipped,
         dryRun: true,
         due: reminders.map((reminder) => ({
           id: reminder.id,
@@ -105,21 +137,112 @@ export default async function handler(request: ApiRequest, response: ApiResponse
         failed += 1
       }
     }
-
-    jsonResponse(response, 200, {
-      ok: true,
+    await finishSchedulerRun(supabase, schedulerRun.id, {
       processed: reminders.length,
       sent,
       failed,
+      skipped,
+      status: failed > 0 ? 'partial_failure' : 'success',
+    })
+
+    jsonResponse(response, 200, {
+      ok: true,
+      schedulerRunId: schedulerRun.id,
+      schedulerWarning: schedulerRun.warning,
+      processed: reminders.length,
+      sent,
+      failed,
+      skipped,
       dryRun: false,
     })
   } catch (error) {
+    await finishSchedulerRun(schedulerSupabase, schedulerRunId, {
+      processed: 0,
+      sent: 0,
+      failed: 0,
+      skipped: 0,
+      status: 'failed',
+      errorMessage: error instanceof Error ? getSafeErrorMessage(error.message) : 'Unknown error',
+    })
+
     if (isMissingEnvError(error)) {
-      errorResponse(response, 'Scheduler environment variables are missing.', 500, error.message)
+      errorResponse(
+        response,
+        'Scheduler environment variables are missing.',
+        500,
+        error.message,
+        'INVALID_ENV',
+      )
       return
     }
 
-    errorResponse(response, 'Could not send due reminders.', 500)
+    errorResponse(response, 'Could not send due reminders.', 500, undefined, 'SUPABASE_ERROR')
+  }
+}
+
+type SchedulerRunStatus = 'success' | 'partial_failure' | 'failed'
+
+async function createSchedulerRun(
+  supabase: ReturnType<typeof createSupabaseAdminClient>,
+  dryRun: boolean,
+  requestedLimit: number,
+): Promise<{ id?: string; warning?: string }> {
+  try {
+    const { data, error } = await supabase
+      .from('push_scheduler_runs')
+      .insert({
+        dry_run: dryRun,
+        requested_limit: requestedLimit,
+        status: 'running',
+      })
+      .select('id')
+      .single()
+
+    if (error || !isRecord(data) || typeof data.id !== 'string') {
+      return {
+        warning: 'Scheduler run logging is unavailable. Run supabase/push_scheduler_runs.sql.',
+      }
+    }
+
+    return { id: data.id }
+  } catch {
+    return {
+      warning: 'Scheduler run logging is unavailable. Run supabase/push_scheduler_runs.sql.',
+    }
+  }
+}
+
+async function finishSchedulerRun(
+  supabase: ReturnType<typeof createSupabaseAdminClient> | undefined,
+  schedulerRunId: string | undefined,
+  result: {
+    processed: number
+    sent: number
+    failed: number
+    skipped: number
+    status: SchedulerRunStatus
+    errorMessage?: string
+  },
+) {
+  if (!supabase || !schedulerRunId) {
+    return
+  }
+
+  try {
+    await supabase
+      .from('push_scheduler_runs')
+      .update({
+        finished_at: new Date().toISOString(),
+        processed: result.processed,
+        sent: result.sent,
+        failed: result.failed,
+        skipped: result.skipped,
+        status: result.status,
+        error_message: result.errorMessage,
+      })
+      .eq('id', schedulerRunId)
+  } catch {
+    // Scheduler logging is diagnostic only; never stop reminder delivery.
   }
 }
 
@@ -283,4 +406,14 @@ function getHeaderValue(value: string | string[] | undefined) {
 
 function getString(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined
+}
+
+function getSafeErrorMessage(message: string) {
+  return message.slice(0, 240)
+}
+
+function getSupabaseErrorCode(message: string) {
+  return /relation .*does not exist|schema cache|could not find/i.test(message)
+    ? 'MISSING_TABLE'
+    : 'SUPABASE_ERROR'
 }

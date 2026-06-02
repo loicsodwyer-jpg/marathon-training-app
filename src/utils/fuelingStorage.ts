@@ -1,5 +1,6 @@
 import type { FuelingPreferences } from '../types/fueling'
 import { FUELING_PREFERENCES_STORAGE_KEY } from './localStorageKeys'
+import { markNotificationRemindersNeedResync } from './notificationSyncMetadataStorage'
 
 export const defaultFuelingPreferences: FuelingPreferences = {
   preferredBrand: 'Maurten',
@@ -97,6 +98,7 @@ export function saveFuelingPreferences(preferences: FuelingPreferences): void {
       FUELING_PREFERENCES_STORAGE_KEY,
       JSON.stringify(normalizeFuelingPreferences(preferences)),
     )
+    markNotificationRemindersNeedResync('Fuelling preferences changed.')
     window.dispatchEvent(new Event(fuelingPreferencesChangedEvent))
   } catch {
     // Keep the app usable if localStorage is unavailable or full.
@@ -110,6 +112,7 @@ export function resetFuelingPreferences(): void {
 
   try {
     window.localStorage.removeItem(FUELING_PREFERENCES_STORAGE_KEY)
+    markNotificationRemindersNeedResync('Fuelling preferences changed.')
     window.dispatchEvent(new Event(fuelingPreferencesChangedEvent))
   } catch {
     // Keep reset actions from crashing in restricted browser contexts.

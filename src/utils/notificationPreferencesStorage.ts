@@ -1,5 +1,6 @@
 import type { NotificationPreferences } from '../types/notifications'
 import { NOTIFICATION_PREFERENCES_STORAGE_KEY } from './localStorageKeys'
+import { markNotificationRemindersNeedResync } from './notificationSyncMetadataStorage'
 
 export const defaultNotificationPreferences: NotificationPreferences = {
   enabled: false,
@@ -122,6 +123,7 @@ export function saveNotificationPreferences(preferences: NotificationPreferences
       NOTIFICATION_PREFERENCES_STORAGE_KEY,
       JSON.stringify(normalizeNotificationPreferences(preferences)),
     )
+    markNotificationRemindersNeedResync('Notification preferences changed.')
     window.dispatchEvent(new Event(notificationPreferencesChangedEvent))
   } catch {
     // Keep preferences non-critical if storage is unavailable.
@@ -146,6 +148,7 @@ export function resetNotificationPreferences(): void {
 
   try {
     window.localStorage.removeItem(NOTIFICATION_PREFERENCES_STORAGE_KEY)
+    markNotificationRemindersNeedResync('Notification preferences changed.')
     window.dispatchEvent(new Event(notificationPreferencesChangedEvent))
   } catch {
     // Keep reset actions from crashing in restricted browser contexts.

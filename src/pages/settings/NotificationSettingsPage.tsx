@@ -1,5 +1,6 @@
 import {
   Bell,
+  Activity,
   Clock,
   Cloud,
   Eye,
@@ -9,20 +10,23 @@ import {
   Send,
   ShieldAlert,
   Smartphone,
+  TestTube2,
   Trash2,
   UploadCloud,
+  Wrench,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import PageCard from '../../components/PageCard'
 import StatusPill, { type StatusTone } from '../../components/StatusPill'
 import { useFuelingPreferences } from '../../hooks/useFuelingPreferences'
 import { useNotificationPreferences } from '../../hooks/useNotificationPreferences'
+import { useNotificationSyncMetadata } from '../../hooks/useNotificationSyncMetadata'
 import type {
   LocalReminderPreview,
   NotificationSupportStatus,
 } from '../../types/notifications'
 import { trainingPlanEndDate } from '../../data/trainingPlan'
-import { formatDisplayDate } from '../../utils/dateUtils'
+import { formatDateKey, formatDisplayDate } from '../../utils/dateUtils'
 import { getEffectiveFullTrainingPlan } from '../../utils/effectiveTrainingPlanUtils'
 import {
   buildLocalReminderPreviewForRange,
@@ -48,16 +52,24 @@ import {
 import {
   clearPushReminders,
   getReminderSyncRange,
+  getPushReminderHealth,
   listPushReminders,
   syncPushReminders,
+  type PushReminderHealthResult,
   type PushReminderListItem,
+  type PushReminderStatus,
 } from '../../utils/pushReminderBackendClient'
+import {
+  markNotificationRemindersNeedResync,
+  saveSuccessfulNotificationReminderSync,
+} from '../../utils/notificationSyncMetadataStorage'
 
 type NotificationSettingsPageProps = {
   selectedDate: string
 }
 
 type PreviewRange = 'next_7_days' | 'next_30_days' | 'full_remaining_plan'
+type ReminderHistoryFilter = PushReminderStatus
 
 type Message = {
   tone: 'success' | 'error'
@@ -70,9 +82,17 @@ const previewRangeLabels: Record<PreviewRange, string> = {
   full_remaining_plan: 'Full remaining plan',
 }
 
+const reminderHistoryLabels: Record<ReminderHistoryFilter, string> = {
+  pending: 'Pending',
+  sent: 'Sent',
+  failed: 'Failed',
+  cancelled: 'Cancelled',
+}
+
 function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProps) {
   const { preferences, resetPreferences, updatePreferences } = useNotificationPreferences()
   const { preferences: fuelingPreferences } = useFuelingPreferences()
+  const syncMetadata = useNotificationSyncMetadata()
   const [supportStatus, setSupportStatus] = useState<NotificationSupportStatus>(() =>
     getNotificationSupportStatus(),
   )
@@ -85,18 +105,30 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
   const [hasPreviewedScheduledReminders, setHasPreviewedScheduledReminders] = useState(false)
   const [isReminderBackendBusy, setIsReminderBackendBusy] = useState(false)
   const [syncedReminders, setSyncedReminders] = useState<PushReminderListItem[]>([])
+  const [reminderHealth, setReminderHealth] = useState<PushReminderHealthResult>()
+  const [activeHistoryFilter, setActiveHistoryFilter] =
+    useState<ReminderHistoryFilter>('pending')
   const [lastSyncSummary, setLastSyncSummary] = useState<{
     synced: number
     cancelled: number
     syncedAt: string
+    rangeStart: string
+    rangeEnd: string
   }>()
   const hasVapidPublicKey = Boolean(getVapidPublicKey())
+
+  async function refreshReminderHealth(endpointOverride?: string) {
+    const endpoint = endpointOverride ?? (await getExistingPushSubscription())?.endpoint
+    const result = await getPushReminderHealth(endpoint)
+    setReminderHealth(result)
+  }
 
   const refreshStatus = async () => {
     const nextStatus = await readPushStatus()
     setSupportStatus(nextStatus.supportStatus)
     setHasPushSubscription(nextStatus.hasPushSubscription)
     setBackendStatus(nextStatus.backendStatus)
+    await refreshReminderHealth(nextStatus.endpoint)
   }
 
   useEffect(() => {
@@ -111,6 +143,7 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
         setHasPushSubscription(nextStatus.hasPushSubscription)
         setSupportStatus(nextStatus.supportStatus)
         setBackendStatus(nextStatus.backendStatus)
+        void refreshReminderHealth(nextStatus.endpoint)
       })
       .catch(() => {
         if (isMounted) {
@@ -144,6 +177,15 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
     preferencesEnabled: preferences.enabled,
     permission: supportStatus.permission,
   })
+  const systemHealth = getNotificationSystemHealth({
+    backendStatus,
+    health: reminderHealth,
+  })
+  const displayedLastSync = lastSyncSummary
+    ? `${lastSyncSummary.syncedAt} (${formatDisplayDate(lastSyncSummary.rangeStart)} - ${formatDisplayDate(lastSyncSummary.rangeEnd)})`
+    : syncMetadata.lastSyncedAt
+      ? `${formatReminderDateTime(syncMetadata.lastSyncedAt)} (${syncMetadata.lastSyncedRangeStart ?? '?'} - ${syncMetadata.lastSyncedRangeEnd ?? '?'})`
+      : 'Not synced yet'
 
   const handleEnableNotifications = async () => {
     const permission = await requestNotificationPermission()
@@ -235,6 +277,43 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
     }
   }
 
+  const handleRepairNotificationSetup = async () => {
+    const shouldRepair = window.confirm(
+      'This will remove the current browser push subscription, create a fresh one, and save it to the backend. Your plan, logs, reminders preferences, and calendar edits stay untouched.',
+    )
+
+    if (!shouldRepair) {
+      return
+    }
+
+    setIsBackendBusy(true)
+
+    try {
+      await removePushSubscriptionEverywhere()
+      const result = await createAndSavePushSubscription(preferences, deviceLabel)
+      setMessage({ tone: result.ok ? 'success' : 'error', text: result.message })
+      await refreshStatus()
+      await refreshSyncedReminders(result.endpoint, false)
+    } catch (error) {
+      setMessage({
+        tone: 'error',
+        text: error instanceof Error ? error.message : 'Could not repair notification setup.',
+      })
+    } finally {
+      setIsBackendBusy(false)
+    }
+  }
+
+  const handleSelectPreviewRange = (range: PreviewRange) => {
+    setPreviewRange(range)
+    setHasPreviewedScheduledReminders(false)
+    setSyncedReminders([])
+
+    if (syncMetadata.lastSyncedAt && getReminderSyncScope(range) !== syncScope) {
+      markNotificationRemindersNeedResync('Reminder sync range changed.')
+    }
+  }
+
   const handlePreviewScheduledReminders = () => {
     setHasPreviewedScheduledReminders(true)
     setMessage({
@@ -281,6 +360,13 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
           synced: result.synced ?? payload.reminders.length,
           cancelled: result.cancelled ?? 0,
           syncedAt: new Date().toLocaleString(),
+          rangeStart: payload.rangeStart,
+          rangeEnd: payload.rangeEnd,
+        })
+        saveSuccessfulNotificationReminderSync({
+          rangeStart: payload.rangeStart,
+          rangeEnd: payload.rangeEnd,
+          reminders: payload.reminders,
         })
         setHasPreviewedScheduledReminders(true)
         setMessage({
@@ -288,6 +374,7 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
           text: `Synced ${result.synced ?? payload.reminders.length} reminders. Cancelled ${result.cancelled ?? 0}.`,
         })
         await refreshSyncedReminders(subscription.endpoint, false)
+        await refreshReminderHealth(subscription.endpoint)
       } else {
         setMessage({ tone: 'error', text: result.message })
       }
@@ -327,6 +414,100 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
         text: result.ok ? `Cancelled ${result.cancelled ?? 0} pending reminders.` : result.message,
       })
       await refreshSyncedReminders(subscription.endpoint, false)
+      await refreshReminderHealth(subscription.endpoint)
+    } finally {
+      setIsReminderBackendBusy(false)
+    }
+  }
+
+  const handleCreateTestScheduledReminder = async () => {
+    if (reminderSyncBlocker) {
+      setMessage({ tone: 'error', text: reminderSyncBlocker })
+      return
+    }
+
+    setIsReminderBackendBusy(true)
+
+    try {
+      const subscription = await getExistingPushSubscription()
+
+      if (!subscription?.endpoint) {
+        setMessage({ tone: 'error', text: 'Create and save push subscription first.' })
+        return
+      }
+
+      const now = new Date()
+      const sourceDate = formatDateKey(now)
+      const existingTestResult = await listPushReminders({
+        endpoint: subscription.endpoint,
+        rangeStart: sourceDate,
+        rangeEnd: sourceDate,
+        status: 'pending',
+      })
+      const pendingTest = existingTestResult.reminders?.find((reminder) =>
+        reminder.reminderKey?.startsWith('test:'),
+      )
+
+      if (pendingTest) {
+        setMessage({
+          tone: 'success',
+          text: 'A pending scheduled test reminder already exists. Wait for the scheduler or run the GitHub workflow manually.',
+        })
+        return
+      }
+
+      const sendAtDate = new Date(Date.now() + 2 * 60 * 1000)
+      const reminderKey = `test:${sendAtDate.getTime()}`
+      const testReminder = {
+        reminderKey,
+        syncScope: 'test',
+        sourceActivityId: reminderKey,
+        sourceDate,
+        type: 'custom',
+        title: 'Scheduled reminder test',
+        body: 'Your scheduled reminder pipeline is working.',
+        url: `/?date=${sourceDate}`,
+        sendAt: sendAtDate.toISOString(),
+        eventTime: sendAtDate.toISOString(),
+        reminderOffsetMinutes: 0,
+        payload: {
+          type: 'custom',
+          title: 'Scheduled reminder test',
+          body: 'Your scheduled reminder pipeline is working.',
+          url: `/?date=${sourceDate}`,
+          tag: reminderKey,
+          reminderId: reminderKey,
+          sourceActivityId: reminderKey,
+          sourceDate,
+        },
+      }
+      const result = await syncPushReminders({
+        endpoint: subscription.endpoint,
+        syncScope: 'test',
+        rangeStart: sourceDate,
+        rangeEnd: sourceDate,
+        reminders: [testReminder],
+      })
+
+      setMessage({
+        tone: result.ok ? 'success' : 'error',
+        text: result.ok
+          ? 'Test scheduled reminder created. Wait for the scheduler or run the GitHub workflow manually.'
+          : result.message,
+      })
+      await refreshSyncedReminders(subscription.endpoint, false)
+      await refreshReminderHealth(subscription.endpoint)
+    } finally {
+      setIsReminderBackendBusy(false)
+    }
+  }
+
+  const handleRefreshHealth = async () => {
+    setIsReminderBackendBusy(true)
+
+    try {
+      await refreshReminderHealth()
+      setMessage({ tone: 'success', text: 'Notification system health refreshed.' })
     } finally {
       setIsReminderBackendBusy(false)
     }
@@ -369,6 +550,63 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
   return (
     <div className="space-y-4">
       <SupportStatusCard status={supportStatus} />
+
+      <PageCard className="space-y-4">
+        <SectionTitle
+          icon={Activity}
+          title="Notification system health"
+          subtitle={systemHealth.message}
+        />
+        <div className="flex flex-wrap gap-2">
+          <StatusPill tone={systemHealth.tone}>{systemHealth.label}</StatusPill>
+          <StatusPill tone={backendStatusTone(backendStatus)}>
+            {backendStatusLabel(backendStatus)}
+          </StatusPill>
+          <StatusPill tone={reminderHealth?.scheduler?.lastRunAt ? 'success' : 'warning'}>
+            {reminderHealth?.scheduler?.lastRunAt ? 'Scheduler seen' : 'No scheduler run'}
+          </StatusPill>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <StatusTile label="Permission" tone={permissionTone(supportStatus.permission)} value={supportStatus.permission} />
+          <StatusTile
+            label="Browser subscription"
+            tone={hasPushSubscription ? 'success' : 'warning'}
+            value={hasPushSubscription ? 'Yes' : 'No'}
+          />
+          <StatusTile
+            label="Last scheduler run"
+            tone={reminderHealth?.scheduler?.lastRunAt ? 'success' : 'warning'}
+            value={formatReminderDateTime(reminderHealth?.scheduler?.lastRunAt ?? null)}
+          />
+          <StatusTile
+            label="Recent sent"
+            tone={(reminderHealth?.scheduler?.recentFailed ?? 0) > 0 ? 'warning' : 'success'}
+            value={`${reminderHealth?.scheduler?.recentSent ?? 0} sent / ${reminderHealth?.scheduler?.recentFailed ?? 0} failed`}
+          />
+          <StatusTile
+            label="Next reminder"
+            tone={reminderHealth?.device?.nextPendingSendAt ? 'success' : 'neutral'}
+            value={formatReminderDateTime(reminderHealth?.device?.nextPendingSendAt ?? null)}
+          />
+          <StatusTile label="Device label" tone="neutral" value={deviceLabel || 'This device'} />
+        </div>
+        {reminderHealth?.ok === false ? (
+          <p className="rounded-[16px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200">
+            {getDiagnosticMessage(reminderHealth)}
+          </p>
+        ) : null}
+        <button
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-white px-3 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
+          disabled={isReminderBackendBusy}
+          onClick={() => {
+            void handleRefreshHealth()
+          }}
+          type="button"
+        >
+          <RefreshCw className="h-4 w-4" aria-hidden="true" />
+          Refresh health
+        </button>
+      </PageCard>
 
       {message ? (
         <p
@@ -488,6 +726,17 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
           >
             Remove push subscription
           </button>
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-amber-200 bg-white px-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-amber-300/20 dark:bg-neutral-950/30 dark:text-amber-200 dark:hover:bg-amber-300/10 sm:col-span-2"
+            disabled={isBackendBusy || !supportStatus.canSubscribeToPush}
+            onClick={() => {
+              void handleRepairNotificationSetup()
+            }}
+            type="button"
+          >
+            <Wrench className="h-4 w-4" aria-hidden="true" />
+            Repair notification setup
+          </button>
         </div>
         {!hasVapidPublicKey ? (
           <p className="rounded-[16px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200">
@@ -528,11 +777,7 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
                   : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]'
               }`}
               key={range}
-              onClick={() => {
-                setPreviewRange(range)
-                setHasPreviewedScheduledReminders(false)
-                setSyncedReminders([])
-              }}
+              onClick={() => handleSelectPreviewRange(range)}
               type="button"
             >
               {previewRangeLabels[range]}
@@ -547,6 +792,19 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
           Sync reminders uploads this device&apos;s next schedule to the backend. Scheduled delivery
           runs every ~5 minutes. Changes to your plan/calendar require re-syncing.
         </p>
+
+        <p className="text-xs font-semibold text-stone-500 dark:text-neutral-500">
+          Last sync: {displayedLastSync}
+        </p>
+
+        {syncMetadata.needsResync ? (
+          <div className="rounded-[16px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200">
+            <p>Your reminders may be out of date. Re-sync after plan or calendar changes.</p>
+            {syncMetadata.needsResyncReason ? (
+              <p className="mt-1 text-xs">{syncMetadata.needsResyncReason}</p>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -590,6 +848,17 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             Clear synced
           </button>
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-stone-200 bg-white px-3 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]"
+            disabled={Boolean(reminderSyncBlocker) || isReminderBackendBusy}
+            onClick={() => {
+              void handleCreateTestScheduledReminder()
+            }}
+            type="button"
+          >
+            <TestTube2 className="h-4 w-4" aria-hidden="true" />
+            Create test reminder
+          </button>
         </div>
 
         {reminderSyncBlocker ? (
@@ -612,8 +881,25 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
           <CountTile label="Cancelled" value={reminderStatusCounts.cancelled} />
         </div>
 
+        <div className="grid grid-cols-4 gap-2">
+          {(Object.keys(reminderHistoryLabels) as ReminderHistoryFilter[]).map((filter) => (
+            <button
+              className={`min-h-10 rounded-[14px] border px-2 text-xs font-semibold transition ${
+                activeHistoryFilter === filter
+                  ? 'border-stone-950 bg-stone-950 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-950'
+                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]'
+              }`}
+              key={filter}
+              onClick={() => setActiveHistoryFilter(filter)}
+              type="button"
+            >
+              {reminderHistoryLabels[filter]}
+            </button>
+          ))}
+        </div>
+
         {syncedReminders.length ? (
-          <SyncedReminderList reminders={syncedReminders} />
+          <SyncedReminderList filter={activeHistoryFilter} reminders={syncedReminders} />
         ) : (
           <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-4 text-sm font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
             No synced reminders loaded for this range yet.
@@ -739,7 +1025,7 @@ function NotificationSettingsPage({ selectedDate }: NotificationSettingsPageProp
                   : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-200 dark:hover:bg-white/[0.1]'
               }`}
               key={range}
-              onClick={() => setPreviewRange(range)}
+              onClick={() => handleSelectPreviewRange(range)}
               type="button"
             >
               {previewRangeLabels[range]}
@@ -948,33 +1234,34 @@ function CountTile({ label, value }: { label: string; value: number }) {
   )
 }
 
-function SyncedReminderList({ reminders }: { reminders: PushReminderListItem[] }) {
-  const pendingReminders = reminders
-    .filter((reminder) => reminder.status === 'pending')
-    .slice(0, 6)
-  const failedReminders = reminders
-    .filter((reminder) => reminder.status === 'failed')
-    .slice(0, 4)
-  const sentReminders = reminders
-    .filter((reminder) => reminder.status === 'sent')
-    .slice(-4)
-    .reverse()
-  const visibleReminders = [
-    ...failedReminders,
-    ...pendingReminders,
-    ...sentReminders,
-  ]
+function SyncedReminderList({
+  filter,
+  reminders,
+}: {
+  filter: ReminderHistoryFilter
+  reminders: PushReminderListItem[]
+}) {
+  const visibleReminders = reminders
+    .filter((reminder) => reminder.status === filter)
+    .sort((firstReminder, secondReminder) => sortReminderHistory(firstReminder, secondReminder, filter))
+    .slice(0, filter === 'cancelled' ? 6 : 10)
 
   if (!visibleReminders.length) {
     return (
       <p className="rounded-[18px] border border-stone-100 bg-stone-50 p-4 text-sm font-semibold text-stone-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-300">
-        Synced reminder rows exist, but none are pending, sent, or failed in this range.
+        No {reminderHistoryLabels[filter].toLowerCase()} reminders loaded for this range.
       </p>
     )
   }
 
   return (
     <div className="space-y-2">
+      {filter === 'failed' ? (
+        <p className="rounded-[16px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200">
+          Failed reminders show safe backend errors. Re-sync after fixing the issue, or clear
+          pending reminders if the schedule changed.
+        </p>
+      ) : null}
       {visibleReminders.map((reminder) => (
         <SyncedReminderRow key={reminder.id ?? reminder.reminderKey} reminder={reminder} />
       ))}
@@ -991,7 +1278,9 @@ function SyncedReminderRow({ reminder }: { reminder: PushReminderListItem }) {
             {reminder.title ?? 'Scheduled reminder'}
           </p>
           <p className="mt-1 text-xs font-semibold text-stone-500 dark:text-neutral-500">
-            Send {formatReminderDateTime(reminder.sendAt)}
+            {reminder.status === 'sent' && reminder.sentAt
+              ? `Sent ${formatReminderDateTime(reminder.sentAt)}`
+              : `Send ${formatReminderDateTime(reminder.sendAt)}`}
           </p>
         </div>
         <StatusPill tone={syncedReminderTone(reminder.status)}>
@@ -1010,6 +1299,24 @@ function SyncedReminderRow({ reminder }: { reminder: PushReminderListItem }) {
       ) : null}
     </div>
   )
+}
+
+function sortReminderHistory(
+  firstReminder: PushReminderListItem,
+  secondReminder: PushReminderListItem,
+  filter: ReminderHistoryFilter,
+) {
+  const firstValue =
+    filter === 'sent'
+      ? firstReminder.sentAt ?? firstReminder.sendAt
+      : firstReminder.sendAt ?? firstReminder.sentAt
+  const secondValue =
+    filter === 'sent'
+      ? secondReminder.sentAt ?? secondReminder.sendAt
+      : secondReminder.sendAt ?? secondReminder.sentAt
+  const direction = filter === 'pending' ? 1 : -1
+
+  return direction * (firstValue ?? '').localeCompare(secondValue ?? '')
 }
 
 function getSelectedReminderRange(range: PreviewRange, selectedDate: string) {
@@ -1093,6 +1400,86 @@ function getReminderSyncBlocker({
   return undefined
 }
 
+function getNotificationSystemHealth({
+  backendStatus,
+  health,
+}: {
+  backendStatus: PushSubscriptionBackendStatusResult | undefined
+  health: PushReminderHealthResult | undefined
+}): { label: string; message: string; tone: StatusTone } {
+  if (health?.ok === false) {
+    return {
+      label: 'Needs attention',
+      message: getDiagnosticMessage(health),
+      tone: 'warning',
+    }
+  }
+
+  if (!backendStatus?.ok || !backendStatus.exists || !backendStatus.active) {
+    return {
+      label: 'Needs attention',
+      message: 'Device is not saved as an active backend subscription.',
+      tone: 'warning',
+    }
+  }
+
+  if (!health?.scheduler?.lastRunAt) {
+    return {
+      label: 'No scheduler run',
+      message: 'Scheduler has not run yet. Run the GitHub workflow manually or wait for cron.',
+      tone: 'warning',
+    }
+  }
+
+  if (!hasRecentSchedulerRun(health.scheduler.lastRunAt)) {
+    return {
+      label: 'No recent scheduler run',
+      message: 'Scheduler has not run recently. Check GitHub Actions and repository secrets.',
+      tone: 'warning',
+    }
+  }
+
+  if ((health.scheduler.recentFailed ?? 0) > 0 || (health.device?.failed ?? 0) > 0) {
+    return {
+      label: 'Some failures',
+      message: 'Scheduler is running, but failed reminders need attention.',
+      tone: 'warning',
+    }
+  }
+
+  return {
+    label: 'Healthy',
+    message: 'Device, backend subscription, and scheduler checks look healthy.',
+    tone: 'success',
+  }
+}
+
+function getDiagnosticMessage(result: { message: string; code?: string; status?: number }) {
+  if (result.code === 'MISSING_TABLE') {
+    return result.message
+  }
+
+  if (result.code === 'UNAUTHORIZED' || result.status === 401) {
+    return 'API returned 401. Check CRON_SECRET and GitHub scheduler secrets.'
+  }
+
+  if (result.code === 'NETWORK_ERROR') {
+    return 'Network unavailable or backend route is not reachable.'
+  }
+
+  return result.message || 'Backend returned an unexpected response.'
+}
+
+function hasRecentSchedulerRun(value: string) {
+  const timestamp = Date.parse(value)
+
+  if (Number.isNaN(timestamp)) {
+    return false
+  }
+
+  return Date.now() - timestamp < 20 * 60 * 1000
+}
+
 function syncedReminderTone(status: string | null): StatusTone {
   if (status === 'pending') {
     return 'neutral'
@@ -1141,6 +1528,7 @@ function permissionTone(permission: string): StatusTone {
 async function readPushStatus(): Promise<{
   supportStatus: NotificationSupportStatus
   hasPushSubscription: boolean
+  endpoint?: string
   backendStatus?: PushSubscriptionBackendStatusResult
 }> {
   const supportStatus = getNotificationSupportStatus()
@@ -1152,6 +1540,7 @@ async function readPushStatus(): Promise<{
   return {
     supportStatus,
     hasPushSubscription: Boolean(subscription),
+    endpoint: subscription?.endpoint,
     backendStatus,
   }
 }
