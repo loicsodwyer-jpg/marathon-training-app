@@ -1,5 +1,5 @@
 import { strengthSessions, strengthSessionsById } from '../data/strengthSessions'
-import type { StrengthExercise, StrengthSession } from '../types/training'
+import type { StrengthExercise, StrengthLoadCategory, StrengthSession } from '../types/training'
 import type {
   StrengthExerciseGroup,
   StrengthExerciseGroupId,
@@ -50,6 +50,14 @@ export function getAllStrengthSessions(): StrengthSession[] {
 }
 
 export function getStrengthSessionCategory(session: StrengthSession): StrengthSessionCategory {
+  if (session.loadCategory === 'mobility') {
+    return 'mobility'
+  }
+
+  if (session.loadCategory === 'optional') {
+    return 'prehab'
+  }
+
   const lookup = `${session.id} ${session.title} ${session.focus}`.toLowerCase()
 
   if (lookup.includes('mini') || lookup.includes('prehab')) {
@@ -61,6 +69,21 @@ export function getStrengthSessionCategory(session: StrengthSession): StrengthSe
   }
 
   return 'gym'
+}
+
+export function getStrengthSessionLoadCategory(session: StrengthSession): StrengthLoadCategory {
+  return session.loadCategory ?? (getStrengthSessionCategory(session) === 'gym' ? 'heavy' : 'mobility')
+}
+
+export function getStrengthSessionLoadLabel(session: StrengthSession): string {
+  const labels: Record<StrengthLoadCategory, string> = {
+    heavy: 'Heavy',
+    light: 'Light',
+    optional: 'Optional',
+    mobility: 'Mobility only',
+  }
+
+  return labels[getStrengthSessionLoadCategory(session)]
 }
 
 export function getStrengthSessionAccent(session: StrengthSession) {
@@ -90,7 +113,7 @@ export function getStrengthSessionAccent(session: StrengthSession) {
 }
 
 export function getStrengthSessionSummary(session: StrengthSession): string {
-  return `${session.estimatedDurationMinutes} min - ${session.exercises.length} exercises`
+  return `${session.durationRange ?? `${session.estimatedDurationMinutes} min`} - ${getStrengthSessionLoadLabel(session)}`
 }
 
 export function groupStrengthExercises(session: StrengthSession): StrengthExerciseGroup[] {
@@ -127,7 +150,13 @@ export function getStrengthCompletionLabel(
 function getExerciseGroupId(exercise: StrengthExercise): StrengthExerciseGroupId {
   const name = exercise.name.toLowerCase()
 
-  if (name.includes('warm-up') || name.includes('easy bike') || name.includes('dynamic mobility')) {
+  if (
+    name.includes('warm-up') ||
+    name.includes('easy bike') ||
+    name.includes('easy walk') ||
+    name.includes('breathing') ||
+    name.includes('dynamic mobility')
+  ) {
     return 'warmup'
   }
 
@@ -157,11 +186,17 @@ function getExerciseGroupId(exercise: StrengthExercise): StrengthExerciseGroupId
   if (
     name.includes('split squat') ||
     name.includes('romanian deadlift') ||
+    name.includes('deadlift') ||
     name.includes('leg press') ||
+    name.includes('squat') ||
     name.includes('goblet') ||
     name.includes('hip thrust') ||
     name.includes('hamstring curl') ||
-    name.includes('step-up')
+    name.includes('step-up') ||
+    name.includes('sled push') ||
+    name.includes('box jump') ||
+    name.includes('pogo') ||
+    name.includes('farmer carry')
   ) {
     return 'main_strength'
   }

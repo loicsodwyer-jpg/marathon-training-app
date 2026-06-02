@@ -97,7 +97,13 @@ export function getExerciseSection(
 
   const name = exerciseName.toLowerCase()
 
-  if (name.includes('warm-up') || name.includes('easy bike') || name.includes('rowing')) {
+  if (
+    name.includes('warm-up') ||
+    name.includes('easy bike') ||
+    name.includes('easy walk') ||
+    name.includes('breathing') ||
+    name.includes('rowing')
+  ) {
     return 'warmup'
   }
 
@@ -111,15 +117,23 @@ export function getExerciseSection(
   }
 
   if (
+    name.includes('ankle rocks') ||
+    name.includes('leg swings') ||
+    name.includes('hamstring sweeps') ||
+    name.includes('bodyweight') ||
     name.includes('plank') ||
     name.includes('pallof') ||
     name.includes('dead bug') ||
     name.includes('mobility') ||
     name.includes('stretch') ||
+    name.includes('foam rolling') ||
     name.includes('clamshell') ||
     name.includes('banded') ||
     name.includes('glute bridge') ||
-    name.includes('airplanes')
+    name.includes('airplanes') ||
+    name.includes('monster walks') ||
+    name.includes('adductor') ||
+    name.includes('figure-four')
   ) {
     return 'core_mobility'
   }

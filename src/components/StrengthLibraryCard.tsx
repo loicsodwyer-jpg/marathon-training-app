@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Dumbbell } from 'lucide-react'
+import { strengthPhaseDescriptions, strengthProgressionRules } from '../data/strengthSessions'
 import { getAllStrengthSessions } from '../utils/strengthUtils'
 import type { StrengthSession } from '../types/training'
 import type { LiveStrengthSessionResult } from '../types/liveStrength'
@@ -45,8 +46,32 @@ function StrengthLibraryCard() {
               Strength library
             </h2>
             <p className="mt-1 text-sm leading-5 text-stone-500 dark:text-neutral-400">
-              Two gym sessions and one mini prehab session support the marathon plan.
+              Periodized gym, prehab, mobility, and taper sessions support the marathon plan.
             </p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
+            Strength phases
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {strengthPhaseDescriptions.map((phase) => (
+              <div
+                className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]"
+                key={phase.weeks}
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-purple-700 dark:text-purple-200">
+                  {phase.weeks}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-stone-950 dark:text-white">
+                  {phase.title}
+                </p>
+                <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-400">
+                  {phase.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -59,6 +84,19 @@ function StrengthLibraryCard() {
               session={session}
             />
           ))}
+        </div>
+
+        <div className="rounded-[18px] border border-stone-100 bg-stone-50 p-3 dark:border-white/10 dark:bg-white/[0.05]">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
+            Progression rules
+          </p>
+          <ul className="mt-2 space-y-1">
+            {strengthProgressionRules.slice(0, 5).map((rule) => (
+              <li className="text-sm leading-5 text-stone-600 dark:text-neutral-400" key={rule}>
+                {rule}
+              </li>
+            ))}
+          </ul>
         </div>
       </PageCard>
 

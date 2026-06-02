@@ -74,6 +74,8 @@ export type RunWorkout = {
 }
 
 export type StrengthExercise = {
+  id?: string
+  mediaId?: string
   name: string
   sets: string
   reps: string
@@ -82,16 +84,29 @@ export type StrengthExercise = {
   notes?: string
 }
 
+export type StrengthLoadCategory = 'heavy' | 'light' | 'optional' | 'mobility'
+
 export type StrengthSession = {
   id: string
   title: string
   shortTitle: string
   startTime?: TimeString
   estimatedDurationMinutes: number
+  durationRange?: string
+  phaseFocus?: string
+  purpose?: string
+  bestDay?: string
+  intensity?: string
+  equipment?: string[]
+  tags?: string[]
+  loadCategory?: StrengthLoadCategory
   focus: string
   exercises: StrengthExercise[]
   warmup?: string[]
   cooldown?: string[]
+  mobilityFinisher?: string[]
+  cautionNotes?: string[]
+  liveSessionSteps?: string[]
   progressionNotes?: string[]
 }
 

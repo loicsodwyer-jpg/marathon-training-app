@@ -9,7 +9,7 @@ import { formatFuelingSummary } from '../utils/fuelingFormatUtils'
 import { getFuelingRecommendationForDay } from '../utils/fuelingRules'
 import { getFuelingGuidanceForRun, getNutritionSummaryForDay } from '../utils/nutritionUtils'
 import { getDayBadges, getIntervalSummary } from '../utils/planViewUtils'
-import { getStrengthSessionsByIds } from '../utils/strengthUtils'
+import { getStrengthSessionSummary, getStrengthSessionsByIds } from '../utils/strengthUtils'
 import AdjustedPlanBadge from './AdjustedPlanBadge'
 import PlanWorkoutBadge from './PlanWorkoutBadge'
 import StatusPill from './StatusPill'
@@ -121,7 +121,7 @@ function PlanDayCard({ dayPlan, events, isSelected, log, onOpenDay }: PlanDayCar
             icon={<Dumbbell className="h-4 w-4" aria-hidden="true" />}
             label="Strength"
             value={strengthSessions
-              .map((session) => `${session.shortTitle}: ${session.focus}`)
+              .map((session) => `${session.shortTitle}: ${getStrengthSessionSummary(session)} - ${session.focus}`)
               .join(' - ')}
           />
         ) : null}

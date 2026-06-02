@@ -27,7 +27,7 @@ Use this checklist before deployment or iPhone testing. The app is local-first, 
 - Calendar export: current week, next 4 weeks, full plan, custom range, validation, `.ics` download.
 - Data management: backup export/import, CSV export, clear logs, clear calendar edits, clear plan adjustments, clear grocery checkmarks, clear all local data.
 - Notifications: support status, permission request, local test notification, backend subscription status, backend test push, reminder preview.
-- Strength library: Gym A, Gym B, Mini C details, illustrations, start live session.
+- Strength library: Gym A1, Gym A2, Gym B1, Gym B2, Mini C, Taper Mobility, Week 1 Recovery Mobility details, illustrations, start live session.
 - Nutrition library: meal templates, Maurten fuelling preferences, reset defaults, grocery list note.
 - Integrations: future-feature copy only, no login or API key flow.
 - About: plan period, local storage/privacy, roadmap.
@@ -35,7 +35,7 @@ Use this checklist before deployment or iPhone testing. The app is local-first, 
 ## 4. Key Workflows
 
 - Log a run: select a date, save distance/duration/HR/notes, refresh, confirm Today/Week/Dashboard update.
-- Start/save strength session: start Gym A or Mini C, complete a few sets, end, save, confirm strength completion updates.
+- Start/save strength session: start Gym A1, Gym A2, Gym B1, Gym B2, Mini C, Taper Mobility, and Week 1 Recovery Mobility, complete a few sets, end, save, confirm strength completion updates.
 - Weekly grocery list: open Week, expand Grocery list, tick items, refresh, confirm checkmarks persist, copy list, reset checks.
 - Apply/reset plan adjustment: generate an Achilles adjustment, approve, confirm Today/Week/Plan/Dashboard use adjusted plan, reset it.
 - ChatGPT fallback: generate prompt, paste valid JSON, preview, apply, reset; invalid JSON should show errors without crashing.
@@ -50,10 +50,15 @@ Use this checklist before deployment or iPhone testing. The app is local-first, 
 - Test scheduled reminder: create a test reminder due in about 2 minutes, run the GitHub workflow manually, refresh, and confirm it moves from pending to sent.
 - Resync-needed banner: move/delete a calendar activity or change notification preferences, confirm the warning appears, then re-sync and confirm it clears.
 - Offline/PWA check: build, preview, load once, switch DevTools network offline, refresh, confirm app shell and local data still load.
+- Week 1 recovery: confirm 2026-06-01 and 2026-06-02 are full rest, 2026-06-03 is Recovery Mobility, first run back is 6 km on 2026-06-04, 2026-06-05 is 8 km easy, 2026-06-06 is birthday/social rest, and 2026-06-07 is 9 km with 8-10 km optional notes.
+- Strength variety: confirm Week 2 has Gym A1/B1, Week 3 has Gym A2/B2, Week 4 includes one Mini C, Week 7 has no heavy gym, Week 17 has only taper mobility, and Weeks 18-20 have mobility/activation only.
+- Calendar export strength details: export a week with Gym A1/B1, Week 17, and race week; confirm duration, purpose, key exercises, mobility notes, and caution notes are clear.
+- Notification re-sync after strength update: Settings -> Notifications shows reminders may need re-sync after the Step 29 strength-plan change, and syncing clears the warning.
 
 ## 5. Important Dates To Test
 
-- 2026-06-02: early easy/recovery day and short-run fuelling.
+- 2026-06-02: full rest after Utrecht Half Marathon, optional easy walk/bike only.
+- 2026-06-04: first run back, 6 km recovery.
 - 2026-06-09: Week 2 quality session, 10 x 400 m.
 - 2026-07-16: festival/social context and lighter grocery list.
 - 2026-09-27: Week 17 marathon simulation, 38 km, full fuel test, peak grocery list.

@@ -65,6 +65,20 @@ function WeekSummaryCard({ summary }: WeekSummaryCardProps) {
         />
       </div>
 
+      {summary.plannedStrengthSessions ? (
+        <div className="flex flex-wrap gap-2">
+          {summary.plannedBigStrengthSessions ? (
+            <StatusPill tone="strength">{summary.plannedBigStrengthSessions} big gym</StatusPill>
+          ) : null}
+          {summary.plannedLightOrMobilitySessions ? (
+            <StatusPill tone="neutral">{summary.plannedLightOrMobilitySessions} light/mobility</StatusPill>
+          ) : null}
+          {summary.plannedOptionalMiniSessions ? (
+            <StatusPill tone="warning">{summary.plannedOptionalMiniSessions} optional mini</StatusPill>
+          ) : null}
+        </div>
+      ) : null}
+
       <div>
         <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-500 dark:text-neutral-500">
           <span>Completed mileage</span>

@@ -11,6 +11,7 @@ import type { WorkoutLogEntry } from '../types/workoutLog'
 import { formatDateKey } from './dateUtils'
 import { roundOneDecimal, roundWhole } from './chartFormatUtils'
 import { getEffectiveFullTrainingPlan, getEffectiveWeekPlans } from './effectiveTrainingPlanUtils'
+import { getStrengthSessionLoadCategory, getStrengthSessionsByIds } from './strengthUtils'
 
 function isPositiveNumber(value: number | undefined): value is number {
   return value !== undefined && Number.isFinite(value) && value > 0
@@ -108,6 +109,24 @@ export function buildWeeklyDashboardSummaries(
       (total, day) => total + (day.strengthSessionIds?.length ?? 0),
       0,
     )
+    const plannedStrengthByLoad = week.days
+      .flatMap((day) => getStrengthSessionsByIds(day.strengthSessionIds))
+      .reduce(
+        (totals, session) => {
+          const load = getStrengthSessionLoadCategory(session)
+
+          if (load === 'heavy') {
+            totals.heavy += 1
+          } else if (load === 'optional') {
+            totals.optional += 1
+          } else {
+            totals.lightOrMobility += 1
+          }
+
+          return totals
+        },
+        { heavy: 0, lightOrMobility: 0, optional: 0 },
+      )
     // The current log model stores one strength completion flag per day, not per session.
     const completedStrengthCount = weekLogs.filter((log) => log.strengthCompleted).length
     const averageHr = average(
@@ -143,6 +162,9 @@ export function buildWeeklyDashboardSummaries(
       plannedRunCount,
       completedRunCount,
       plannedStrengthCount,
+      plannedHeavyStrengthCount: plannedStrengthByLoad.heavy,
+      plannedLightOrMobilityStrengthCount: plannedStrengthByLoad.lightOrMobility,
+      plannedOptionalStrengthCount: plannedStrengthByLoad.optional,
       completedStrengthCount,
       completionPercent:
         plannedRunCount > 0 ? roundWhole((completedRunCount / plannedRunCount) * 100) : 0,

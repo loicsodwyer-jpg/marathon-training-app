@@ -104,7 +104,7 @@ function DashboardPage({ onOpenSettings }: DashboardPageProps) {
         <DashboardMetricCard
           icon={Dumbbell}
           label="Strength"
-          subtitle={`${latestWeek?.completedStrengthCount ?? 0}/${latestWeek?.plannedStrengthCount ?? 0} this week`}
+          subtitle={getStrengthSubtitle(latestWeek)}
           tone="strength"
           value={`${totals.completedStrengthSessions}/${totals.plannedStrengthSessions}`}
         />
@@ -174,6 +174,23 @@ function DashboardPage({ onOpenSettings }: DashboardPageProps) {
       <RiskSignalsCard signals={riskSignals} />
     </div>
   )
+}
+
+function getStrengthSubtitle(
+  week: ReturnType<typeof buildWeeklyDashboardSummaries>[number] | undefined,
+) {
+  if (!week) {
+    return 'waiting for plan'
+  }
+
+  const parts = [
+    week.plannedHeavyStrengthCount ? `${week.plannedHeavyStrengthCount} big` : undefined,
+    week.plannedLightOrMobilityStrengthCount ? `${week.plannedLightOrMobilityStrengthCount} light` : undefined,
+    week.plannedOptionalStrengthCount ? `${week.plannedOptionalStrengthCount} mini` : undefined,
+  ].filter((part) => part !== undefined)
+
+  const count = `${week.completedStrengthCount}/${week.plannedStrengthCount} this week`
+  return parts.length ? `${count} - ${parts.join(', ')}` : count
 }
 
 export default DashboardPage

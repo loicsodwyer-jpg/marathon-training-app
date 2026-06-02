@@ -7,7 +7,7 @@ export const specialEvents: SpecialEvent[] = [
     startDate: '2026-06-01',
     endDate: '2026-06-07',
     category: 'recovery',
-    trainingImpact: 'Easy week after Utrecht Half Marathon.',
+    trainingImpact: 'Three recovery days before the first run back on Thursday after Utrecht Half Marathon.',
     alcoholRisk: 'none',
   },
   {

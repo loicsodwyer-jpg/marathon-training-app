@@ -3,6 +3,7 @@ import type { DayPlan, MealItem, MealPlan, RunWorkout } from '../types/training'
 import type { MealCategory } from '../types/nutrition'
 import { formatFuelingItems } from './fuelingFormatUtils'
 import { getFuelingRecommendationForRun } from './fuelingRules'
+import { getStrengthSessionLoadCategory, getStrengthSessionsByIds } from './strengthUtils'
 
 const hardRunTypes = ['threshold', 'interval', 'marathon_pace', 'progression', 'race']
 
@@ -74,8 +75,15 @@ export function getMealIcon(meal: MealItem): MealCategory {
 export function getNutritionSummaryForDay(dayPlan: DayPlan): string {
   const carbLabel = getCarbFocusLabel(dayPlan.mealPlan.carbFocus)
   const run = dayPlan.plannedRun
+  const hasHeavyStrength = getStrengthSessionsByIds(dayPlan.strengthSessionIds).some(
+    (session) => getStrengthSessionLoadCategory(session) === 'heavy',
+  )
 
   if (!run) {
+    if (hasHeavyStrength) {
+      return `${carbLabel} - include protein at lunch/dinner and a recovery snack if needed.`
+    }
+
     return `${carbLabel} - steady hydration and normal protein.`
   }
 
@@ -92,6 +100,10 @@ export function getNutritionSummaryForDay(dayPlan: DayPlan): string {
   }
 
   if (shouldShowPreRunSnack(dayPlan)) {
+    if (hasHeavyStrength) {
+      return `${carbLabel} - small pre-run snack plus protein after strength if needed.`
+    }
+
     return `${carbLabel} - small pre-run snack if needed.`
   }
 

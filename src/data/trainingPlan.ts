@@ -35,6 +35,7 @@ type RunBlueprint = {
   instructions?: string[]
   fuelNotes?: string[]
   recoveryNotes?: string[]
+  targetHrDescription?: string
 }
 
 type DayBlueprint = {
@@ -58,9 +59,13 @@ type WeekBlueprint = {
   days: DayBlueprint[]
 }
 
-const gymA = 'gym_a_lower_body_calves'
-const gymB = 'gym_b_posterior_chain_core'
-const miniC = 'mini_c_mobility_achilles_prehab'
+const gymA1 = 'gym-a1-lower-strength-achilles'
+const gymA2 = 'gym-a2-unilateral-strength'
+const gymB1 = 'gym-b1-posterior-power-core'
+const gymB2 = 'gym-b2-stability-hamstrings-prehab'
+const miniC = 'mini-c-mobility-prehab'
+const taperMobility = 'taper-mobility-activation'
+const week1RecoveryMobility = 'week1-recovery-mobility'
 
 const thresholdIntervals = (
   label: string,
@@ -270,40 +275,59 @@ const weeks: WeekBlueprint[] = [
     weekNumber: 1,
     startDate: '2026-06-01',
     phase: 'recovery',
-    targetMileageKm: 30,
-    focus: 'Recovery plus birthday weekend. Keep everything easy and optional.',
+    targetMileageKm: 23,
+    focus: 'Post-Utrecht Half Marathon recovery and birthday weekend. Three recovery days before first run back on Thursday.',
     days: [
-      restDay('Rest / optional mobility', 'No run planned. Optional mobility only.', {
+      restDay('Full rest', 'Optional easy walking only. No running and no gym.', {
         dayType: 'recovery',
         intensity: 'rest',
-        notes: ['Let the half marathon settle before rebuilding.'],
+        notes: ['Let the Utrecht Half Marathon settle before rebuilding.', 'No running.', 'No gym.'],
       }),
-      runDay('recovery', '6 km recovery', 6, 'recovery', 'Very easy recovery at 5:10-5:40/km.', {
-        notes: ['Stop early if Achilles or calves feel sharp.'],
-      }),
-      runDay('easy', '8 km easy + light strength', 8, 'easy', 'Gentle aerobic rhythm plus light strength.', {
-        strengthSessionIds: [miniC],
-        notes: ['Keep the strength light and skip calf loading if stiff.'],
-      }),
-      restDay('Rest or 30 min bike', 'Rest or 30 min very easy bike.', {
+      restDay('Full rest', 'Optional 20-30 min very easy walk or bike only. No running and no gym.', {
         dayType: 'recovery',
         intensity: 'rest',
-        notes: ['Bike only if it helps the legs feel better.'],
+        notes: ['Keep this as a full recovery day after the half marathon.', 'No running.', 'No gym.'],
       }),
-      runDay('easy', '8 km easy + optional strides', 8, 'easy', 'Easy Friday run. Add 4 x 15 sec relaxed strides only if legs feel normal.', {
-        intervals: relaxedStrides(4, 15),
-        notes: ['Skip strides if anything feels tight.'],
+      restDay('Mobility + light activation', 'No run. Optional 20-30 min recovery mobility/prehab only.', {
+        strengthSessionIds: [week1RecoveryMobility],
+        dayType: 'recovery',
+        intensity: 'low',
+        notes: ['No heavy gym.', 'Use this only if it helps recovery and prepares the first run back.'],
+      }),
+      runDay('recovery', '6 km recovery', 6, 'recovery', 'First run back after the half marathon. Keep it relaxed at 5:10-5:40/km.', {
+        paceOverride: {
+          minPerKmFrom: '5:10',
+          minPerKmTo: '5:40',
+          description: 'Very easy Zone 1 to low Zone 2 recovery pace',
+        },
+        targetHrDescription: 'Very easy, Zone 1 to low Zone 2',
+        notes: ['First run after Utrecht Half Marathon.', 'Stop early if Achilles or calves feel sharp.'],
+      }),
+      runDay('easy', '8 km easy', 8, 'easy', 'Easy Zone 2 run at 4:50-5:20/km. No workout intensity.', {
+        paceOverride: {
+          minPerKmFrom: '4:50',
+          minPerKmTo: '5:20',
+          description: 'Easy Zone 2 recovery-week pace',
+        },
+        targetHrDescription: 'Easy Zone 2',
+        notes: ['No workout intensity. Keep it conversational.'],
       }),
       restDay('Birthday/social day', 'No run planned. Optional walk only.', {
         dayType: 'social',
         intensity: 'rest',
         mealTemplateId: 'social_festival',
         sleepTargetHours: 8.5,
-        notes: ['Enjoy the birthday weekend and keep hydration sensible.'],
+        notes: ['Birthday/social/rest day.', 'Optional mobility only.', 'Enjoy the birthday weekend and keep hydration sensible.'],
       }),
-      runDay('easy', '8 km easy', 8, 'easy', 'No-pressure Sunday run.', {
+      runDay('easy', '9 km easy (8-10 km optional)', 9, 'easy', 'Easy Zone 2 run. Keep the distance flexible between 8-10 km depending how the body feels.', {
         startTime: '09:30',
-        notes: ['No pressure. Keep it easy or shorten if the weekend took energy.'],
+        paceOverride: {
+          minPerKmFrom: '4:55',
+          minPerKmTo: '5:25',
+          description: 'Easy Zone 2 recovery-week pace',
+        },
+        targetHrDescription: 'Easy Zone 2',
+        notes: ['Planned as 9 km for totals; 8-10 km optional.', 'Shorten if social fatigue is high.'],
       }),
     ],
   },
@@ -314,8 +338,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 80,
     focus: 'Base restart with faster reps. Fast work stays controlled and repeatable.',
     days: [
-      restDay('Rest + Strength A', 'No running. Lower-body strength before the faster restart.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 before the faster restart, controlled and not sore-making.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -330,16 +354,13 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 3,
         instructions: ['Fast workouts should be controlled and repeatable, not all-out racing.'],
       }),
-      runDay('easy', '12 km easy + Strength B', 12, 'easy', 'Easy aerobic volume plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '12 km easy + Gym B1', 12, 'easy', 'Easy aerobic volume plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '16 km medium-long steady', 16, 'steady', 'Controlled medium-long run at 4:25-4:45/km.', {
         instructions: ['If Tuesday was very hard, keep this closer to easy than steady.'],
       }),
-      runDay('recovery', '8 km recovery + prehab', 8, 'recovery', 'Short recovery plus calf/soleus prehab.', {
-        strengthSessionIds: [miniC],
-        notes: ['Calf and soleus work should build tolerance, not soreness.'],
-      }),
+      runDay('recovery', '8 km recovery', 8, 'recovery', 'Short recovery run. Keep the extra prehab for later weeks.'),
       runDay('easy', '8 km easy + strides', 8, 'easy', 'Easy Saturday with 6 x 20 sec relaxed strides.', {
         startTime: '09:30',
         intervals: relaxedStrides(6, 20),
@@ -357,8 +378,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 86,
     focus: 'Introduce over/unders while keeping the rest of the week aerobic.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A with clean reps only.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A2', 'No running. Gym A2 with clean unilateral reps only.', {
+        strengthSessionIds: [gymA2],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -368,8 +389,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 2,
         instructions: ['Stay smooth on the faster kilometers; this is control work, not racing.'],
       }),
-      runDay('easy', '12 km easy + Strength B', 12, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '12 km easy + Gym B2', 12, 'easy', 'Easy aerobic run plus Gym B2.', {
+        strengthSessionIds: [gymB2],
       }),
       runDay('medium_long', '18 km medium-long', 18, 'steady', 'Medium-long run at 4:25-4:45/km.', {
         instructions: ['Keep Thursday controlled after Tuesday quality.'],
@@ -393,8 +414,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 92,
     focus: 'Tempo ladder week with steady aerobic support.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A without chasing soreness.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 without chasing soreness.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -404,8 +425,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 3,
         instructions: ['Take 3 min jog between blocks and keep the final 1 km fast but repeatable.'],
       }),
-      runDay('easy', '13 km easy + Strength B', 13, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '13 km easy + Gym B1', 13, 'easy', 'Easy aerobic run plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '18 km steady medium-long', 18, 'steady', 'Steady medium-long run.', {
         instructions: ['Controlled pressure only; Tuesday is the hard work.'],
@@ -432,8 +453,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 76,
     focus: 'Cutback week with light speed and reduced strength load.',
     days: [
-      restDay('Rest + lighter Strength A', 'No running. Keep Strength A lighter than normal.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + lighter Gym A2', 'No running. Keep Gym A2 lighter than normal.', {
+        strengthSessionIds: [gymA2],
         dayType: 'strength',
         intensity: 'low',
         notes: ['Reduce gym load by 20-30% this cutback week.'],
@@ -456,8 +477,8 @@ const weeks: WeekBlueprint[] = [
         ],
         instructions: ['Keep this playful and controlled, not all-out.'],
       }),
-      runDay('easy', '10 km easy + light Strength B', 10, 'easy', 'Easy aerobic run plus light Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '10 km easy + light Gym B2', 10, 'easy', 'Easy aerobic run plus light Gym B2.', {
+        strengthSessionIds: [gymB2],
         notes: ['Keep gym volume light.'],
       }),
       runDay('medium_long', '16 km easy-medium', 16, 'easy', 'Controlled easy-medium run.'),
@@ -479,8 +500,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 98,
     focus: 'Stronger aerobic build with controlled 1 km reps.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A with clean controlled reps.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 with clean controlled reps.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -490,8 +511,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 3,
         instructions: ['Fast workouts should be controlled and repeatable, not all-out racing.'],
       }),
-      runDay('easy', '14 km easy + Strength B', 14, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '14 km easy + Gym B1', 14, 'easy', 'Easy aerobic run plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '20 km medium-long', 20, 'steady', 'Medium-long run at 4:20-4:40/km.', {
         instructions: ['Keep this aerobic; Tuesday is the quality session.'],
@@ -540,10 +561,9 @@ const weeks: WeekBlueprint[] = [
         mealTemplateId: 'social_festival',
         notes: ['Hydrate well and keep this genuinely easy.'],
       }),
-      runDay('recovery', '6 km very easy + mobility', 6, 'recovery', 'Very easy run plus mobility during the festival block.', {
-        strengthSessionIds: [miniC],
+      runDay('recovery', '6 km very easy + mobility', 6, 'recovery', 'Very easy run plus optional self-guided mobility during the festival block.', {
         mealTemplateId: 'social_festival',
-        notes: ['Skip the run if sleep, hydration, or Achilles are off.'],
+        notes: ['Skip the run if sleep, hydration, or Achilles are off.', 'No heavy gym during festival deload.'],
       }),
       restDay('Rest / festival', 'No running planned. Festival protection day.', {
         dayType: 'social',
@@ -570,20 +590,27 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 74,
     focus: 'Post-festival rebuild. No hard workout yet.',
     days: [
-      restDay('Rest + mobility', 'No running. Restore sleep, hydration, and normal food.', {
+      restDay('Rest + light Gym A2', 'No running. Restore sleep, hydration, normal food, and keep Gym A2 light.', {
+        strengthSessionIds: [gymA2],
+        dayType: 'strength',
+        intensity: 'low',
         mealTemplateId: 'post_alcohol_recovery',
         sleepTargetHours: 9,
+        notes: ['Light post-festival strength only; skip heavy loading if recovery is not back.'],
       }),
       runDay('easy', '12 km easy + strides', 12, 'easy', 'Easy run with 6 x 20 sec strides. No hard workout yet.', {
         intervals: relaxedStrides(6, 20),
         mealTemplateId: 'post_alcohol_recovery',
       }),
-      runDay('easy', '10 km easy + light Strength B', 10, 'easy', 'Easy run plus light Strength B.', {
-        strengthSessionIds: [gymB],
-        notes: ['Keep Strength B light after the festival week.'],
+      runDay('easy', '10 km easy + Gym B2', 10, 'easy', 'Easy run plus Gym B2.', {
+        strengthSessionIds: [gymB2],
+        notes: ['Keep Gym B2 light after the festival week.'],
       }),
       runDay('medium_long', '16 km easy-medium', 16, 'easy', 'Controlled easy-medium run.'),
-      runDay('recovery', '8 km recovery', 8, 'recovery', 'Low-stress recovery run.'),
+      runDay('recovery', '8 km recovery + Mini C', 8, 'recovery', 'Low-stress recovery run plus restorative Mini C.', {
+        strengthSessionIds: [miniC],
+        notes: ['Mini C should feel restorative, not like a third hard gym workout.'],
+      }),
       runDay('recovery', '6 km very easy', 6, 'recovery', 'Very easy Saturday reset.', {
         startTime: '09:30',
       }),
@@ -600,8 +627,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 82,
     focus: 'Back into quality while protecting the August festival day.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A controlled.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 controlled.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -611,8 +638,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 3,
         instructions: ['Keep the last block strong but never desperate.'],
       }),
-      runDay('easy', '12 km easy + Strength B', 12, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '12 km easy + Gym B1', 12, 'easy', 'Easy aerobic run plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '18 km medium-long', 18, 'steady', 'Controlled medium-long run.'),
       runDay('recovery', '8 km recovery', 8, 'recovery', 'Short and gentle.'),
@@ -648,8 +675,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 105,
     focus: 'Marathon-specific build with the first 30 km long run.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A with no soreness chasing.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A2', 'No running. Gym A2 with no soreness chasing.', {
+        strengthSessionIds: [gymA2],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -669,15 +696,13 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 2,
         instructions: ['Practice rhythm, not strain.'],
       }),
-      runDay('easy', '14 km easy + Strength B', 14, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '14 km easy + Gym B2', 14, 'easy', 'Easy aerobic run plus Gym B2.', {
+        strengthSessionIds: [gymB2],
       }),
       runDay('medium_long', '21 km medium-long steady', 21, 'steady', 'Medium-long steady run.', {
         instructions: ['If Tuesday took more than expected, keep this easy-medium.'],
       }),
-      runDay('recovery', '10 km recovery + prehab', 10, 'recovery', 'Recovery run plus prehab.', {
-        strengthSessionIds: [miniC],
-      }),
+      runDay('recovery', '10 km recovery', 10, 'recovery', 'Recovery run. Keep Friday free from extra gym load.'),
       runDay('easy', '13 km easy + strides', 13, 'easy', 'Easy Saturday with strides.', {
         startTime: '09:30',
         intervals: relaxedStrides(6, 20),
@@ -696,8 +721,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 110,
     focus: 'Big over/under week with a 32 km long run.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A controlled.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 controlled.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -707,8 +732,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 4,
         instructions: ['Fast kilometers must stay controlled and repeatable.'],
       }),
-      runDay('easy', '14 km easy + Strength B', 14, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '14 km easy + Gym B1', 14, 'easy', 'Easy aerobic run plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '22 km medium-long', 22, 'steady', 'Controlled medium-long run.'),
       runDay('recovery', '10 km recovery', 10, 'recovery', 'Very easy recovery.'),
@@ -743,8 +768,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 88,
     focus: 'Cutback plus sharpness. Keep the 400s smooth.',
     days: [
-      restDay('Rest + light Strength A', 'No running. Lighter Strength A.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + lighter Gym A2', 'No running. Lighter Gym A2.', {
+        strengthSessionIds: [gymA2],
         dayType: 'strength',
         intensity: 'low',
         notes: ['Reduce gym load by 20-30%.'],
@@ -755,12 +780,15 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 3,
         instructions: ['Fast relaxed, not sprinting. Keep all reps repeatable.'],
       }),
-      runDay('easy', '12 km easy + light Strength B', 12, 'easy', 'Easy run plus light Strength B.', {
-        strengthSessionIds: [gymB],
-        notes: ['Keep Strength B lighter than normal.'],
+      runDay('easy', '12 km easy + Gym B2', 12, 'easy', 'Easy run plus Gym B2.', {
+        strengthSessionIds: [gymB2],
+        notes: ['Keep Gym B2 lighter than normal.'],
       }),
       runDay('medium_long', '18 km easy-medium', 18, 'easy', 'Reduced medium-long run.'),
-      runDay('recovery', '8 km recovery', 8, 'recovery', 'Short recovery mileage.'),
+      runDay('recovery', '8 km recovery + Mini C', 8, 'recovery', 'Short recovery mileage plus restorative Mini C.', {
+        strengthSessionIds: [miniC],
+        notes: ['Mini C should stay easy and restorative.'],
+      }),
       runDay('easy', '10 km easy + strides', 10, 'easy', 'Easy Saturday with strides.', {
         startTime: '09:30',
         intervals: relaxedStrides(6, 20),
@@ -778,8 +806,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 112,
     focus: 'Tempo ladder plus a marathon-specific 34 km long run.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A controlled.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 controlled.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
       }),
@@ -789,8 +817,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 4,
         instructions: ['Keep this strong and repeatable, not like racing.'],
       }),
-      runDay('easy', '14 km easy + Strength B', 14, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '14 km easy + Gym B1', 14, 'easy', 'Easy aerobic run plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '22 km medium-long steady', 22, 'steady', 'Medium-long steady run.', {
         instructions: ['Keep Thursday controlled because Sunday has marathon-specific work.'],
@@ -829,8 +857,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 116,
     focus: 'Peak marathon strength. Protect sleep, fueling, and Achilles response.',
     days: [
-      restDay('Rest + Strength A', 'No running. Strength A controlled, not maximal.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A2', 'No running. Gym A2 controlled, not maximal.', {
+        strengthSessionIds: [gymA2],
         dayType: 'strength',
         intensity: 'low',
         notes: ['Do not chase soreness in the gym during peak weeks.'],
@@ -841,9 +869,9 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 4,
         instructions: ['Controlled and repeatable. Reduce intensity first if Achilles talks.'],
       }),
-      runDay('easy', '16 km easy + Strength B', 16, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
-        notes: ['Keep gym work submaximal.'],
+      runDay('easy', '16 km easy + Gym B2', 16, 'easy', 'Easy aerobic run plus Gym B2 with reduced volume.', {
+        strengthSessionIds: [gymB2],
+        notes: ['Keep gym work submaximal and reduce volume slightly.'],
       }),
       runDay('medium_long', '24 km medium-long', 24, 'steady', 'Medium-long run at 4:20-4:40/km.', {
         instructions: ['Stay aerobic; Sunday is the important marathon-specific run.'],
@@ -884,8 +912,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 116,
     focus: 'High-volume speed endurance with controlled 1 km reps.',
     days: [
-      restDay('Rest + controlled Strength A', 'No running. Strength A controlled.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + Gym A1', 'No running. Gym A1 controlled.', {
+        strengthSessionIds: [gymA1],
         dayType: 'strength',
         intensity: 'low',
         notes: ['Keep strength controlled. Do not chase soreness.'],
@@ -896,8 +924,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 4,
         instructions: ['Fast workouts should be controlled and repeatable, not all-out racing.'],
       }),
-      runDay('easy', '16 km easy + Strength B', 16, 'easy', 'Easy aerobic run plus Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '16 km easy + Gym B1', 16, 'easy', 'Easy aerobic run plus Gym B1.', {
+        strengthSessionIds: [gymB1],
       }),
       runDay('medium_long', '23 km medium-long steady', 23, 'steady', 'Controlled medium-long steady run.'),
       runDay('recovery', '10 km recovery', 10, 'recovery', 'Very easy recovery.'),
@@ -920,8 +948,8 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 82,
     focus: 'Cutback and consolidation. Freshness matters more than extra work.',
     days: [
-      restDay('Rest + lighter Strength A', 'No running. Lighter Strength A.', {
-        strengthSessionIds: [gymA],
+      restDay('Rest + lighter Gym A2', 'No running. Lighter Gym A2.', {
+        strengthSessionIds: [gymA2],
         dayType: 'strength',
         intensity: 'low',
         notes: ['Reduce gym load and keep two reps in reserve.'],
@@ -932,8 +960,8 @@ const weeks: WeekBlueprint[] = [
         cooldownKm: 1,
         instructions: ['Controlled marathon rhythm only.'],
       }),
-      runDay('easy', '12 km easy + light Strength B', 12, 'easy', 'Easy run plus light Strength B.', {
-        strengthSessionIds: [gymB],
+      runDay('easy', '12 km easy + Gym B2', 12, 'easy', 'Easy run plus Gym B2.', {
+        strengthSessionIds: [gymB2],
         notes: ['Light strength only.'],
       }),
       runDay('medium_long', '18 km medium-long easy', 18, 'easy', 'Medium-long easy run.'),
@@ -955,11 +983,11 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 115,
     focus: 'Peak simulation week. The 38 km simulation is optional to complete fully.',
     days: [
-      restDay('Rest + very light strength', 'No running. Very light strength only.', {
-        strengthSessionIds: [miniC],
+      restDay('Rest + taper mobility', 'No running. Very light taper mobility only.', {
+        strengthSessionIds: [taperMobility],
         dayType: 'strength',
         intensity: 'low',
-        notes: ['Very light strength only. No soreness chasing.'],
+        notes: ['Very light mobility/activation only. No heavy Wednesday gym this week.'],
       }),
       runDay('interval', '18 km speed endurance', 18, 'interval', '6 x 1 km at 3:35-3:40/km, then 4 x 400 m fast relaxed. Do not race this.', {
         intervals: [
@@ -982,9 +1010,7 @@ const weeks: WeekBlueprint[] = [
       runDay('medium_long', '22 km medium-long', 22, 'steady', 'Medium-long run at 4:20-4:40/km.', {
         instructions: ['Keep Thursday controlled; the marathon simulation is Sunday.'],
       }),
-      runDay('recovery', '10 km recovery + mobility', 10, 'recovery', 'Recovery run plus mobility.', {
-        strengthSessionIds: [miniC],
-      }),
+      runDay('recovery', '10 km recovery + mobility', 10, 'recovery', 'Recovery run plus optional self-guided mobility. No gym loading before the marathon simulation.'),
       runDay('easy', '12 km easy', 12, 'easy', 'Easy Saturday. No strides if legs feel heavy.', {
         startTime: '09:30',
         instructions: ['Saturday stays easy because Sunday is the simulation.'],
@@ -1019,9 +1045,10 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 65,
     focus: 'Taper starts plus wedding/social protection. No heavy strength anymore.',
     days: [
-      restDay('Rest - no heavy strength', 'No running. No heavy strength anymore.', {
-        dayType: 'recovery',
-        intensity: 'rest',
+      restDay('Rest + taper mobility', 'No running. Taper mobility only; no heavy strength anymore.', {
+        strengthSessionIds: [taperMobility],
+        dayType: 'strength',
+        intensity: 'low',
         notes: ['During taper, freshness is more important than making up missed training.'],
       }),
       runDay('marathon_pace', '14 km with 2 x 4 km marathon pace', 14, 'marathonPace', '2 x 4 km at marathon pace, controlled.', {
@@ -1051,9 +1078,10 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 76,
     focus: 'Taper 2. Smooth sharpness, no maximal work.',
     days: [
-      restDay('Rest + mobility', 'No running. Mobility only.', {
-        dayType: 'recovery',
-        intensity: 'rest',
+      restDay('Rest + taper mobility', 'No running. Mobility and activation only.', {
+        strengthSessionIds: [taperMobility],
+        dayType: 'strength',
+        intensity: 'low',
         notes: ['During taper, freshness is more important than making up missed training.'],
       }),
       runDay('interval', '14 km with 5 x 1 km', 14, 'interval', '5 x 1 km at 3:40/km, 2 min jog recovery. Smooth, not maximal.', {
@@ -1117,10 +1145,13 @@ const weeks: WeekBlueprint[] = [
     targetMileageKm: 71.2,
     focus: 'Race week for Amsterdam Marathon. Freshness beats extra work.',
     days: [
-      restDay('Rest - mobility only', 'No running. Mobility only.', {
+      restDay('Rest + race-week mobility', 'No running. Race-week mobility only.', {
+        strengthSessionIds: [taperMobility],
+        dayType: 'strength',
+        intensity: 'low',
         mealTemplateId: 'race_week',
         sleepTargetHours: 9,
-        notes: ['Do not make up missed training. Freshness is the goal.'],
+        notes: ['Do not make up missed training. Freshness is the goal.', 'No gym loading during race week.'],
       }),
       runDay('marathon_pace', '10 km with 4 km marathon pace', 10, 'marathonPace', '3 km easy + 4 km at marathon pace + 3 km easy.', {
         mealTemplateId: 'race_week',
@@ -1273,7 +1304,7 @@ function createRunWorkout(date: ISODateString, dayOfWeek: string, run: RunBluepr
     estimatedDurationMinutes: getEstimatedDurationMinutes(run),
     targetPace: run.paceOverride ?? guideline.pace,
     targetHrZone: guideline.hrZone,
-    targetHrDescription: guideline.hrDescription,
+    targetHrDescription: run.targetHrDescription ?? guideline.hrDescription,
     warmupKm: run.warmupKm,
     cooldownKm: run.cooldownKm,
     intervals: run.intervals,

@@ -1,11 +1,12 @@
 import { strengthSessionsById } from '../data/strengthSessions'
 import type { DailyScheduleBlock, ScheduleBlockCategory } from '../types/schedule'
 import type { FuelingPreferences } from '../types/fueling'
-import type { DayPlan, RunWorkout, TimeString, WorkoutInterval } from '../types/training'
+import type { DayPlan, RunWorkout, StrengthSession, TimeString, WorkoutInterval } from '../types/training'
 import { formatFuelingSummary } from './fuelingFormatUtils'
 import { getFuelingRecommendationForDay } from './fuelingRules'
 import { loadFuelingPreferences } from './fuelingStorage'
 import { addMinutesToTime, sortBlocksByTime, timeToMinutes } from './scheduleTimeUtils'
+import { getStrengthSessionLoadLabel } from './strengthUtils'
 
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
@@ -123,6 +124,17 @@ function getRunDescription(dayPlan: DayPlan, run: RunWorkout, preferences: Fueli
   return `${conciseParts.join(' - ')}.${warmup}${intervalSummary}${cooldown}${fuel}`
 }
 
+function getStrengthDescription(session: StrengthSession) {
+  return [
+    session.purpose ?? session.focus,
+    `Duration: ${session.durationRange ?? `${session.estimatedDurationMinutes} min`}.`,
+    session.intensity ? `Intensity: ${session.intensity}` : undefined,
+    `Load: ${getStrengthSessionLoadLabel(session)}.`,
+  ]
+    .filter((line) => line !== undefined)
+    .join(' ')
+}
+
 export function getDailyScheduleBlocks(
   dayPlan: DayPlan,
   preferences: FuelingPreferences = loadFuelingPreferences(),
@@ -203,7 +215,7 @@ export function getDailyScheduleBlocks(
             startTime,
             endTime: addMinutesToTime(startTime, session.estimatedDurationMinutes),
             category: 'strength',
-            description: session.focus,
+            description: getStrengthDescription(session),
             relatedPlanId: session.id,
             legacyIds: [`strength-${session.id}`],
           },

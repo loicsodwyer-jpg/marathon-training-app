@@ -6,6 +6,7 @@ export type NotificationSyncMetadata = {
   lastSyncedRangeStart?: string
   lastSyncedRangeEnd?: string
   lastSyncedHash?: string
+  planVersion?: string
   needsResync?: boolean
   needsResyncReason?: string
 }
@@ -14,8 +15,11 @@ export const notificationSyncMetadataChangedEvent =
   'loic-marathon-notification-sync-metadata-changed'
 
 const defaultMetadata: NotificationSyncMetadata = {
+  planVersion: 'strength-plan-step-29-v1',
   needsResync: false,
 }
+
+const currentNotificationPlanVersion = 'strength-plan-step-29-v1'
 
 export function loadNotificationSyncMetadata(): NotificationSyncMetadata {
   if (!canUseLocalStorage()) {
@@ -71,6 +75,7 @@ export function saveSuccessfulNotificationReminderSync({
     lastSyncedRangeStart: rangeStart,
     lastSyncedRangeEnd: rangeEnd,
     lastSyncedHash: createReminderSyncHash(reminders),
+    planVersion: currentNotificationPlanVersion,
     needsResync: false,
     needsResyncReason: undefined,
   })
@@ -101,15 +106,29 @@ function normalizeNotificationSyncMetadata(value: unknown): NotificationSyncMeta
     return defaultMetadata
   }
 
-  return {
+  const storedPlanVersion = optionalString(value.planVersion)
+  const normalized: NotificationSyncMetadata = {
     lastSyncedAt: optionalString(value.lastSyncedAt),
     lastSyncedRangeStart: optionalString(value.lastSyncedRangeStart),
     lastSyncedRangeEnd: optionalString(value.lastSyncedRangeEnd),
     lastSyncedHash: optionalString(value.lastSyncedHash),
+    planVersion: storedPlanVersion ?? defaultMetadata.planVersion,
     needsResync:
       typeof value.needsResync === 'boolean' ? value.needsResync : defaultMetadata.needsResync,
     needsResyncReason: optionalString(value.needsResyncReason),
   }
+
+  if (normalized.lastSyncedAt && storedPlanVersion !== currentNotificationPlanVersion) {
+    return {
+      ...normalized,
+      planVersion: currentNotificationPlanVersion,
+      needsResync: true,
+      needsResyncReason:
+        normalized.needsResyncReason ?? 'Plan strength sessions changed. Re-sync reminders.',
+    }
+  }
+
+  return normalized
 }
 
 function canUseLocalStorage() {

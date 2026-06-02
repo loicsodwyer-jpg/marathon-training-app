@@ -6,6 +6,7 @@ import type {
 } from '../types/notifications'
 import type { DailyScheduleBlock } from '../types/schedule'
 import type { DayPlan } from '../types/training'
+import { strengthSessionsById } from '../data/strengthSessions'
 import { addDays, formatDateKey, getMondayOfWeek } from './dateUtils'
 import { formatFuelingSummary } from './fuelingFormatUtils'
 import { getFuelingRecommendationForDay } from './fuelingRules'
@@ -351,9 +352,30 @@ function getReminderCopy(
   }
 
   if (type === 'strength') {
+    const session = block.relatedPlanId ? strengthSessionsById[block.relatedPlanId] : undefined
+    const shortTitle = session?.shortTitle ?? block.title
+
+    if (session?.loadCategory === 'optional') {
+      return {
+        title: isBefore ? `Mini prehab in 1 hour: ${shortTitle}` : `Mini prehab: ${shortTitle}`,
+        body: 'Keep it easy and restorative.',
+      }
+    }
+
+    if (session?.loadCategory === 'mobility') {
+      return {
+        title: isBefore ? `Mobility in 1 hour: ${shortTitle}` : `Start ${shortTitle}`,
+        body: session.id === 'taper-mobility-activation'
+          ? 'Taper mobility: activation only, no heavy lifting.'
+          : 'Recovery mobility only, no heavy lifting.',
+      }
+    }
+
     return {
-      title: isBefore ? 'Strength in 1 hour' : 'Strength session now',
-      body: `${block.title}. Keep it controlled and repeatable.`,
+      title: isBefore ? `Strength in 1 hour: ${shortTitle}` : `Start ${shortTitle}`,
+      body: isBefore
+        ? `Keep it controlled so running quality stays high. ${session?.purpose ?? block.description ?? ''}`.trim()
+        : `${session?.focus ?? block.title}. Duration ${session?.durationRange ?? 'planned session'}.`,
     }
   }
 

@@ -4,14 +4,12 @@ Private mobile-first React PWA foundation for the Amsterdam Marathon build.
 
 Current scope:
 
-- Mobile app shell, typed tab navigation, reusable UI cards, and placeholder pages.
-- Typed 20-week training plan data from 2026-06-01 to 2026-10-18.
-- Plan utilities, static meal/pace/strength/event data, and a validation script.
-- Dark-mode-first Today screen connected to real plan data with a read-only hourly calendar preview.
-- Editable Today hourly calendar with local schedule overrides and custom activities.
-- Local workout logging with planned-vs-actual feedback and recovery notes.
-
-Analytics charts, calendar export, integrations, and PWA installation will be added later.
+- Mobile-first Today, Week, Plan, Log, Dashboard, and Settings tabs.
+- Typed 20-week Amsterdam Marathon plan data from 2026-06-01 to 2026-10-18.
+- Week 1 post-Utrecht Half Marathon recovery adjustment with first run back on Thursday.
+- Periodized strength programme with Gym A1/A2, Gym B1/B2, occasional Mini C, taper mobility, and live strength mode.
+- Editable hourly calendar, local schedule overrides, custom activities, workout logging, plan overrides, and rule-based adjustment.
+- Nutrition, Maurten fuelling, weekly grocery list, calendar export, backup/import/export, PWA/offline support, and push notification reminders.
 
 ## Commands
 

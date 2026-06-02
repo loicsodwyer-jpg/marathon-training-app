@@ -9,6 +9,9 @@ export interface WeeklyDashboardSummary {
   plannedRunCount: number
   completedRunCount: number
   plannedStrengthCount: number
+  plannedHeavyStrengthCount: number
+  plannedLightOrMobilityStrengthCount: number
+  plannedOptionalStrengthCount: number
   completedStrengthCount: number
   completionPercent: number
   averageHr?: number

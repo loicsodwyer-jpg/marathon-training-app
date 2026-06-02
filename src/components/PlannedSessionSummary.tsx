@@ -1,6 +1,6 @@
 import { Dumbbell, Flag, Moon, Watch } from 'lucide-react'
 import type { DayPlan, SpecialEvent } from '../types/training'
-import { getStrengthSessionsByIds } from '../utils/strengthUtils'
+import { getStrengthSessionSummary, getStrengthSessionsByIds } from '../utils/strengthUtils'
 import ActivityCard from './ActivityCard'
 import StatusPill from './StatusPill'
 
@@ -105,10 +105,10 @@ function PlannedSessionSummary({ dayPlan, events }: PlannedSessionSummaryProps) 
                     {session.shortTitle}
                   </p>
                   <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
-                    {session.focus}
+                    {session.purpose ?? session.focus}
                   </p>
                 </div>
-                <StatusPill tone="strength">{session.estimatedDurationMinutes} min</StatusPill>
+                <StatusPill tone="strength">{getStrengthSessionSummary(session)}</StatusPill>
               </div>
             </div>
           ))}

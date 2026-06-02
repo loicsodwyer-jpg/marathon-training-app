@@ -14,7 +14,7 @@ import { loadFuelingPreferences } from './fuelingStorage'
 import { getScheduleOverridesForDate } from './scheduleStorage'
 import { applyScheduleOverridesToGeneratedBlocks } from './scheduleOverrideUtils'
 import { addMinutesToTime, sortBlocksByTime } from './scheduleTimeUtils'
-import { getStrengthSessionsByIds } from './strengthUtils'
+import { getStrengthSessionLoadLabel, getStrengthSessionsByIds } from './strengthUtils'
 import { getDailyScheduleBlocks } from './todayScheduleUtils'
 import { loadWorkoutLogs } from './workoutLogStorage'
 
@@ -150,12 +150,14 @@ function buildStrengthEvents(dayPlan: DayPlan): CalendarExportEvent[] {
       scheduleBlock?.startTime ?? session.startTime ?? (weekdays.includes(dayPlan.dayOfWeek) ? '06:45' : '10:00')
     const endTime =
       scheduleBlock?.endTime ?? addMinutesToTime(startTime, session.estimatedDurationMinutes)
-    const isPrehab = session.title.toLowerCase().includes('prehab') || session.shortTitle.toLowerCase().includes('mini')
+    const isPrehab = session.loadCategory === 'optional'
+    const isMobility = session.loadCategory === 'mobility'
+    const titlePrefix = isMobility ? 'Mobility' : isPrehab ? 'Prehab' : 'Strength'
 
     return {
       id: `strength-${session.id}-${dayPlan.date}`,
       date: dayPlan.date,
-      title: `${isPrehab ? 'Prehab' : 'Strength'}: ${session.shortTitle}`,
+      title: `${titlePrefix}: ${session.shortTitle}`,
       description: buildStrengthDescription(session, adjustment?.strengthAdjustment),
       startTime,
       endTime,
@@ -353,11 +355,21 @@ function buildStrengthDescription(session: StrengthSession, strengthAdjustment: 
   return [
     session.title,
     `Focus: ${session.focus}`,
-    `Duration: ${session.estimatedDurationMinutes} minutes`,
+    session.purpose ? `Purpose: ${session.purpose}` : undefined,
+    `Duration: ${session.durationRange ?? `${session.estimatedDurationMinutes} minutes`}`,
+    `Load: ${getStrengthSessionLoadLabel(session)}`,
+    session.intensity ? `Intensity: ${session.intensity}` : undefined,
+    session.equipment?.length ? `Equipment: ${session.equipment.join(' | ')}` : undefined,
     `Main exercises: ${session.exercises
       .slice(0, 6)
       .map((exercise) => `${exercise.name} (${exercise.sets} x ${exercise.reps})`)
       .join(' | ')}`,
+    session.mobilityFinisher?.length
+      ? `Mobility finisher: ${session.mobilityFinisher.join(' | ')}`
+      : undefined,
+    session.cautionNotes?.length
+      ? `Caution: ${session.cautionNotes.join(' | ')}`
+      : undefined,
     session.progressionNotes?.length
       ? `Progression: ${session.progressionNotes.join(' | ')}`
       : undefined,

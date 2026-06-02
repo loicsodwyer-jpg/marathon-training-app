@@ -1,7 +1,11 @@
 import { Activity, Dumbbell, ShieldCheck, Timer } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { StrengthSession } from '../types/training'
-import { getStrengthSessionAccent, groupStrengthExercises } from '../utils/strengthUtils'
+import {
+  getStrengthSessionAccent,
+  getStrengthSessionLoadLabel,
+  groupStrengthExercises,
+} from '../utils/strengthUtils'
 import StatusPill from './StatusPill'
 import StrengthExerciseCard from './StrengthExerciseCard'
 import StrengthProgressionCard from './StrengthProgressionCard'
@@ -38,15 +42,35 @@ function StrengthSessionDetail({ session }: StrengthSessionDetailProps) {
           <HeaderMetric
             icon={<Timer className="h-4 w-4" aria-hidden="true" />}
             label="Duration"
-            value={`${session.estimatedDurationMinutes} min`}
+            value={session.durationRange ?? `${session.estimatedDurationMinutes} min`}
           />
           <HeaderMetric
             icon={<Dumbbell className="h-4 w-4" aria-hidden="true" />}
-            label="Exercises"
-            value={`${session.exercises.length}`}
+            label="Load"
+            value={getStrengthSessionLoadLabel(session)}
           />
         </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {session.bestDay ? <StatusPill tone="strength">{session.bestDay}</StatusPill> : null}
+          {session.phaseFocus ? <StatusPill tone="neutral">{session.phaseFocus}</StatusPill> : null}
+          {session.intensity ? <StatusPill tone="neutral">{session.intensity}</StatusPill> : null}
+        </div>
+
+        {session.purpose ? (
+          <p className="mt-3 text-sm leading-6 text-stone-700 dark:text-neutral-300">
+            {session.purpose}
+          </p>
+        ) : null}
       </header>
+
+      {session.equipment?.length ? (
+        <DetailList
+          icon={<Dumbbell className="h-4 w-4" aria-hidden="true" />}
+          items={session.equipment}
+          title="Equipment"
+        />
+      ) : null}
 
       {session.warmup?.length && !hasWarmupExerciseGroup ? (
         <DetailList
@@ -76,7 +100,23 @@ function StrengthSessionDetail({ session }: StrengthSessionDetailProps) {
         <DetailList
           icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
           items={session.cooldown}
-          title="Cooldown"
+          title="Mobility finisher"
+        />
+      ) : null}
+
+      {session.cautionNotes?.length ? (
+        <DetailList
+          icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
+          items={session.cautionNotes}
+          title="Caution notes"
+        />
+      ) : null}
+
+      {session.liveSessionSteps?.length ? (
+        <DetailList
+          icon={<Activity className="h-4 w-4" aria-hidden="true" />}
+          items={session.liveSessionSteps}
+          title="Live session flow"
         />
       ) : null}
 

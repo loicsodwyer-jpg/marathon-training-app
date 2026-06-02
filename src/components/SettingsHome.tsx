@@ -107,12 +107,12 @@ function SettingsHome({ onClose, onSelectPage, theme }: SettingsHomeProps) {
 
         <SettingsSection title="Training libraries">
           <SettingsRow
-            badge="Gym A/B/C"
+            badge="A1/A2/B1/B2"
             icon={Dumbbell}
             iconClassName="bg-purple-50 text-purple-700 dark:bg-purple-300/10 dark:text-purple-200"
             onSelect={onSelectPage}
             page="strength"
-            subtitle="Gym A, Gym B, and Mini C details"
+            subtitle="Gym A1/A2, Gym B1/B2, Mini C, and taper mobility"
             title="Strength library"
           />
           <SettingsRow

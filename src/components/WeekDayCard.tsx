@@ -5,7 +5,7 @@ import type { WeekViewDay } from '../types/weekView'
 import { formatFuelingSummary } from '../utils/fuelingFormatUtils'
 import { getFuelingRecommendationForDay } from '../utils/fuelingRules'
 import { getNutritionSummaryForDay } from '../utils/nutritionUtils'
-import { getStrengthSessionsByIds } from '../utils/strengthUtils'
+import { getStrengthSessionSummary, getStrengthSessionsByIds } from '../utils/strengthUtils'
 import AdjustedPlanBadge from './AdjustedPlanBadge'
 import StatusPill from './StatusPill'
 import WeekBlockPill from './WeekBlockPill'
@@ -124,9 +124,16 @@ function WeekDayCard({ day, isExpanded, onOpenDay, onToggleExpanded }: WeekDayCa
           </div>
 
           {strengthSessions.length ? (
-            <p className="rounded-[16px] border border-purple-100 bg-purple-50 px-3 py-2 text-sm font-semibold text-purple-700 dark:border-purple-300/20 dark:bg-purple-300/10 dark:text-purple-200">
-              Strength planned: {strengthSessions.map((session) => session.shortTitle).join(' - ')}
-            </p>
+            <div className="space-y-2 rounded-[16px] border border-purple-100 bg-purple-50 px-3 py-2 text-purple-700 dark:border-purple-300/20 dark:bg-purple-300/10 dark:text-purple-200">
+              <p className="text-sm font-semibold">
+                Strength planned: {strengthSessions.map((session) => session.shortTitle).join(' - ')}
+              </p>
+              {strengthSessions.map((session) => (
+                <p className="text-xs leading-5 text-purple-800 dark:text-purple-100" key={session.id}>
+                  {session.shortTitle}: {getStrengthSessionSummary(session)}. {session.purpose ?? session.focus}
+                </p>
+              ))}
+            </div>
           ) : null}
 
           {visibleSpecialEvents.length ? (

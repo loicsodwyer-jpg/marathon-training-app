@@ -69,6 +69,21 @@ function StrengthDetailCard({
               {isCompleted ? <StatusPill tone="success">Done</StatusPill> : null}
             </div>
 
+            {session.purpose || session.intensity ? (
+              <div className="mt-3 rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35">
+                {session.intensity ? (
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-purple-700 dark:text-purple-200">
+                    {session.intensity}
+                  </p>
+                ) : null}
+                {session.purpose ? (
+                  <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-neutral-300">
+                    {session.purpose}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
             <div className="mt-3 rounded-[16px] border border-white/70 bg-white/75 p-3 dark:border-white/10 dark:bg-neutral-950/35">
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 dark:text-neutral-500">
                 Key exercises

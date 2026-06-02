@@ -18,6 +18,7 @@ import {
 import { getScheduleOverridesForDate } from './scheduleStorage'
 import { applyScheduleOverridesToGeneratedBlocks } from './scheduleOverrideUtils'
 import { sortBlocksByTime } from './scheduleTimeUtils'
+import { getStrengthSessionLoadCategory, getStrengthSessionsByIds } from './strengthUtils'
 import { getDailyScheduleBlocks } from './todayScheduleUtils'
 import { getSpecialEventsForDate } from './trainingPlanUtils'
 
@@ -171,6 +172,24 @@ export function buildWeekViewSummary(days: WeekViewDay[]): WeekViewSummary {
     (total, day) => total + (day.dayPlan?.strengthSessionIds?.length ?? 0),
     0,
   )
+  const plannedStrengthByLoad = days
+    .flatMap((day) => getStrengthSessionsByIds(day.dayPlan?.strengthSessionIds))
+    .reduce(
+      (totals, session) => {
+        const load = getStrengthSessionLoadCategory(session)
+
+        if (load === 'heavy') {
+          totals.big += 1
+        } else if (load === 'optional') {
+          totals.optional += 1
+        } else {
+          totals.lightOrMobility += 1
+        }
+
+        return totals
+      },
+      { big: 0, lightOrMobility: 0, optional: 0 },
+    )
   const completedStrengthSessions = days.filter((day) => day.workoutLog?.strengthCompleted).length
   const specialEventLabels = Array.from(
     new Set(days.flatMap((day) => day.specialEvents.map((event) => event.title))),
@@ -187,6 +206,9 @@ export function buildWeekViewSummary(days: WeekViewDay[]): WeekViewSummary {
     plannedRuns,
     completedRuns,
     plannedStrengthSessions,
+    plannedBigStrengthSessions: plannedStrengthByLoad.big,
+    plannedLightOrMobilitySessions: plannedStrengthByLoad.lightOrMobility,
+    plannedOptionalMiniSessions: plannedStrengthByLoad.optional,
     completedStrengthSessions,
     completionPercent:
       plannedRuns > 0 ? Math.round((completedRuns / plannedRuns) * 100) : 0,

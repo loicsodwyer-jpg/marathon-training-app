@@ -30,6 +30,9 @@ export interface WeekViewSummary {
   plannedRuns: number
   completedRuns: number
   plannedStrengthSessions: number
+  plannedBigStrengthSessions: number
+  plannedLightOrMobilitySessions: number
+  plannedOptionalMiniSessions: number
   completedStrengthSessions: number
   completionPercent: number
   specialEventLabels: string[]

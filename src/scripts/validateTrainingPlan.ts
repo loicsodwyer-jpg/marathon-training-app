@@ -89,12 +89,33 @@ function validateMeals() {
 
 function validateSpecialDates() {
   const firstWeek = getAllWeekPlans()[0]
-  assertCondition(getWeeklyRunCount(1) === 4, `First week must have exactly 4 planned runs.`)
+  assertCondition(getWeeklyRunCount(1) === 3, `First week must have exactly 3 planned runs.`)
   assertCondition(
     firstWeek.days.every(
       (day) => !day.plannedRun || !firstWeekForbiddenRunTypes.includes(day.plannedRun.type),
     ),
     'First week must not include threshold, interval, marathon-pace, or race workouts.',
+  )
+
+  assertCondition(!getRequiredDay('2026-06-01').plannedRun, '2026-06-01 must be full rest.')
+  assertCondition(!getRequiredDay('2026-06-02').plannedRun, '2026-06-02 must be full rest.')
+  assertCondition(!getRequiredDay('2026-06-03').plannedRun, '2026-06-03 must have no run.')
+  assertCondition(
+    getRequiredDay('2026-06-03').strengthSessionIds?.includes('week1-recovery-mobility') ?? false,
+    '2026-06-03 must include Week 1 Recovery Mobility.',
+  )
+  assertCondition(
+    getRequiredDay('2026-06-04').plannedRun?.plannedDistanceKm === 6,
+    '2026-06-04 must be the 6 km first run back.',
+  )
+  assertCondition(
+    getRequiredDay('2026-06-05').plannedRun?.plannedDistanceKm === 8,
+    '2026-06-05 must be the 8 km easy run.',
+  )
+  assertCondition(!getRequiredDay('2026-06-06').plannedRun, '2026-06-06 must be birthday/social rest.')
+  assertCondition(
+    getRequiredDay('2026-06-07').plannedRun?.plannedDistanceKm === 9,
+    '2026-06-07 must be planned as 9 km with 8-10 km optional notes.',
   )
 
   for (const date of ['2026-07-15', '2026-07-16', '2026-07-17', '2026-07-18', '2026-07-19']) {
@@ -164,6 +185,17 @@ function validateRunAndStrengthTiming() {
 
   for (const session of strengthSessions) {
     assertCondition(session.exercises.length > 0, `${session.id} must include exercises.`)
+    assertCondition(Boolean(session.purpose), `${session.id} must include a purpose.`)
+    assertCondition(Boolean(session.bestDay), `${session.id} must include a best day.`)
+    assertCondition(Boolean(session.intensity), `${session.id} must include intensity guidance.`)
+    assertCondition(Boolean(session.loadCategory), `${session.id} must include a load category.`)
+    assertCondition((session.equipment?.length ?? 0) > 0, `${session.id} must include equipment.`)
+    assertCondition((session.cautionNotes?.length ?? 0) > 0, `${session.id} must include caution notes.`)
+    assertCondition((session.liveSessionSteps?.length ?? 0) > 0, `${session.id} must include live session steps.`)
+
+    for (const exercise of session.exercises) {
+      assertCondition(Boolean(exercise.id), `${session.id} exercise ${exercise.name} must include an exercise id.`)
+    }
   }
 }
 
@@ -184,7 +216,7 @@ function validatePlanShape() {
 
 function validateRevisedMileage() {
   const expectedWeeklyKm: Record<number, number> = {
-    1: 30,
+    1: 23,
     2: 80,
     3: 86,
     4: 92,
@@ -224,7 +256,7 @@ function validateRevisedMileage() {
 
 function validateLongRunProgression() {
   const expectedLongRuns: Record<number, number> = {
-    1: 8,
+    1: 9,
     2: 22,
     3: 24,
     4: 25,
@@ -269,13 +301,54 @@ function validateStrengthTaper() {
   for (const day of getFullTrainingPlan()) {
     if (day.date >= '2026-09-28') {
       for (const sessionId of day.strengthSessionIds ?? []) {
+        const session = strengthSessionsById[sessionId]
         assertCondition(
-          sessionId !== 'gym_a_lower_body_calves' && sessionId !== 'gym_b_posterior_chain_core',
-          `${day.date} must not schedule heavy Strength A/B after 2026-09-28.`,
+          session?.loadCategory === 'mobility',
+          `${day.date} must schedule mobility-only strength after 2026-09-28.`,
         )
       }
     }
   }
+}
+
+function validateStrengthScheduleMapping() {
+  const expectedByWeek: Record<number, string[]> = {
+    1: ['week1-recovery-mobility'],
+    2: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core'],
+    3: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab'],
+    4: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core', 'mini-c-mobility-prehab'],
+    5: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab'],
+    6: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core'],
+    7: [],
+    8: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab', 'mini-c-mobility-prehab'],
+    9: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core'],
+    10: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab'],
+    11: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core'],
+    12: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab', 'mini-c-mobility-prehab'],
+    13: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core'],
+    14: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab'],
+    15: ['gym-a1-lower-strength-achilles', 'gym-b1-posterior-power-core'],
+    16: ['gym-a2-unilateral-strength', 'gym-b2-stability-hamstrings-prehab'],
+    17: ['taper-mobility-activation'],
+    18: ['taper-mobility-activation'],
+    19: ['taper-mobility-activation'],
+    20: ['taper-mobility-activation'],
+  }
+
+  for (const [weekNumberText, expectedSessionIds] of Object.entries(expectedByWeek)) {
+    const weekNumber = Number(weekNumberText)
+    const actualSessionIds = getAllWeekPlans()
+      .find((week) => week.weekNumber === weekNumber)
+      ?.days.flatMap((day) => day.strengthSessionIds ?? []) ?? []
+
+    assertCondition(
+      actualSessionIds.join('|') === expectedSessionIds.join('|'),
+      `Week ${weekNumber} strength schedule should be ${expectedSessionIds.join(', ') || 'empty'}; found ${actualSessionIds.join(', ') || 'empty'}.`,
+    )
+  }
+
+  const uniqueSessionIds = new Set(strengthSessions.map((session) => session.id))
+  assertCondition(uniqueSessionIds.size === strengthSessions.length, 'Strength session IDs must be unique.')
 }
 
 function validateTuesdayQualityDistances() {
@@ -328,6 +401,7 @@ validatePlanShape()
 validateRevisedMileage()
 validateLongRunProgression()
 validateStrengthTaper()
+validateStrengthScheduleMapping()
 validateTuesdayQualityDistances()
 validateFestivalRecovery()
 
